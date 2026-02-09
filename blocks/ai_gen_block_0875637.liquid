@@ -1,0 +1,650 @@
+{% doc %}
+  @prompt
+    Hello Sidekick,
+    
+    I need you to create a new, fully functional, and customizable hero section for my Shopify theme and update my header's behavior.
+    
+    1. Hero Section Design:
+    The hero section should be based on the attached image (Screenshot 2025-06-11 at 10.15.29 AM.jpg). It needs to be a full-width section that displays a background image with a large, centered heading and a smaller subheading overlaid on top of it.
+    
+    2. Theme Editor Customization:
+    This new hero section must be fully customizable in the Shopify theme editor. Please include the following settings, just like in the screenshots provided:
+    
+    Aspect Ratio:
+    
+    A slider to control the Desktop aspect ratio (percentage).
+    A slider to control the Mobile aspect ratio (percentage).
+    Content:
+    
+    A text field for the Heading.
+    A color picker for the Heading color.
+    Sliders for Heading size for both desktop and mobile.
+    A toggle to Show description.
+    A rich text editor for the Description (subheading).
+    A color picker for the Text color (for the description).
+    Sliders for Text size for both desktop and mobile.
+    Buttons for Text alignment (Left, Center, Right).
+    Content Layout & Box Model:
+    
+    Buttons for Horizontal alignment and Vertical alignment (Top, Middle, Bottom) for the content box.
+    A toggle to Show content background.
+    A color picker for Content background color.
+    A slider for Content border radius.
+    A slider for Content max width.
+    Spacing:
+    
+    Input fields for Section Padding (Top, Right, Bottom, Left) for both Desktop and Mobile.
+    Input fields for Content box padding for both Desktop and Mobile.
+    3. Critical Header Functionality:
+    This is the most important part. I need to change how my theme's header works.
+    
+    Initial State (Top of Page): The header should overlap the new hero section. Its background must be transparent.
+    On Scroll: As the user scrolls down the page, the header should transition to having a solid background color (e.g., white) and become sticky, remaining fixed at the top of the viewport.
+    Please generate all the necess, please make it so that the store header is completely visible when crossed to the top of the page. as of now its just a white block when the user is scrolled to the top of the screen
+    , as of now when the user is rolled all the way to the top of the page, it doesn't show the store's header. it is just a white space. please fix this
+    
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .hero-section-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding-top: {{ block.settings.desktop_padding_top }}px;
+    padding-right: {{ block.settings.desktop_padding_right }}px;
+    padding-bottom: {{ block.settings.desktop_padding_bottom }}px;
+    padding-left: {{ block.settings.desktop_padding_left }}px;
+  }
+
+  .hero-section__image-container-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: {{ block.settings.desktop_aspect_ratio }}%;
+  }
+
+  .hero-section__image-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-section__image-placeholder-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+  }
+
+  .hero-section__image-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .hero-section__content-wrapper-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: {{ block.settings.horizontal_alignment }};
+    align-items: {{ block.settings.vertical_alignment }};
+    padding: {{ block.settings.desktop_content_padding_top }}px {{ block.settings.desktop_content_padding_right }}px {{ block.settings.desktop_content_padding_bottom }}px {{ block.settings.desktop_content_padding_left }}px;
+  }
+
+  .hero-section__content-{{ ai_gen_id }} {
+    text-align: {{ block.settings.text_alignment }};
+    max-width: {{ block.settings.content_max_width }}px;
+    {% if block.settings.show_content_background %}
+      background-color: {{ block.settings.content_background_color }};
+      border-radius: {{ block.settings.content_border_radius }}px;
+      padding: 2rem;
+    {% endif %}
+  }
+
+  .hero-section__heading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.desktop_heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin-top: 0;
+    margin-bottom: 1rem;
+  }
+
+  .hero-section__description-{{ ai_gen_id }} {
+    font-size: {{ block.settings.desktop_text_size }}px;
+    color: {{ block.settings.text_color }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .hero-section-{{ ai_gen_id }} {
+      padding-top: {{ block.settings.mobile_padding_top }}px;
+      padding-right: {{ block.settings.mobile_padding_right }}px;
+      padding-bottom: {{ block.settings.mobile_padding_bottom }}px;
+      padding-left: {{ block.settings.mobile_padding_left }}px;
+    }
+
+    .hero-section__image-container-{{ ai_gen_id }} {
+      padding-bottom: {{ block.settings.mobile_aspect_ratio }}%;
+    }
+
+    .hero-section__content-wrapper-{{ ai_gen_id }} {
+      padding: {{ block.settings.mobile_content_padding_top }}px {{ block.settings.mobile_content_padding_right }}px {{ block.settings.mobile_content_padding_bottom }}px {{ block.settings.mobile_content_padding_left }}px;
+    }
+
+    .hero-section__heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_heading_size }}px;
+    }
+
+    .hero-section__description-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_text_size }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="hero-section-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="hero-section__image-container-{{ ai_gen_id }}">
+    {% if block.settings.background_image %}
+      <img
+        src="{{ block.settings.background_image | image_url: width: 2000 }}"
+        alt="{{ block.settings.background_image.alt | escape }}"
+        loading="lazy"
+        class="hero-section__image-{{ ai_gen_id }}">
+    {% else %}
+      <div class="hero-section__image-placeholder-{{ ai_gen_id }}">
+        {{ 'hero-apparel-1' | placeholder_svg_tag }}
+      </div>
+    {% endif %}
+    <div class="hero-section__content-wrapper-{{ ai_gen_id }}">
+      <div class="hero-section__content-{{ ai_gen_id }}">
+        {% if block.settings.heading != blank %}
+          <h2 class="hero-section__heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+        {% endif %}
+        
+        {% if block.settings.show_description and block.settings.description != blank %}
+          <div class="hero-section__description-{{ ai_gen_id }}">
+            {{ block.settings.description }}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    document.addEventListener('DOMContentLoaded', function() {
+      const header = document.querySelector('header');
+      
+      if (!header) return;
+      
+      // Create and append the style for the header
+      const style = document.createElement('style');
+      style.textContent = `
+        .header-transparent-{{ ai_gen_id }} {
+          background-color: transparent !important;
+          transition: background-color 0.3s ease;
+          position: absolute;
+          width: 100%;
+          z-index: 100;
+        }
+        
+        .header-transparent-{{ ai_gen_id }} * {
+          color: {{ block.settings.header_text_color }} !important;
+        }
+        
+        .header-scrolled-{{ ai_gen_id }} {
+          background-color: #ffffff !important;
+          position: fixed;
+          top: 0;
+          width: 100%;
+          z-index: 100;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header-scrolled-{{ ai_gen_id }} * {
+          color: {{ block.settings.header_scrolled_text_color }} !important;
+        }
+      `;
+      document.head.appendChild(style);
+      
+      // Function to check scroll position and update header
+      function checkScroll() {
+        if (window.scrollY > 50) {
+          header.classList.remove('header-transparent-{{ ai_gen_id }}');
+          header.classList.add('header-scrolled-{{ ai_gen_id }}');
+        } else {
+          header.classList.add('header-transparent-{{ ai_gen_id }}');
+          header.classList.remove('header-scrolled-{{ ai_gen_id }}');
+        }
+      }
+      
+      // Apply transparent header immediately
+      header.classList.add('header-transparent-{{ ai_gen_id }}');
+      
+      // Initial check
+      checkScroll();
+      
+      // Add scroll event listener
+      window.addEventListener('scroll', checkScroll);
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Hero Section",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background image"
+    },
+    {
+      "type": "header",
+      "content": "Aspect Ratio"
+    },
+    {
+      "type": "range",
+      "id": "desktop_aspect_ratio",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Desktop aspect ratio",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "mobile_aspect_ratio",
+      "min": 20,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "label": "Mobile aspect ratio",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Welcome to our store"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "desktop_heading_size",
+      "min": 20,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Desktop heading size",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_size",
+      "min": 16,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "label": "Mobile heading size",
+      "default": 32
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show description",
+      "default": true
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Use this section to welcome customers to your store, highlight products, or share brand announcements.</p>"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "desktop_text_size",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Desktop text size",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "mobile_text_size",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "label": "Mobile text size",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Content Layout & Box Model"
+    },
+    {
+      "type": "select",
+      "id": "horizontal_alignment",
+      "label": "Horizontal alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "flex-end",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "vertical_alignment",
+      "label": "Vertical alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Top"
+        },
+        {
+          "value": "center",
+          "label": "Middle"
+        },
+        {
+          "value": "flex-end",
+          "label": "Bottom"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_content_background",
+      "label": "Show content background",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "content_background_color",
+      "label": "Content background color",
+      "default": "#000000",
+      "alpha": true
+    },
+    {
+      "type": "range",
+      "id": "content_border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Content border radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "min": 400,
+      "max": 1200,
+      "step": 50,
+      "unit": "px",
+      "label": "Content max width",
+      "default": 800
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing - Desktop"
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_right",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Right padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "desktop_padding_left",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Left padding",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing - Mobile"
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_right",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Right padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "mobile_padding_left",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Left padding",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Content Box Padding - Desktop"
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_padding_right",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Right padding",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "desktop_content_padding_left",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Left padding",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Content Box Padding - Mobile"
+    },
+    {
+      "type": "range",
+      "id": "mobile_content_padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Top padding",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "mobile_content_padding_right",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Right padding",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "mobile_content_padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom padding",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "mobile_content_padding_left",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Left padding",
+      "default": 15
+    },
+    {
+      "type": "header",
+      "content": "Header Settings"
+    },
+    {
+      "type": "color",
+      "id": "header_text_color",
+      "label": "Header text color (transparent state)",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "header_scrolled_text_color",
+      "label": "Header text color (scrolled state)",
+      "default": "#000000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Section"
+    }
+  ],
+  "class": "hero-section-block"
+}
+{% endschema %}

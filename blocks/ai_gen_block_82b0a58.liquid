@@ -1,0 +1,423 @@
+{% doc %}
+  @prompt
+    Create me a dropdown that I can insert text and an image inside and have a title that the user will see before they click on it.
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-dropdown-container-{{ ai_gen_id }} {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .ai-dropdown-header-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: {{ block.settings.padding }}px;
+    background-color: {{ block.settings.header_bg_color }};
+    color: {{ block.settings.header_text_color }};
+    border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    user-select: none;
+  }
+
+  .ai-dropdown-header-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.header_hover_color }};
+  }
+
+  .ai-dropdown-header-{{ ai_gen_id }}[aria-expanded="true"] {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .ai-dropdown-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_font_size }}px;
+    font-weight: {{ block.settings.title_font_weight }};
+    margin: 0;
+  }
+
+  .ai-dropdown-icon-{{ ai_gen_id }} {
+    width: 20px;
+    height: 20px;
+    transition: transform 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .ai-dropdown-header-{{ ai_gen_id }}[aria-expanded="true"] .ai-dropdown-icon-{{ ai_gen_id }} {
+    transform: rotate(180deg);
+  }
+
+  .ai-dropdown-content-{{ ai_gen_id }} {
+    background-color: {{ block.settings.content_bg_color }};
+    border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+    border-top: none;
+    border-bottom-left-radius: {{ block.settings.border_radius }}px;
+    border-bottom-right-radius: {{ block.settings.border_radius }}px;
+    padding: {{ block.settings.content_padding }}px;
+    overflow: hidden;
+    max-height: 0;
+    opacity: 0;
+    transition: all 0.3s ease;
+  }
+
+  .ai-dropdown-content-{{ ai_gen_id }}.active {
+    max-height: 1000px;
+    opacity: 1;
+  }
+
+  .ai-dropdown-image-wrapper-{{ ai_gen_id }} {
+    margin-bottom: {{ block.settings.image_spacing }}px;
+  }
+
+  .ai-dropdown-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: auto;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    display: block;
+  }
+
+  .ai-dropdown-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 200px;
+    background-color: #f4f4f4;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-dropdown-image-placeholder-{{ ai_gen_id }} svg {
+    width: 60px;
+    height: 60px;
+    opacity: 0.5;
+  }
+
+  .ai-dropdown-text-{{ ai_gen_id }} {
+    color: {{ block.settings.content_text_color }};
+    font-size: {{ block.settings.content_font_size }}px;
+    line-height: 1.6;
+  }
+
+  .ai-dropdown-text-{{ ai_gen_id }} p {
+    margin: 0 0 16px;
+  }
+
+  .ai-dropdown-text-{{ ai_gen_id }} p:last-child {
+    margin-bottom: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-dropdown-header-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding | times: 0.8 }}px;
+    }
+
+    .ai-dropdown-content-{{ ai_gen_id }} {
+      padding: {{ block.settings.content_padding | times: 0.8 }}px;
+    }
+
+    .ai-dropdown-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_font_size | times: 0.9 }}px;
+    }
+
+    .ai-dropdown-text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.content_font_size | times: 0.9 }}px;
+    }
+  }
+{% endstyle %}
+
+<dropdown-toggle-{{ ai_gen_id }} class="ai-dropdown-container-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <button
+    class="ai-dropdown-header-{{ ai_gen_id }}"
+    aria-expanded="false"
+    aria-controls="dropdown-content-{{ ai_gen_id }}"
+  >
+    <h3 class="ai-dropdown-title-{{ ai_gen_id }}">{{ block.settings.dropdown_title }}</h3>
+    <svg
+      class="ai-dropdown-icon-{{ ai_gen_id }}"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <polyline points="6,9 12,15 18,9"></polyline>
+    </svg>
+  </button>
+
+  <div
+    id="dropdown-content-{{ ai_gen_id }}"
+    class="ai-dropdown-content-{{ ai_gen_id }}"
+    role="region"
+    aria-labelledby="dropdown-header-{{ ai_gen_id }}"
+  >
+    {% if block.settings.dropdown_image %}
+      <div class="ai-dropdown-image-wrapper-{{ ai_gen_id }}">
+        <img
+          src="{{ block.settings.dropdown_image | image_url: width: 800 }}"
+          alt="{{ block.settings.dropdown_image.alt | escape }}"
+          class="ai-dropdown-image-{{ ai_gen_id }}"
+          loading="lazy"
+          width="{{ block.settings.dropdown_image.width }}"
+          height="{{ block.settings.dropdown_image.height }}"
+        >
+      </div>
+    {% elsif block.settings.show_placeholder_image %}
+      <div class="ai-dropdown-image-wrapper-{{ ai_gen_id }}">
+        <div class="ai-dropdown-image-placeholder-{{ ai_gen_id }}">
+          {{ 'image' | placeholder_svg_tag }}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if block.settings.dropdown_text %}
+      <div class="ai-dropdown-text-{{ ai_gen_id }}">
+        {{ block.settings.dropdown_text }}
+      </div>
+    {% endif %}
+  </div>
+</dropdown-toggle-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class DropdownToggle{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+      }
+
+      connectedCallback() {
+        this.header = this.querySelector('.ai-dropdown-header-{{ ai_gen_id }}');
+        this.content = this.querySelector('.ai-dropdown-content-{{ ai_gen_id }}');
+        
+        if (this.header && this.content) {
+          this.setupEventListeners();
+        }
+      }
+
+      setupEventListeners() {
+        this.header.addEventListener('click', () => {
+          this.toggleDropdown();
+        });
+
+        this.header.addEventListener('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            this.toggleDropdown();
+          }
+        });
+      }
+
+      toggleDropdown() {
+        const isExpanded = this.header.getAttribute('aria-expanded') === 'true';
+        
+        this.header.setAttribute('aria-expanded', !isExpanded);
+        
+        if (isExpanded) {
+          this.content.classList.remove('active');
+        } else {
+          this.content.classList.add('active');
+        }
+      }
+    }
+
+    customElements.define('dropdown-toggle-{{ ai_gen_id }}', DropdownToggle{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Dropdown Content",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "dropdown_title",
+      "label": "Dropdown title",
+      "default": "Click to expand"
+    },
+    {
+      "type": "richtext",
+      "id": "dropdown_text",
+      "label": "Dropdown text",
+      "default": "<p>Add your content here. You can include multiple paragraphs, lists, and other rich text formatting.</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "dropdown_image",
+      "label": "Dropdown image"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_placeholder_image",
+      "label": "Show placeholder image when no image selected",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Header Style"
+    },
+    {
+      "type": "color",
+      "id": "header_bg_color",
+      "label": "Header background color",
+      "default": "#f8f8f8"
+    },
+    {
+      "type": "color",
+      "id": "header_hover_color",
+      "label": "Header hover color",
+      "default": "#e8e8e8"
+    },
+    {
+      "type": "color",
+      "id": "header_text_color",
+      "label": "Header text color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Title font size",
+      "default": 18
+    },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "label": "Title font weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "header",
+      "content": "Content Style"
+    },
+    {
+      "type": "color",
+      "id": "content_bg_color",
+      "label": "Content background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "content_text_color",
+      "label": "Content text color",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "content_font_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Content font size",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Header padding",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "content_padding",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Content padding",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "image_spacing",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Image bottom spacing",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Image border radius",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Border width",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#e0e0e0"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Dropdown Content"
+    }
+  ]
+}
+{% endschema %}

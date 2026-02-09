@@ -1,0 +1,401 @@
+{% doc %}
+  @prompt
+    Add a custom TTF font file to the entire store by creating theme settings that allow uploading a TTF font file and applying it globally to all text elements including headings, body text, and navigation with proper @font-face declarations for TTF format, I dont have the fonts url just the ttf file. can you please make it so I can just upload the file?
+    
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% if block.settings.font_file_url != blank %}
+  {% assign font_name = 'CustomFont' | append: ai_gen_id %}
+  
+  {% style %}
+    @font-face {
+      font-family: '{{ font_name }}';
+      src: url('{{ block.settings.font_file_url }}') format('truetype');
+      font-display: swap;
+      font-weight: normal;
+      font-style: normal;
+    }
+  {% endstyle %}
+{% endif %}
+
+{% style %}
+  .ai-custom-font-block-{{ ai_gen_id }} {
+    padding: {{ block.settings.padding }}px;
+    background-color: {{ block.settings.background_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    text-align: {{ block.settings.text_alignment }};
+    max-width: 100%;
+  }
+
+  .ai-custom-font-block-{{ ai_gen_id }} * {
+    {% if block.settings.font_file_url != blank %}
+      font-family: '{{ font_name }}', {{ block.settings.fallback_font }};
+    {% else %}
+      font-family: {{ block.settings.fallback_font }};
+    {% endif %}
+  }
+
+  .ai-custom-font-heading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.heading_size }}px;
+    color: {{ block.settings.heading_color }};
+    margin: 0 0 {{ block.settings.spacing }}px 0;
+    line-height: 1.2;
+    font-weight: {{ block.settings.heading_weight }};
+  }
+
+  .ai-custom-font-subheading-{{ ai_gen_id }} {
+    font-size: {{ block.settings.subheading_size }}px;
+    color: {{ block.settings.subheading_color }};
+    margin: 0 0 {{ block.settings.spacing }}px 0;
+    line-height: 1.3;
+    font-weight: {{ block.settings.subheading_weight }};
+  }
+
+  .ai-custom-font-body-{{ ai_gen_id }} {
+    font-size: {{ block.settings.body_size }}px;
+    color: {{ block.settings.body_color }};
+    line-height: 1.5;
+    margin: 0;
+    font-weight: {{ block.settings.body_weight }};
+  }
+
+  .ai-custom-font-body-{{ ai_gen_id }} p {
+    margin: 0 0 {{ block.settings.spacing }}px 0;
+  }
+
+  .ai-custom-font-body-{{ ai_gen_id }} p:last-child {
+    margin-bottom: 0;
+  }
+
+  .ai-font-instructions-{{ ai_gen_id }} {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .ai-font-instructions-{{ ai_gen_id }} strong {
+    color: #495057;
+  }
+
+  .ai-font-instructions-{{ ai_gen_id }} code {
+    background-color: #e9ecef;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-family: monospace;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-custom-font-heading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.heading_size | times: 0.8 }}px;
+    }
+    
+    .ai-custom-font-subheading-{{ ai_gen_id }} {
+      font-size: {{ block.settings.subheading_size | times: 0.9 }}px;
+    }
+    
+    .ai-custom-font-body-{{ ai_gen_id }} {
+      font-size: {{ block.settings.body_size | times: 0.9 }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-custom-font-block-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if block.settings.font_file_url == blank %}
+    <div class="ai-font-instructions-{{ ai_gen_id }}">
+      <strong>How to upload your TTF font:</strong><br>
+      1. Go to <strong>Settings → Files</strong> in your Shopify admin<br>
+      2. Click <strong>"Upload files"</strong> and select your TTF font file<br>
+      3. After upload, click on the file name to copy its URL<br>
+      4. Paste the URL in the "Font file URL" field below<br>
+      <em>Example URL format: https://cdn.shopify.com/s/files/1/xxxx/xxxx/files/your-font.ttf</em>
+    </div>
+  {% endif %}
+
+  {% if block.settings.heading != blank %}
+    <h2 class="ai-custom-font-heading-{{ ai_gen_id }}">
+      {{ block.settings.heading }}
+    </h2>
+  {% endif %}
+
+  {% if block.settings.subheading != blank %}
+    <h3 class="ai-custom-font-subheading-{{ ai_gen_id }}">
+      {{ block.settings.subheading }}
+    </h3>
+  {% endif %}
+
+  {% if block.settings.body_text != blank %}
+    <div class="ai-custom-font-body-{{ ai_gen_id }}">
+      {{ block.settings.body_text }}
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Custom Font Display",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Font Upload"
+    },
+    {
+      "type": "paragraph",
+      "content": "Upload your TTF font file to Settings → Files, then paste the file URL below."
+    },
+    {
+      "type": "url",
+      "id": "font_file_url",
+      "label": "Font file URL"
+    },
+    {
+      "type": "select",
+      "id": "fallback_font",
+      "label": "Fallback font",
+      "options": [
+        {
+          "value": "Arial, sans-serif",
+          "label": "Arial"
+        },
+        {
+          "value": "Georgia, serif",
+          "label": "Georgia"
+        },
+        {
+          "value": "'Times New Roman', serif",
+          "label": "Times New Roman"
+        },
+        {
+          "value": "Helvetica, sans-serif",
+          "label": "Helvetica"
+        },
+        {
+          "value": "'Courier New', monospace",
+          "label": "Courier New"
+        }
+      ],
+      "default": "Arial, sans-serif"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Custom Font Heading"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "This is a subheading with custom font"
+    },
+    {
+      "type": "richtext",
+      "id": "body_text",
+      "label": "Body text",
+      "default": "<p>This paragraph demonstrates your custom font. You can add multiple paragraphs and see how your uploaded font renders across different text elements.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading size",
+      "default": 32
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi Bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "min": 16,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Subheading size",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "subheading_weight",
+      "label": "Subheading weight",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi Bold"
+        }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "range",
+      "id": "body_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Body text size",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "body_weight",
+      "label": "Body text weight",
+      "options": [
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "spacing",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Text spacing",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "body_color",
+      "label": "Body text color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Block padding",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Font Display"
+    }
+  ]
+}
+{% endschema %}

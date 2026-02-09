@@ -1,0 +1,1179 @@
+{% doc %}
+  @prompt
+    I want to make a custom block for displaying free gifts that the customer gets as they spend. It needs to be 100% fully customizable and here is how I want to show it:
+    
+    Top: Title, Thank you but I want each tier section to have the following contents:
+    
+    Amount they have to spend
+    What they get
+    A photo I can add a picture of the gift
+    The value they are receiving
+    
+    Please make this fully editable and I will fill in all of the details myself., the amount to spend is displaying wrong. Right now instead of $50 it is displaying $.5. Etc.
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-free-gifts-{{ ai_gen_id }} {
+    background-color: {{ block.settings.background_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    padding: {{ block.settings.padding }}px;
+    margin: {{ block.settings.margin }}px 0;
+    border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+  }
+
+  .ai-free-gifts-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    color: {{ block.settings.title_color }};
+    text-align: {{ block.settings.title_alignment }};
+    margin:0 0 {{ block.settings.title_spacing }}px 0;
+    font-weight: {{ block.settings.title_weight }};
+    {% if block.settings.title_uppercase %}
+      text-transform: uppercase;
+    {% endif %}
+  }
+
+  .ai-free-gifts-progress-container-{{ ai_gen_id }} {
+    margin-bottom: {{ block.settings.progress_spacing }}px;
+  }
+
+  .ai-free-gifts-progress-bar-{{ ai_gen_id }} {
+    width: 100%;
+    height: {{ block.settings.progress_height }}px;
+    background-color: {{ block.settings.progress_bg_color }};
+    border-radius: {{ block.settings.progress_border_radius }}px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ai-free-gifts-progress-fill-{{ ai_gen_id }} {
+    height: 100%;
+    background-color: {{ block.settings.progress_fill_color }};
+    transition: width 0.3s ease;border-radius: {{ block.settings.progress_border_radius }}px;
+  }
+
+  .ai-free-gifts-progress-text-{{ ai_gen_id }} {
+    text-align: center;
+    margin-top: {{ block.settings.progress_text_spacing }}px;
+    font-size: {{ block.settings.progress_text_size }}px;
+    color: {{ block.settings.progress_text_color }};
+  }
+
+  .ai-free-gifts-tiers-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: {{ block.settings.tier_spacing }}px;
+  }
+
+  .ai-free-gifts-tier-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: {{ block.settings.tier_content_spacing }}px;
+    padding: {{ block.settings.tier_padding }}px;
+    background-color: {{ block.settings.tier_bg_color }};
+    border-radius: {{ block.settings.tier_border_radius }}px;
+    border: {{ block.settings.tier_border_width }}px solid {{ block.settings.tier_border_color }};position: relative;
+    transition: all 0.3s ease;
+  }
+
+  .ai-free-gifts-tier-{{ ai_gen_id }}.unlocked {
+    background-color: {{ block.settings.tier_unlocked_bg_color }};
+    border-color: {{ block.settings.tier_unlocked_border_color }};
+  }
+
+  .ai-free-gifts-tier-{{ ai_gen_id }}.current {
+    background-color: {{ block.settings.tier_current_bg_color }};
+    border-color: {{ block.settings.tier_current_border_color }};
+  }
+
+  .ai-free-gifts-tier-image-{{ ai_gen_id }} {
+    width: {{ block.settings.tier_image_size }}px;
+    height: {{ block.settings.tier_image_size }}px;
+    flex-shrink: 0;border-radius: {{ block.settings.tier_image_border_radius }}px;
+    overflow: hidden;
+    background-color: {{ block.settings.tier_image_placeholder_bg }};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-free-gifts-tier-image-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;}
+
+  .ai-free-gifts-tier-image-{{ ai_gen_id }} svg {
+    width: 60%;
+    height: 60%;
+    color: {{ block.settings.tier_image_placeholder_color }};
+  }
+
+  .ai-free-gifts-tier-content-{{ ai_gen_id }} {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    gap: {{ block.settings.tier_text_spacing }}px;
+  }
+
+  .ai-free-gifts-tier-amount-{{ ai_gen_id }} {
+    font-size: {{ block.settings.tier_amount_size }}px;
+    color: {{ block.settings.tier_amount_color }};
+    font-weight: {{ block.settings.tier_amount_weight }};margin: 0;
+  }
+
+  .ai-free-gifts-tier-gift-{{ ai_gen_id }} {
+    font-size: {{ block.settings.tier_gift_size }}px;
+    color: {{ block.settings.tier_gift_color }};
+    font-weight: {{ block.settings.tier_gift_weight }};
+    margin: 0;
+  }
+
+  .ai-free-gifts-tier-value-{{ ai_gen_id }} {
+    font-size: {{ block.settings.tier_value_size }}px;
+    color: {{ block.settings.tier_value_color }};
+    font-weight: {{ block.settings.tier_value_weight }};
+    margin: 0;
+  }
+
+  .ai-free-gifts-tier-{{ ai_gen_id }}.unlocked .ai-free-gifts-tier-amount-{{ ai_gen_id }} {
+    color: {{ block.settings.tier_unlocked_text_color }};
+  }
+
+  .ai-free-gifts-tier-{{ ai_gen_id }}.unlocked .ai-free-gifts-tier-gift-{{ ai_gen_id }} {
+    color: {{ block.settings.tier_unlocked_text_color }};
+  }
+
+  .ai-free-gifts-tier-{{ ai_gen_id }}.unlocked .ai-free-gifts-tier-value-{{ ai_gen_id }} {
+    color: {{ block.settings.tier_unlocked_text_color }};
+  }
+
+  .ai-free-gifts-tier-{{ ai_gen_id }}.current .ai-free-gifts-tier-amount-{{ ai_gen_id }} {
+    color: {{ block.settings.tier_current_text_color }};
+  }
+
+  .ai-free-gifts-tier-{{ ai_gen_id }}.current .ai-free-gifts-tier-gift-{{ ai_gen_id }} {
+    color: {{ block.settings.tier_current_text_color }};
+  }
+
+  .ai-free-gifts-tier-{{ ai_gen_id }}.current .ai-free-gifts-tier-value-{{ ai_gen_id }} {
+    color: {{ block.settings.tier_current_text_color }};
+  }
+
+  .ai-free-gifts-tier-status-{{ ai_gen_id }} {
+    width: {{ block.settings.tier_status_size }}px;
+    height: {{ block.settings.tier_status_size }}px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background-color: {{ block.settings.tier_status_bg_color }};
+    color: {{ block.settings.tier_status_color }};
+    font-size: {{ block.settings.tier_status_size | times: 0.5 }}px;
+    border: {{ block.settings.tier_status_border_width }}px solid {{ block.settings.tier_status_border_color }};
+  }
+
+  .ai-free-gifts-tier-{{ ai_gen_id }}.unlocked .ai-free-gifts-tier-status-{{ ai_gen_id }} {
+    background-color: {{ block.settings.tier_status_unlocked_bg_color }};
+    color: {{ block.settings.tier_status_unlocked_color }};
+    border-color: {{ block.settings.tier_status_unlocked_border_color }};
+  }
+
+  .ai-free-gifts-tier-{{ ai_gen_id }}.current .ai-free-gifts-tier-status-{{ ai_gen_id }} {
+    background-color: {{ block.settings.tier_status_current_bg_color }};
+    color: {{ block.settings.tier_status_current_color }};
+    border-color: {{ block.settings.tier_status_current_border_color }};
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-free-gifts-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding | times: 0.8 }}px;
+    }
+
+    .ai-free-gifts-tier-{{ ai_gen_id }} {
+      flex-direction: {{ block.settings.mobile_layout }};
+      align-items: {% if block.settings.mobile_layout == 'column' %}center{% else %}center{% endif %};
+      text-align: {% if block.settings.mobile_layout == 'column' %}center{% else %}left{% endif %};
+    }
+
+    .ai-free-gifts-tier-image-{{ ai_gen_id }} {
+      width: {{ block.settings.tier_image_size | times: 0.8 }}px;
+      height: {{ block.settings.tier_image_size | times: 0.8 }}px;
+    }
+
+    .ai-free-gifts-tier-status-{{ ai_gen_id }} {
+      width: {{ block.settings.tier_status_size | times: 0.8 }}px;
+      height: {{ block.settings.tier_status_size | times: 0.8 }}px;
+    }
+  }
+{% endstyle %}<free-gifts-tracker-{{ ai_gen_id }}
+  class="ai-free-gifts-{{ ai_gen_id }}"
+  data-cart-total="{{ cart.total_price }}"
+  {{ block.shopify_attributes }}
+>
+  {% if block.settings.title != blank %}
+    <h3 class="ai-free-gifts-title-{{ ai_gen_id }}">{{ block.settings.title }}</h3>
+  {% endif %}
+
+  {% if block.settings.show_progress_bar %}
+    <div class="ai-free-gifts-progress-container-{{ ai_gen_id }}">
+      <div class="ai-free-gifts-progress-bar-{{ ai_gen_id }}">
+        <div class="ai-free-gifts-progress-fill-{{ ai_gen_id }}" data-progress-fill></div>
+      </div>
+      <div class="ai-free-gifts-progress-text-{{ ai_gen_id }}" data-progress-text>
+        {{ block.settings.progress_text_default }}
+      </div>
+    </div>
+  {% endif %}<div class="ai-free-gifts-tiers-{{ ai_gen_id }}">
+    {% for i in (1..5) %}
+      {% assign tier_enabled_key = 'tier_' | append: i | append: '_enabled' %}
+      {% assign tier_threshold_key = 'tier_' | append: i | append: '_threshold' %}
+      {% assign tier_gift_key = 'tier_' | append: i | append: '_gift' %}
+      {% assign tier_value_key = 'tier_' | append: i | append: '_value' %}
+      {% assign tier_image_key = 'tier_' | append: i | append: '_image' %}
+
+      {% assign tier_enabled = block.settings[tier_enabled_key] %}
+      {% assign tier_threshold = block.settings[tier_threshold_key] %}
+      {% assign tier_gift = block.settings[tier_gift_key] %}
+      {% assign tier_value = block.settings[tier_value_key] %}
+      {% assign tier_image = block.settings[tier_image_key] %}
+
+      {% if tier_enabled and tier_threshold > 0 %}
+        <div
+          class="ai-free-gifts-tier-{{ ai_gen_id }}"
+          data-tier="{{ i }}"
+          data-threshold="{{ tier_threshold | times: 100 }}"
+        >
+          <div class="ai-free-gifts-tier-image-{{ ai_gen_id }}">
+            {% if tier_image %}
+              <img
+                src="{{ tier_image | image_url: width: 200}}"
+                alt="{{ tier_image.alt | escape }}"
+                loading="lazy"
+                width="{{ block.settings.tier_image_size }}"
+                height="{{ block.settings.tier_image_size }}"
+              >
+            {% else %}
+              {{'image' | placeholder_svg_tag }}
+            {% endif %}
+          </div>
+
+          <div class="ai-free-gifts-tier-content-{{ ai_gen_id }}">
+            <div class="ai-free-gifts-tier-amount-{{ ai_gen_id }}">Spend {{ tier_threshold | times: 100 | money }}</div>
+            {% if tier_gift != blank %}
+              <div class="ai-free-gifts-tier-gift-{{ ai_gen_id }}">
+                {{ tier_gift }}
+              </div>
+            {% endif %}
+            {% if tier_value != blank %}
+              <div class="ai-free-gifts-tier-value-{{ ai_gen_id }}">
+                Value: {{ tier_value }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="ai-free-gifts-tier-status-{{ ai_gen_id }}"><svgxmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"class="tier-status-icon"
+            >
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</free-gifts-tracker-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class FreeGiftsTracker{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.cartTotal = parseInt(this.dataset.cartTotal) || 0;
+        this.progressFill = this.querySelector('[data-progress-fill]');
+        this.progressText = this.querySelector('[data-progress-text]');
+        this.tiers = this.querySelectorAll('.ai-free-gifts-tier-{{ ai_gen_id }}');}
+
+      connectedCallback() {
+        this.updateProgress();
+        this.updateTierStates();
+        document.addEventListener('cart:updated', () => {
+          this.updateFromCart();
+        });
+      }
+
+      updateFromCart() {
+        fetch('/cart.js')
+          .then(response => response.json())
+          .then(cart => {
+            this.cartTotal = cart.total_price;
+            this.updateProgress();
+            this.updateTierStates();
+          });
+      }
+
+      updateProgress() {
+        if (!this.progressFill || !this.progressText) return;
+
+        const tierThresholds = Array.from(this.tiers).map(tier => 
+          parseInt(tier.dataset.threshold)
+        ).sort((a, b) => a - b);
+
+        if (tierThresholds.length === 0) return;
+
+        const maxThreshold = Math.max(...tierThresholds);
+        const progressPercentage = Math.min((this.cartTotal / maxThreshold) * 100, 100);
+        
+        this.progressFill.style.width = progressPercentage + '%';
+
+        const nextTier = tierThresholds.find(threshold => threshold > this.cartTotal);
+        
+        if (nextTier) {
+          const remaining = nextTier - this.cartTotal;
+          const remainingFormatted = new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 2
+          }).format(remaining / 100);
+          
+          this.progressText.textContent = `Spend ${remainingFormatted} more for your next gift!`;
+        } else {
+          this.progressText.textContent = 'Congratulations! You\'ve unlocked all gifts!';
+        }
+      }
+
+      updateTierStates() {
+        this.tiers.forEach(tier => {
+          const threshold = parseInt(tier.dataset.threshold);
+          tier.classList.remove('unlocked', 'current');
+          
+          if (this.cartTotal >= threshold) {
+            tier.classList.add('unlocked');
+          } else {
+            const tierThresholds = Array.from(this.tiers).map(t => 
+              parseInt(t.dataset.threshold)
+            ).sort((a, b) => a - b);
+            
+            const nextThreshold = tierThresholds.find(t => t > this.cartTotal);
+            
+            if (threshold === nextThreshold) {
+              tier.classList.add('current');
+            }
+          }
+        });
+      }
+    }
+
+    customElements.define('free-gifts-tracker-{{ ai_gen_id }}', FreeGiftsTracker{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Free gifts tracker",
+  "settings": [
+    {
+      "type": "header",
+      "content": "General"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Free Gifts with Purchase"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "margin",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Margin",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "label": "Border width",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#e6e6e6"
+    },
+    {
+      "type": "header",
+      "content": "Title"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 12,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Size",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Color",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "title_alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "title_weight",
+      "label": "Weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "checkbox",
+      "id": "title_uppercase",
+      "label": "Uppercase",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "title_spacing",
+      "min": 5,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom spacing",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Progress bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress_bar",
+      "label": "Show progress bar",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "progress_height",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Height",
+      "default": 8
+    },
+    {
+      "type": "color",
+      "id": "progress_bg_color",
+      "label": "Background color",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "color",
+      "id": "progress_fill_color",
+      "label": "Fill color",
+      "default": "#00d4aa"
+    },
+    {
+      "type": "range",
+      "id": "progress_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "progress_spacing",
+      "min": 10,
+      "max": 40,
+      "step": 5,
+      "unit": "px",
+      "label": "Bottom spacing",
+      "default": 20
+    },
+    {
+      "type": "text",
+      "id": "progress_text_default",
+      "label": "Default text",
+      "default": "Start shopping to unlock free gifts!"
+    },
+    {
+      "type": "range",
+      "id": "progress_text_size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Text size",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "progress_text_color",
+      "label": "Text color",
+      "default": "#666666"
+    },
+    {
+      "type": "range",
+      "id": "progress_text_spacing",
+      "min": 5,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Text spacing",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Tier layout"
+    },
+    {
+      "type": "range",
+      "id": "tier_spacing",
+      "min": 5,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "label": "Spacing between tiers",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "tier_padding",
+      "min": 10,
+      "max": 30,
+      "step": 5,
+      "unit": "px",
+      "label": "Padding",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "tier_content_spacing",
+      "min": 5,
+      "max": 25,
+      "step": 5,
+      "unit": "px",
+      "label": "Content spacing",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "tier_text_spacing",
+      "min": 2,
+      "max": 15,
+      "step": 1,
+      "unit": "px",
+      "label": "Text line spacing",
+      "default": 5
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "options": [
+        {
+          "value": "row",
+          "label": "Horizontal"
+        },
+        {
+          "value": "column",
+          "label": "Vertical"
+        }
+      ],
+      "default": "column"
+    },
+    {
+      "type": "color",
+      "id": "tier_bg_color",
+      "label": "Background color",
+      "default": "#f9f9f9"
+    },
+    {
+      "type": "range",
+      "id": "tier_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "tier_border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Border width",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "tier_border_color",
+      "label": "Border color",
+      "default": "#e6e6e6"
+    },
+    {
+      "type": "header",
+      "content": "Gift images"
+    },
+    {
+      "type": "range",
+      "id": "tier_image_size",
+      "min": 40,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "label": "Size",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "tier_image_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 8
+    },
+    {
+      "type": "color",
+      "id": "tier_image_placeholder_bg",
+      "label": "Placeholder background",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "color",
+      "id": "tier_image_placeholder_color",
+      "label": "Placeholder icon color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "header",
+      "content": "Amount text"
+    },
+    {
+      "type": "range",
+      "id": "tier_amount_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Size",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "tier_amount_color",
+      "label": "Color",
+      "default": "#000000"
+    },
+    {
+      "type": "select",
+      "id": "tier_amount_weight",
+      "label": "Weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "header",
+      "content": "Gift description text"
+    },
+    {
+      "type": "range",
+      "id": "tier_gift_size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Size",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "tier_gift_color",
+      "label": "Color",
+      "default": "#333333"
+    },
+    {
+      "type": "select",
+      "id": "tier_gift_weight",
+      "label": "Weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "header",
+      "content": "Value text"
+    },
+    {
+      "type": "range",
+      "id": "tier_value_size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Size",
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "tier_value_color",
+      "label": "Color",
+      "default": "#666666"
+    },
+    {
+      "type": "select",
+      "id": "tier_value_weight",
+      "label": "Weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semi-bold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "header",
+      "content": "Status icon"
+    },
+    {
+      "type": "range",
+      "id": "tier_status_size",
+      "min": 20,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Size",
+      "default": 30
+    },
+    {
+      "type": "color",
+      "id": "tier_status_bg_color",
+      "label": "Background color",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "color",
+      "id": "tier_status_color",
+      "label": "Icon color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "range",
+      "id": "tier_status_border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Border width",
+      "default": 2
+    },
+    {
+      "type": "color",
+      "id": "tier_status_border_color",
+      "label": "Border color",
+      "default": "#e6e6e6"
+    },
+    {
+      "type": "header",
+      "content": "Unlocked state"
+    },
+    {
+      "type": "color",
+      "id": "tier_unlocked_bg_color",
+      "label": "Background color",
+      "default": "#e8f5e8"
+    },
+    {
+      "type": "color",
+      "id": "tier_unlocked_border_color",
+      "label": "Border color",
+      "default": "#00d4aa"
+    },
+    {
+      "type": "color",
+      "id": "tier_unlocked_text_color",
+      "label": "Text color",
+      "default": "#006644"
+    },
+    {
+      "type": "color",
+      "id": "tier_status_unlocked_bg_color",
+      "label": "Status background color",
+      "default": "#00d4aa"
+    },
+    {
+      "type": "color",
+      "id": "tier_status_unlocked_color",
+      "label": "Status icon color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "tier_status_unlocked_border_color",
+      "label": "Status border color",
+      "default": "#00d4aa"
+    },
+    {
+      "type": "header",
+      "content": "Current tier state"
+    },
+    {
+      "type": "color",
+      "id": "tier_current_bg_color",
+      "label": "Background color",
+      "default": "#fff3cd"
+    },
+    {
+      "type": "color",
+      "id": "tier_current_border_color",
+      "label": "Border color",
+      "default": "#ffc107"
+    },
+    {
+      "type": "color",
+      "id": "tier_current_text_color",
+      "label": "Text color",
+      "default": "#856404"
+    },
+    {
+      "type": "color",
+      "id": "tier_status_current_bg_color",
+      "label": "Status background color",
+      "default": "#ffc107"
+    },
+    {
+      "type": "color",
+      "id": "tier_status_current_color",
+      "label": "Status icon color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "tier_status_current_border_color",
+      "label": "Status border color",
+      "default": "#ffc107"
+    },
+    {
+      "type": "header",
+      "content": "Tier 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "tier_1_enabled",
+      "label": "Enable tier 1",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "tier_1_threshold",
+      "min": 0,
+      "max": 500,
+      "step": 5,
+      "unit": "$",
+      "label": "Spend threshold",
+      "default": 50
+    },
+    {
+      "type": "text",
+      "id": "tier_1_gift",
+      "label": "Gift description",
+      "default": "Free shipping on your order"
+    },
+    {
+      "type": "text",
+      "id": "tier_1_value",
+      "label": "Gift value",
+      "default": "$5.99"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_1_image",
+      "label": "Gift image"
+    },
+    {
+      "type": "header",
+      "content": "Tier 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "tier_2_enabled",
+      "label": "Enable tier 2",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "tier_2_threshold",
+      "min": 0,
+      "max": 500,
+      "step": 5,
+      "unit": "$",
+      "label": "Spend threshold",
+      "default": 100
+    },
+    {
+      "type": "text",
+      "id": "tier_2_gift",
+      "label": "Gift description",
+      "default": "Free sample pack included"
+    },
+    {
+      "type": "text",
+      "id": "tier_2_value",
+      "label": "Gift value",
+      "default": "$15.00"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_2_image",
+      "label": "Gift image"
+    },
+    {
+      "type": "header",
+      "content": "Tier 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "tier_3_enabled",
+      "label": "Enable tier 3",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "tier_3_threshold",
+      "min": 0,
+      "max": 500,
+      "step": 5,
+      "unit": "$",
+      "label": "Spend threshold",
+      "default": 150
+    },
+    {
+      "type": "text",
+      "id": "tier_3_gift",
+      "label": "Gift description",
+      "default": "Free premium gift with purchase"
+    },
+    {
+      "type": "text",
+      "id": "tier_3_value",
+      "label": "Gift value",
+      "default": "$25.00"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_3_image",
+      "label": "Gift image"
+    },
+    {
+      "type": "header",
+      "content": "Tier 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "tier_4_enabled",
+      "label": "Enable tier 4",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "tier_4_threshold",
+      "min": 0,
+      "max": 500,
+      "step": 5,
+      "unit": "$",
+      "label": "Spend threshold",
+      "default": 200
+    },
+    {
+      "type": "text",
+      "id": "tier_4_gift",
+      "label": "Gift description"
+    },
+    {
+      "type": "text",
+      "id": "tier_4_value",
+      "label": "Gift value"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_4_image",
+      "label": "Gift image"
+    },
+    {
+      "type": "header",
+      "content": "Tier 5"
+    },
+    {
+      "type": "checkbox",
+      "id": "tier_5_enabled",
+      "label": "Enable tier 5",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "tier_5_threshold",
+      "min": 0,
+      "max": 500,
+      "step": 5,
+      "unit": "$",
+      "label": "Spend threshold",
+      "default": 250
+    },
+    {
+      "type": "text",
+      "id": "tier_5_gift",
+      "label": "Gift description"
+    },
+    {
+      "type": "text",
+      "id": "tier_5_value",
+      "label": "Gift value"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_5_image",
+      "label": "Gift image"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Free gifts tracker"
+    }
+  ]
+}
+{% endschema %}

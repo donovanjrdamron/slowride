@@ -1,0 +1,661 @@
+{% doc %}
+  @prompt
+    Make me a time section for my black friday sale that is fully customizable so i can change the end date and colors of the design. there should be text with the countdown right next to it. the countdown and text should both be  1 line on both mobile and desktop, make it so that  can adjust the size for mobile 
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-bf-countdown-{{ ai_gen_id }} {
+    background-color: {{ block.settings.background_color }};
+    padding: {{ block.settings.padding_vertical }}px {{ block.settings.padding_horizontal }}px;
+    width: 100%;
+  }
+
+  .ai-bf-countdown-container-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    justify-content: {{ block.settings.alignment }};
+    gap: {{ block.settings.gap }}px;
+    flex-wrap: nowrap;
+    width: 100%;
+  }
+
+  .ai-bf-countdown-text-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.text_size }}px;
+    font-weight: {{ block.settings.text_weight }};
+    margin: 0;
+    white-space: nowrap;
+  }
+
+  .ai-bf-countdown-timer-{{ ai_gen_id }} {
+    display: flex;
+    gap: {{ block.settings.timer_gap }}px;
+    align-items: center;
+  }
+
+  .ai-bf-countdown-unit-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .ai-bf-countdown-value-{{ ai_gen_id }} {
+    background-color: {{ block.settings.timer_bg_color }};
+    color: {{ block.settings.timer_text_color }};
+    font-size: {{ block.settings.timer_size }}px;
+    font-weight: {{ block.settings.timer_weight }};
+    padding: {{ block.settings.timer_padding }}px {{ block.settings.timer_padding | times: 1.5 }}px;
+    border-radius: {{ block.settings.timer_border_radius }}px;
+    min-width: {{ block.settings.timer_min_width }}px;
+    text-align: center;
+    line-height: 1;
+  }
+
+  .ai-bf-countdown-label-{{ ai_gen_id }} {
+    color: {{ block.settings.label_color }};
+    font-size: {{ block.settings.label_size }}px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .ai-bf-countdown-separator-{{ ai_gen_id }} {
+    color: {{ block.settings.separator_color }};
+    font-size: {{ block.settings.timer_size }}px;
+    font-weight: {{ block.settings.timer_weight }};
+    line-height: 1;
+  }
+
+  .ai-bf-countdown-expired-{{ ai_gen_id }} {
+    color: {{ block.settings.expired_text_color }};
+    font-size: {{ block.settings.text_size }}px;
+    font-weight: {{ block.settings.text_weight }};
+    text-align: center;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-bf-countdown-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding_vertical_mobile }}px {{ block.settings.padding_horizontal_mobile }}px;
+    }
+
+    .ai-bf-countdown-text-{{ ai_gen_id }} {
+      font-size: {{ block.settings.text_size_mobile }}px;
+    }
+
+    .ai-bf-countdown-value-{{ ai_gen_id }} {
+      font-size: {{ block.settings.timer_size_mobile }}px;
+      padding: {{ block.settings.timer_padding_mobile }}px {{ block.settings.timer_padding_mobile | times: 1.5 }}px;
+      min-width: {{ block.settings.timer_min_width_mobile }}px;
+    }
+
+    .ai-bf-countdown-label-{{ ai_gen_id }} {
+      font-size: {{ block.settings.label_size_mobile }}px;
+    }
+
+    .ai-bf-countdown-separator-{{ ai_gen_id }} {
+      font-size: {{ block.settings.timer_size_mobile }}px;
+    }
+
+    .ai-bf-countdown-container-{{ ai_gen_id }} {
+      gap: {{ block.settings.gap_mobile }}px;
+    }
+
+    .ai-bf-countdown-timer-{{ ai_gen_id }} {
+      gap: {{ block.settings.timer_gap_mobile }}px;
+    }
+
+    .ai-bf-countdown-expired-{{ ai_gen_id }} {
+      font-size: {{ block.settings.text_size_mobile }}px;
+    }
+  }
+{% endstyle %}
+
+<black-friday-countdown-{{ ai_gen_id }}
+  class="ai-bf-countdown-{{ ai_gen_id }}"
+  data-end-date="{{ block.settings.end_date }}"
+  data-end-time="{{ block.settings.end_time }}"
+  {{ block.shopify_attributes }}
+>
+  <div class="ai-bf-countdown-container-{{ ai_gen_id }}">
+    {% if block.settings.countdown_text != blank %}
+      <div class="ai-bf-countdown-text-{{ ai_gen_id }}">{{ block.settings.countdown_text }}</div>
+    {% endif %}
+
+    <div class="ai-bf-countdown-timer-{{ ai_gen_id }}" data-timer>
+      {% if block.settings.show_days %}
+        <div class="ai-bf-countdown-unit-{{ ai_gen_id }}">
+          <div class="ai-bf-countdown-value-{{ ai_gen_id }}" data-days>00</div>
+          {% if block.settings.show_labels %}
+            <div class="ai-bf-countdown-label-{{ ai_gen_id }}">{{ block.settings.days_label }}</div>
+          {% endif %}
+        </div>
+        {% if block.settings.show_separator %}
+          <div class="ai-bf-countdown-separator-{{ ai_gen_id }}">:</div>
+        {% endif %}
+      {% endif %}
+
+      <div class="ai-bf-countdown-unit-{{ ai_gen_id }}">
+        <div class="ai-bf-countdown-value-{{ ai_gen_id }}" data-hours>00</div>
+        {% if block.settings.show_labels %}
+          <div class="ai-bf-countdown-label-{{ ai_gen_id }}">{{ block.settings.hours_label }}</div>
+        {% endif %}
+      </div>
+
+      {% if block.settings.show_separator %}
+        <div class="ai-bf-countdown-separator-{{ ai_gen_id }}">:</div>
+      {% endif %}
+
+      <div class="ai-bf-countdown-unit-{{ ai_gen_id }}">
+        <div class="ai-bf-countdown-value-{{ ai_gen_id }}" data-minutes>00</div>
+        {% if block.settings.show_labels %}
+          <div class="ai-bf-countdown-label-{{ ai_gen_id }}">{{ block.settings.minutes_label }}</div>
+        {% endif %}
+      </div>
+
+      {% if block.settings.show_separator %}
+        <div class="ai-bf-countdown-separator-{{ ai_gen_id }}">:</div>
+      {% endif %}
+
+      <div class="ai-bf-countdown-unit-{{ ai_gen_id }}">
+        <div class="ai-bf-countdown-value-{{ ai_gen_id }}" data-seconds>00</div>
+        {% if block.settings.show_labels %}
+          <div class="ai-bf-countdown-label-{{ ai_gen_id }}">{{ block.settings.seconds_label }}</div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="ai-bf-countdown-expired-{{ ai_gen_id }}" data-expired style="display: none;">
+      {{ block.settings.expired_message }}
+    </div>
+  </div>
+</black-friday-countdown-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class BlackFridayCountdown{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.endDate = this.dataset.endDate;
+        this.endTime = this.dataset.endTime;
+        this.timer = this.querySelector('[data-timer]');
+        this.expiredMessage = this.querySelector('[data-expired]');
+        this.daysEl = this.querySelector('[data-days]');
+        this.hoursEl = this.querySelector('[data-hours]');
+        this.minutesEl = this.querySelector('[data-minutes]');
+        this.secondsEl = this.querySelector('[data-seconds]');
+        this.interval = null;
+      }
+
+      connectedCallback() {
+        if (!this.endDate || !this.endTime) {
+          return;
+        }
+
+        this.startCountdown();
+      }
+
+      disconnectedCallback() {
+        if (this.interval) {
+          clearInterval(this.interval);
+        }
+      }
+
+      startCountdown() {
+        this.updateCountdown();
+        this.interval = setInterval(() => {
+          this.updateCountdown();
+        }, 1000);
+      }
+
+      updateCountdown() {
+        const endDateTime = new Date(this.endDate + 'T' + this.endTime).getTime();
+        const now = new Date().getTime();
+        const distance = endDateTime - now;
+
+        if (distance < 0) {
+          clearInterval(this.interval);
+          this.timer.style.display = 'none';
+          this.expiredMessage.style.display = 'block';
+          return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        if (this.daysEl) {
+          this.daysEl.textContent = String(days).padStart(2, '0');
+        }
+        this.hoursEl.textContent = String(hours).padStart(2, '0');
+        this.minutesEl.textContent = String(minutes).padStart(2, '0');
+        this.secondsEl.textContent = String(seconds).padStart(2, '0');
+      }
+    }
+
+    customElements.define('black-friday-countdown-{{ ai_gen_id }}', BlackFridayCountdown{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Black Friday countdown",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Countdown settings"
+    },
+    {
+      "type": "text",
+      "id": "end_date",
+      "label": "End date",
+      "info": "Format: YYYY-MM-DD (e.g., 2025-11-29)",
+      "default": "2025-11-29"
+    },
+    {
+      "type": "text",
+      "id": "end_time",
+      "label": "End time",
+      "info": "Format: HH:MM:SS in 24-hour format (e.g., 23:59:59)",
+      "default": "23:59:59"
+    },
+    {
+      "type": "text",
+      "id": "countdown_text",
+      "label": "Countdown text",
+      "default": "Black Friday Sale Ends In:"
+    },
+    {
+      "type": "text",
+      "id": "expired_message",
+      "label": "Expired message",
+      "default": "Sale has ended"
+    },
+    {
+      "type": "header",
+      "content": "Display options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_days",
+      "label": "Show days",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_labels",
+      "label": "Show labels",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_separator",
+      "label": "Show separator",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "flex-end",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Timer labels"
+    },
+    {
+      "type": "text",
+      "id": "days_label",
+      "label": "Days",
+      "default": "Days"
+    },
+    {
+      "type": "text",
+      "id": "hours_label",
+      "label": "Hours",
+      "default": "Hrs"
+    },
+    {
+      "type": "text",
+      "id": "minutes_label",
+      "label": "Minutes",
+      "default": "Min"
+    },
+    {
+      "type": "text",
+      "id": "seconds_label",
+      "label": "Seconds",
+      "default": "Sec"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "timer_bg_color",
+      "label": "Timer background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "timer_text_color",
+      "label": "Timer text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "separator_color",
+      "label": "Separator",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "expired_text_color",
+      "label": "Expired message",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Desktop typography"
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 12,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Text size",
+      "default": 18
+    },
+    {
+      "type": "select",
+      "id": "text_weight",
+      "label": "Text weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "timer_size",
+      "min": 16,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "label": "Timer size",
+      "default": 32
+    },
+    {
+      "type": "select",
+      "id": "timer_weight",
+      "label": "Timer weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "label_size",
+      "min": 8,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "label": "Label size",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Mobile typography"
+    },
+    {
+      "type": "range",
+      "id": "text_size_mobile",
+      "min": 10,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "label": "Text size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "timer_size_mobile",
+      "min": 12,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Timer size",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "label_size_mobile",
+      "min": 6,
+      "max": 14,
+      "step": 1,
+      "unit": "px",
+      "label": "Label size",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Desktop spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Vertical padding",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "label": "Horizontal padding",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 5,
+      "max": 50,
+      "step": 5,
+      "unit": "px",
+      "label": "Gap between text and timer",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "timer_gap",
+      "min": 2,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Gap between timer units",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Mobile spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Vertical padding",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Horizontal padding",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 2,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Gap between text and timer",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "timer_gap_mobile",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Gap between timer units",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Desktop timer style"
+    },
+    {
+      "type": "range",
+      "id": "timer_padding",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "label": "Timer padding",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "timer_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Timer border radius",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "timer_min_width",
+      "min": 30,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "label": "Timer minimum width",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Mobile timer style"
+    },
+    {
+      "type": "range",
+      "id": "timer_padding_mobile",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Timer padding",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "timer_min_width_mobile",
+      "min": 20,
+      "max": 60,
+      "step": 5,
+      "unit": "px",
+      "label": "Timer minimum width",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Black Friday countdown"
+    }
+  ]
+}
+{% endschema %}

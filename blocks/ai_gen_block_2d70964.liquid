@@ -1,0 +1,280 @@
+{% doc %}
+  @prompt
+    A hero section that i can insert my own image for and will show under my header. I want it to be completely editable with the option to choose my own aspect ratio for desktop and for mobile using the same image, please make the padding adjustable functional
+    , when i adjust the padding it moves the content on the inside of the section. i want it to adjust the padding on the outside of the section so that when i adjust the paddings all to 0 there is no gaps around the section content
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-hero-section-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding-top: {{ block.settings.padding_top }}px;
+    padding-right: {{ block.settings.padding_right }}px;
+    padding-bottom: {{ block.settings.padding_bottom }}px;
+    padding-left: {{ block.settings.padding_left }}px;
+  }
+
+  .ai-hero-link-{{ ai_gen_id }} {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .ai-hero-image-container-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    height: 0;
+    padding-bottom: {{ block.settings.desktop_aspect_ratio }}%;
+    overflow: hidden;
+  }
+
+  .ai-hero-image-{{ ai_gen_id }},
+  .ai-hero-placeholder-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: {{ block.settings.image_position }};
+  }
+
+  .ai-hero-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+  }
+
+  .ai-hero-content-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: {{ block.settings.content_vertical_align }};
+    align-items: {{ block.settings.content_horizontal_align }};
+    text-align: {{ block.settings.text_align }};
+  }
+
+  .ai-hero-content-wrapper-{{ ai_gen_id }} {
+    max-width: {{ block.settings.content_width }}px;
+    padding: {{ block.settings.content_box_padding }}px;
+    {% if block.settings.show_content_background %}
+      background-color: {{ block.settings.content_background_color }};
+      border-radius: {{ block.settings.content_border_radius }}px;
+    {% endif %}
+  }
+
+  .ai-hero-heading-{{ ai_gen_id }} {
+    margin-top: 0;
+    margin-bottom: {% if block.settings.show_description %}15px{% else %}0{% endif %};
+    color: {{ block.settings.heading_color }};
+    font-size: {{ block.settings.heading_size }}px;
+    line-height: 1.2;
+  }
+
+  .ai-hero-description-{{ ai_gen_id }} {
+    margin: 0;
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.text_size }}px;
+    line-height: 1.5;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-hero-section-{{ ai_gen_id }} {
+      padding-top: {{ block.settings.padding_top_mobile }}px;
+      padding-right: {{ block.settings.padding_right_mobile }}px;
+      padding-bottom: {{ block.settings.padding_bottom_mobile }}px;
+      padding-left: {{ block.settings.padding_left_mobile }}px;
+    }
+
+    .ai-hero-image-container-{{ ai_gen_id }} {
+      padding-bottom: {{ block.settings.mobile_aspect_ratio }}%;
+    }
+
+    .ai-hero-heading-{{ ai_gen_id }} { font-size: {{ block.settings.heading_size_mobile }}px; }
+    .ai-hero-description-{{ ai_gen_id }} { font-size: {{ block.settings.text_size_mobile }}px; }
+    .ai-hero-content-wrapper-{{ ai_gen_id }} { padding: {{ block.settings.content_box_padding_mobile }}px; }
+  }
+{% endstyle %}
+
+<div class="ai-hero-section-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% comment %}
+    If a section link is provided, wrap the visual container in an <a> so the entire hero is clickable.
+  {% endcomment %}
+  {% if block.settings.section_link != blank %}
+    <a
+      class="ai-hero-link-{{ ai_gen_id }}"
+      href="{{ block.settings.section_link }}"
+      {% if block.settings.link_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
+      aria-label="{{ block.settings.link_aria_label | default: block.settings.heading | escape }}"
+    >
+  {% endif %}
+
+  <div class="ai-hero-image-container-{{ ai_gen_id }}">
+    {% if block.settings.image %}
+      <img
+        src="{{ block.settings.image | image_url: width: 2000 }}"
+        alt="{{ block.settings.image.alt | default: block.settings.link_aria_label | default: block.settings.heading | escape }}"
+        class="ai-hero-image-{{ ai_gen_id }}"
+        loading="eager"
+        width="{{ block.settings.image.width }}"
+        height="{{ block.settings.image.height }}"
+      >
+    {% else %}
+      <div class="ai-hero-placeholder-{{ ai_gen_id }}">
+        {{ 'hero-apparel-1' | placeholder_svg_tag }}
+      </div>
+    {% endif %}
+
+    <div class="ai-hero-content-{{ ai_gen_id }}">
+      <div class="ai-hero-content-wrapper-{{ ai_gen_id }}">
+        {% if block.settings.heading != blank %}
+          <h2 class="ai-hero-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+        {% endif %}
+        {% if block.settings.show_description and block.settings.description != blank %}
+          <div class="ai-hero-description-{{ ai_gen_id }}">{{ block.settings.description }}</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% if block.settings.section_link != blank %}
+    </a>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Hero Section",
+  "tag": null,
+  "settings": [
+    { "type": "header", "content": "Image" },
+    { "type": "image_picker", "id": "image", "label": "Image" },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image focal point",
+      "options": [
+        { "value": "center center", "label": "Center" },
+        { "value": "center top", "label": "Top" },
+        { "value": "center bottom", "label": "Bottom" },
+        { "value": "left center", "label": "Left" },
+        { "value": "right center", "label": "Right" }
+      ],
+      "default": "center center"
+    },
+
+    { "type": "header", "content": "Aspect Ratio" },
+    {
+      "type": "range",
+      "id": "desktop_aspect_ratio",
+      "min": 10, "max": 100, "step": 5, "unit": "%",
+      "label": "Desktop aspect ratio",
+      "info": "Percentage determines height (smaller % = taller image)",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mobile_aspect_ratio",
+      "min": 30, "max": 150, "step": 5, "unit": "%",
+      "label": "Mobile aspect ratio",
+      "info": "Percentage determines height (smaller % = taller image)",
+      "default": 80
+    },
+
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Hero heading" },
+    { "type": "color", "id": "heading_color", "label": "Heading color", "default": "#ffffff" },
+    {
+      "type": "range", "id": "heading_size", "min": 20, "max": 80, "step": 2, "unit": "px",
+      "label": "Heading size", "default": 48
+    },
+    {
+      "type": "range", "id": "heading_size_mobile", "min": 16, "max": 60, "step": 2, "unit": "px",
+      "label": "Heading size (mobile)", "default": 32
+    },
+    { "type": "checkbox", "id": "show_description", "label": "Show description", "default": true },
+    {
+      "type": "richtext", "id": "description", "label": "Description",
+      "default": "<p>Add a description to your hero section</p>"
+    },
+    { "type": "color", "id": "text_color", "label": "Text color", "default": "#ffffff" },
+    {
+      "type": "range", "id": "text_size", "min": 12, "max": 30, "step": 1, "unit": "px",
+      "label": "Text size", "default": 18
+    },
+    {
+      "type": "range", "id": "text_size_mobile", "min": 12, "max": 24, "step": 1, "unit": "px",
+      "label": "Text size (mobile)", "default": 16
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    { "type": "checkbox", "id": "show_content_background", "label": "Show content background", "default": false },
+    { "type": "color", "id": "content_background_color", "label": "Content background color", "default": "#000000" },
+    {
+      "type": "range", "id": "content_border_radius", "min": 0, "max": 20, "step": 1, "unit": "px",
+      "label": "Content border radius", "default": 8
+    },
+    {
+      "type": "range", "id": "content_width", "min": 200, "max": 1200, "step": 50, "unit": "px",
+      "label": "Content max width", "default": 600
+    },
+    {
+      "type": "select",
+      "id": "content_horizontal_align",
+      "label": "Horizontal alignment",
+      "options": [
+        { "value": "flex-start", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "content_vertical_align",
+      "label": "Vertical alignment",
+      "options": [
+        { "value": "flex-start", "label": "Top" },
+        { "value": "center", "label": "Middle" },
+        { "value": "flex-end", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+
+    { "type": "header", "content": "Section Padding (Desktop)" },
+    { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 5, "unit": "px", "label": "Top padding", "default": 0 },
+    { "type": "range", "id": "padding_right", "min": 0, "max": 100, "step": 5, "unit": "px", "label": "Right padding", "default": 0 },
+    { "type": "range", "id": "padding_bottom", "min": 0, "max": 100, "step": 5, "unit": "px", "label": "Bottom padding", "default": 0 },
+    { "type": "range", "id": "padding_left", "min": 0, "max": 100, "step": 5, "unit": "px", "label": "Left padding", "default": 0 },
+
+    { "type": "header", "content": "Section Padding (Mobile)" },
+    { "type": "range", "id": "padding_top_mobile", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Top padding (mobile)", "default": 0 },
+    { "type": "range", "id": "padding_right_mobile", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Right padding (mobile)", "default": 0 },
+    { "type": "range", "id": "padding_bottom_mobile", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Bottom padding (mobile)", "default": 0 },
+    { "type": "range", "id": "padding_left_mobile", "min": 0, "max": 60, "step": 5, "unit": "px", "label": "Left padding (mobile)", "default": 0 },
+
+    { "type": "header", "content": "Link" },
+    { "type": "url", "id": "section_link", "label": "Section link (paste URL)" },
+    { "type": "checkbox", "id": "link_new_tab", "label": "Open link in new tab", "default": false },
+    { "type": "text", "id": "link_aria_label", "label": "Link aria-label (accessibility)", "info": "If blank, the heading will be used." }
+  ],
+  "presets": [
+    { "name": "Hero Section" }
+  ]
+}
+{% endschema %}

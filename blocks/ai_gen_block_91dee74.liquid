@@ -1,0 +1,209 @@
+{% doc %}
+  @prompt
+    Create me a custom video section  to put on my product page. i want to use it to display a product video metafield and for the product. if the product does not have a video metafield connected to it i want the section to not appear on the product page for that product. 
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% if product.metafields.custom.product_video != blank %}
+  {% style %}
+    .ai-product-video-{{ ai_gen_id }} {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: {{ block.settings.padding_top }}px 0 {{ block.settings.padding_bottom }}px;
+    }
+
+    .ai-product-video-container-{{ ai_gen_id }} {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      height: 0;
+      overflow: hidden;
+      border-radius: {{ block.settings.border_radius }}px;
+      background-color: {{ block.settings.background_color }};
+    }
+
+    .ai-product-video-container-{{ ai_gen_id }} video,
+    .ai-product-video-container-{{ ai_gen_id }} iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .ai-product-video-heading-{{ ai_gen_id }} {
+      margin: 0 0 {{ block.settings.heading_spacing }}px;
+      text-align: {{ block.settings.heading_alignment }};
+      color: {{ block.settings.heading_color }};
+      font-size: {{ block.settings.heading_size }}px;
+    }
+
+    @media screen and (max-width: 749px) {
+      .ai-product-video-{{ ai_gen_id }} {
+        padding: {{ block.settings.padding_top | times: 0.7 }}px 0 {{ block.settings.padding_bottom | times: 0.7 }}px;
+      }
+
+      .ai-product-video-heading-{{ ai_gen_id }} {
+        font-size: {{ block.settings.heading_size | times: 0.8 }}px;
+      }
+    }
+  {% endstyle %}
+
+  <div class="ai-product-video-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+    {% if block.settings.heading != blank %}
+      <h2 class="ai-product-video-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+    {% endif %}
+
+    <div class="ai-product-video-container-{{ ai_gen_id }}">
+      {{ product.metafields.custom.product_video | video_tag: 
+        autoplay: block.settings.autoplay, 
+        loop: block.settings.loop, 
+        controls: block.settings.controls,
+        muted: block.settings.muted
+      }}
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Product video",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Video settings"
+    },
+    {
+      "type": "paragraph",
+      "content": "This block displays the product video from the product_video metafield. The block will not appear if no video is set."
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Loop video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "controls",
+      "label": "Show controls",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "muted",
+      "label": "Muted",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading size",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Heading alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#063d49"
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "label": "Heading spacing",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 36
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product video"
+    }
+  ]
+}
+{% endschema %}

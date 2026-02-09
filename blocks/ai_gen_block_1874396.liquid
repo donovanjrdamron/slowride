@@ -1,0 +1,558 @@
+{% doc %}
+  @prompt
+    Create me a custom product tier section for a tier offer system for my product page. I want it to cleanly show my  black friday tier based system by tier. I should be able to add as many tiers as i want and each one should show the price, description, a photo, this is way too big. it just needs to be small blocks for the product page , please make the size of the heading adjustable and add a small description below the heading thats all adjustable. 
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-product-tiers-{{ ai_gen_id }} {
+    margin: {{ block.settings.block_margin }}px 0;
+  }
+
+  .ai-product-tiers__heading-{{ ai_gen_id }} {
+    margin: 0 0 8px;
+    color: {{ block.settings.heading_color }};
+    font-size: {{ block.settings.heading_size }}px;
+    font-weight: 600;
+  }
+
+  .ai-product-tiers__description-{{ ai_gen_id }} {
+    margin: 0 0 12px;
+    color: {{ block.settings.description_color }};
+    font-size: {{ block.settings.description_size }}px;
+    line-height: 1.5;
+  }
+
+  .ai-product-tiers__list-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .ai-product-tier-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background-color: {{ block.settings.tier_background }};
+    border: 1px solid {{ block.settings.tier_border_color }};
+    border-radius: {{ block.settings.tier_border_radius }}px;
+    transition: background-color 0.2s ease;
+  }
+
+  .ai-product-tier-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.tier_hover_background }};
+  }
+
+  .ai-product-tier__image-{{ ai_gen_id }} {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    overflow: hidden;
+    background-color: #f5f5f5;
+  }
+
+  .ai-product-tier__image-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-product-tier__image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-product-tier__image-placeholder-{{ ai_gen_id }} svg {
+    width: 70%;
+    height: 70%;
+    opacity: 0.2;
+  }
+
+  .ai-product-tier__content-{{ ai_gen_id }} {
+    flex-grow: 1;
+    min-width: 0;
+  }
+
+  .ai-product-tier__header-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  .ai-product-tier__title-{{ ai_gen_id }} {
+    margin: 0;
+    color: {{ block.settings.tier_title_color }};
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .ai-product-tier__badge-{{ ai_gen_id }} {
+    display: inline-block;
+    padding: 2px 8px;
+    background-color: {{ block.settings.badge_background }};
+    color: {{ block.settings.badge_text_color }};
+    font-size: 10px;
+    font-weight: 600;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .ai-product-tier__price-{{ ai_gen_id }} {
+    color: {{ block.settings.tier_price_color }};
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .ai-product-tier__description-{{ ai_gen_id }} {
+    color: {{ block.settings.tier_description_color }};
+    font-size: 12px;
+    line-height: 1.4;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-product-tier__image-{{ ai_gen_id }} {
+      width: 50px;
+      height: 50px;
+    }
+
+    .ai-product-tiers__heading-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.heading_size }}px * 0.9);
+    }
+
+    .ai-product-tiers__description-{{ ai_gen_id }} {
+      font-size: calc({{ block.settings.description_size }}px * 0.9);
+    }
+  }
+{% endstyle %}
+
+<div class="ai-product-tiers-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if block.settings.heading != blank %}
+    <h3 class="ai-product-tiers__heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h3>
+  {% endif %}
+
+  {% if block.settings.description != blank %}
+    <div class="ai-product-tiers__description-{{ ai_gen_id }}">{{ block.settings.description }}</div>
+  {% endif %}
+
+  <div class="ai-product-tiers__list-{{ ai_gen_id }}">
+    {% for i in (1..6) %}
+      {% liquid
+        assign tier_enabled_key = 'tier_' | append: i | append: '_enabled'
+        assign tier_title_key = 'tier_' | append: i | append: '_title'
+        assign tier_price_key = 'tier_' | append: i | append: '_price'
+        assign tier_description_key = 'tier_' | append: i | append: '_description'
+        assign tier_image_key = 'tier_' | append: i | append: '_image'
+        assign tier_badge_key = 'tier_' | append: i | append: '_badge'
+
+        assign tier_enabled = block.settings[tier_enabled_key]
+        assign tier_title = block.settings[tier_title_key]
+        assign tier_price = block.settings[tier_price_key]
+        assign tier_description = block.settings[tier_description_key]
+        assign tier_image = block.settings[tier_image_key]
+        assign tier_badge = block.settings[tier_badge_key]
+      %}
+
+      {% if tier_enabled %}
+        <div class="ai-product-tier-{{ ai_gen_id }}">
+          <div class="ai-product-tier__image-{{ ai_gen_id }}">
+            {% if tier_image %}
+              <img
+                src="{{ tier_image | image_url: width: 120 }}"
+                alt="{{ tier_title | escape }}"
+                loading="lazy"
+                width="120"
+                height="120"
+              >
+            {% else %}
+              <div class="ai-product-tier__image-placeholder-{{ ai_gen_id }}">
+                {{ 'product-1' | placeholder_svg_tag }}
+              </div>
+            {% endif %}
+          </div>
+
+          <div class="ai-product-tier__content-{{ ai_gen_id }}">
+            <div class="ai-product-tier__header-{{ ai_gen_id }}">
+              {% if tier_title != blank %}
+                <h4 class="ai-product-tier__title-{{ ai_gen_id }}">{{ tier_title }}</h4>
+              {% endif %}
+              {% if tier_badge != blank %}
+                <span class="ai-product-tier__badge-{{ ai_gen_id }}">{{ tier_badge }}</span>
+              {% endif %}
+            </div>
+
+            {% if tier_price != blank %}
+              <div class="ai-product-tier__price-{{ ai_gen_id }}">{{ tier_price }}</div>
+            {% endif %}
+
+            {% if tier_description != blank %}
+              <p class="ai-product-tier__description-{{ ai_gen_id }}">{{ tier_description }}</p>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Product tier offers",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Black Friday Tiers"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading size",
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#063d49"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Description size",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description color",
+      "default": "#666666"
+    },
+    {
+      "type": "range",
+      "id": "block_margin",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "label": "Spacing",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Tier style"
+    },
+    {
+      "type": "color",
+      "id": "tier_background",
+      "label": "Background",
+      "default": "#f9f9f9"
+    },
+    {
+      "type": "color",
+      "id": "tier_hover_background",
+      "label": "Hover background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "tier_border_color",
+      "label": "Border",
+      "default": "#e6e6e6"
+    },
+    {
+      "type": "range",
+      "id": "tier_border_radius",
+      "min": 0,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 8
+    },
+    {
+      "type": "color",
+      "id": "tier_title_color",
+      "label": "Title",
+      "default": "#063d49"
+    },
+    {
+      "type": "color",
+      "id": "tier_price_color",
+      "label": "Price",
+      "default": "#063d49"
+    },
+    {
+      "type": "color",
+      "id": "tier_description_color",
+      "label": "Description",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "badge_background",
+      "label": "Badge background",
+      "default": "#063d49"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Badge text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Tier 1"
+    },
+    {
+      "type": "checkbox",
+      "id": "tier_1_enabled",
+      "label": "Enable",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "tier_1_title",
+      "label": "Title",
+      "default": "Buy 1"
+    },
+    {
+      "type": "text",
+      "id": "tier_1_price",
+      "label": "Price",
+      "default": "$29.99"
+    },
+    {
+      "type": "textarea",
+      "id": "tier_1_description",
+      "label": "Description",
+      "default": "Single item at regular price"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_1_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "tier_1_badge",
+      "label": "Badge"
+    },
+    {
+      "type": "header",
+      "content": "Tier 2"
+    },
+    {
+      "type": "checkbox",
+      "id": "tier_2_enabled",
+      "label": "Enable",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "tier_2_title",
+      "label": "Title",
+      "default": "Buy 2"
+    },
+    {
+      "type": "text",
+      "id": "tier_2_price",
+      "label": "Price",
+      "default": "$49.99"
+    },
+    {
+      "type": "textarea",
+      "id": "tier_2_description",
+      "label": "Description",
+      "default": "Save 15% when you buy 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_2_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "tier_2_badge",
+      "label": "Badge",
+      "default": "Save 15%"
+    },
+    {
+      "type": "header",
+      "content": "Tier 3"
+    },
+    {
+      "type": "checkbox",
+      "id": "tier_3_enabled",
+      "label": "Enable",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "tier_3_title",
+      "label": "Title",
+      "default": "Buy 3+"
+    },
+    {
+      "type": "text",
+      "id": "tier_3_price",
+      "label": "Price",
+      "default": "$69.99"
+    },
+    {
+      "type": "textarea",
+      "id": "tier_3_description",
+      "label": "Description",
+      "default": "Save 25% when you buy 3 or more"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_3_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "tier_3_badge",
+      "label": "Badge",
+      "default": "Best Value"
+    },
+    {
+      "type": "header",
+      "content": "Tier 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "tier_4_enabled",
+      "label": "Enable",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "tier_4_title",
+      "label": "Title"
+    },
+    {
+      "type": "text",
+      "id": "tier_4_price",
+      "label": "Price"
+    },
+    {
+      "type": "textarea",
+      "id": "tier_4_description",
+      "label": "Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_4_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "tier_4_badge",
+      "label": "Badge"
+    },
+    {
+      "type": "header",
+      "content": "Tier 5"
+    },
+    {
+      "type": "checkbox",
+      "id": "tier_5_enabled",
+      "label": "Enable",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "tier_5_title",
+      "label": "Title"
+    },
+    {
+      "type": "text",
+      "id": "tier_5_price",
+      "label": "Price"
+    },
+    {
+      "type": "textarea",
+      "id": "tier_5_description",
+      "label": "Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_5_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "tier_5_badge",
+      "label": "Badge"
+    },
+    {
+      "type": "header",
+      "content": "Tier 6"
+    },
+    {
+      "type": "checkbox",
+      "id": "tier_6_enabled",
+      "label": "Enable",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "tier_6_title",
+      "label": "Title"
+    },
+    {
+      "type": "text",
+      "id": "tier_6_price",
+      "label": "Price"
+    },
+    {
+      "type": "textarea",
+      "id": "tier_6_description",
+      "label": "Description"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_6_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "tier_6_badge",
+      "label": "Badge"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product tier offers"
+    }
+  ]
+}
+{% endschema %}

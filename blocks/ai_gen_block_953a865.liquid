@@ -1,0 +1,288 @@
+{% doc %}
+  @prompt
+    Add a custom font to the entire store by creating theme settings that allow uploading a custom font file and applying it globally to all text elements including headings, body text, and navigation
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-custom-font-loader-{{ ai_gen_id }} {
+    display: none;
+  }
+
+  {% if block.settings.font_file_woff2 or block.settings.font_file_woff %}
+    @font-face {
+      font-family: '{{ block.settings.font_name }}';
+      src: 
+        {% if block.settings.font_file_woff2 %}url('{{ block.settings.font_file_woff2 | file_url }}') format('woff2'){% if block.settings.font_file_woff %},{% endif %}{% endif %}
+        {% if block.settings.font_file_woff %}url('{{ block.settings.font_file_woff | file_url }}') format('woff'){% endif %};
+      font-weight: {{ block.settings.font_weight }};
+      font-style: {{ block.settings.font_style }};
+      font-display: swap;
+    }
+
+    {% if block.settings.apply_globally %}
+      :root {
+        --ai-custom-font-family-{{ ai_gen_id }}: '{{ block.settings.font_name }}', {{ block.settings.fallback_fonts }};
+      }
+
+      {% if block.settings.apply_to_body %}
+        body,
+        .body,
+        p,
+        div,
+        span,
+        li,
+        td,
+        th,
+        input,
+        textarea,
+        select,
+        button {
+          font-family: var(--ai-custom-font-family-{{ ai_gen_id }}) !important;
+        }
+      {% endif %}
+
+      {% if block.settings.apply_to_headings %}
+        h1, .h1,
+        h2, .h2,
+        h3, .h3,
+        h4, .h4,
+        h5, .h5,
+        h6, .h6,
+        .heading {
+          font-family: var(--ai-custom-font-family-{{ ai_gen_id }}) !important;
+        }
+      {% endif %}
+
+      {% if block.settings.apply_to_navigation %}
+        nav,
+        .nav,
+        .navigation,
+        .menu,
+        .header-nav,
+        .site-nav,
+        .main-nav,
+        .breadcrumb,
+        .pagination {
+          font-family: var(--ai-custom-font-family-{{ ai_gen_id }}) !important;
+        }
+      {% endif %}
+
+      {% if block.settings.apply_to_buttons %}
+        .btn,
+        .button,
+        button,
+        input[type="submit"],
+        input[type="button"],
+        .product-form__cart-submit,
+        .cart__checkout-button {
+          font-family: var(--ai-custom-font-family-{{ ai_gen_id }}) !important;
+        }
+      {% endif %}
+
+      {% if block.settings.apply_to_forms %}
+        input,
+        textarea,
+        select,
+        .form-control,
+        .field__input,
+        .customer input,
+        .contact-form input,
+        .newsletter-form input {
+          font-family: var(--ai-custom-font-family-{{ ai_gen_id }}) !important;
+        }
+      {% endif %}
+
+      {% if block.settings.apply_to_product_info %}
+        .product-title,
+        .product__title,
+        .product-price,
+        .product__price,
+        .product-description,
+        .product__description,
+        .variant-picker,
+        .product-form {
+          font-family: var(--ai-custom-font-family-{{ ai_gen_id }}) !important;
+        }
+      {% endif %}
+
+      {% if block.settings.apply_to_cards %}
+        .card,
+        .product-card,
+        .collection-card,
+        .blog-card,
+        .article-card,
+        .card-title,
+        .card-text {
+          font-family: var(--ai-custom-font-family-{{ ai_gen_id }}) !important;
+        }
+      {% endif %}
+    {% endif %}
+
+    {% if block.settings.custom_css != blank %}
+      {{ block.settings.custom_css }}
+    {% endif %}
+  {% endif %}
+{% endstyle %}
+
+<div class="ai-custom-font-loader-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% if block.settings.font_file_woff2 or block.settings.font_file_woff %}
+    <div style="font-family: '{{ block.settings.font_name }}'; opacity: 0; position: absolute; left: -9999px;">
+      Font loading helper
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Custom Font Loader",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Font Files"
+    },
+    {
+      "type": "paragraph",
+      "content": "Upload your custom font files. WOFF2 format is recommended for better performance. You can convert fonts at fontconverter.io or similar services."
+    },
+    {
+      "type": "text",
+      "id": "font_name",
+      "label": "Font family name",
+      "default": "CustomFont",
+      "info": "Enter a unique name for your font family"
+    },
+    {
+      "type": "url",
+      "id": "font_file_woff2",
+      "label": "WOFF2 font file URL",
+      "info": "Upload your .woff2 file to Files in admin, then paste the URL here"
+    },
+    {
+      "type": "url",
+      "id": "font_file_woff",
+      "label": "WOFF font file URL (fallback)",
+      "info": "Upload your .woff file to Files in admin, then paste the URL here"
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font weight",
+      "options": [
+        {"value": "100", "label": "100 - Thin"},
+        {"value": "200", "label": "200 - Extra Light"},
+        {"value": "300", "label": "300 - Light"},
+        {"value": "400", "label": "400 - Normal"},
+        {"value": "500", "label": "500 - Medium"},
+        {"value": "600", "label": "600 - Semi Bold"},
+        {"value": "700", "label": "700 - Bold"},
+        {"value": "800", "label": "800 - Extra Bold"},
+        {"value": "900", "label": "900 - Black"}
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "font_style",
+      "label": "Font style",
+      "options": [
+        {"value": "normal", "label": "Normal"},
+        {"value": "italic", "label": "Italic"}
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "select",
+      "id": "fallback_fonts",
+      "label": "Fallback fonts",
+      "options": [
+        {"value": "sans-serif", "label": "Sans-serif"},
+        {"value": "serif", "label": "Serif"},
+        {"value": "monospace", "label": "Monospace"},
+        {"value": "Arial, sans-serif", "label": "Arial, sans-serif"},
+        {"value": "Georgia, serif", "label": "Georgia, serif"},
+        {"value": "'Times New Roman', serif", "label": "Times New Roman, serif"},
+        {"value": "Helvetica, Arial, sans-serif", "label": "Helvetica, Arial, sans-serif"}
+      ],
+      "default": "sans-serif"
+    },
+    {
+      "type": "header",
+      "content": "Application Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "apply_globally",
+      "label": "Apply font globally",
+      "default": true,
+      "info": "Enable this to apply the font across your entire store"
+    },
+    {
+      "type": "checkbox",
+      "id": "apply_to_body",
+      "label": "Apply to body text",
+      "default": true,
+      "info": "Apply to paragraphs, divs, spans, and general text"
+    },
+    {
+      "type": "checkbox",
+      "id": "apply_to_headings",
+      "label": "Apply to headings",
+      "default": true,
+      "info": "Apply to H1, H2, H3, H4, H5, H6 elements"
+    },
+    {
+      "type": "checkbox",
+      "id": "apply_to_navigation",
+      "label": "Apply to navigation",
+      "default": true,
+      "info": "Apply to menu items, breadcrumbs, and navigation elements"
+    },
+    {
+      "type": "checkbox",
+      "id": "apply_to_buttons",
+      "label": "Apply to buttons",
+      "default": true,
+      "info": "Apply to all button elements and form submissions"
+    },
+    {
+      "type": "checkbox",
+      "id": "apply_to_forms",
+      "label": "Apply to form inputs",
+      "default": true,
+      "info": "Apply to input fields, textareas, and select elements"
+    },
+    {
+      "type": "checkbox",
+      "id": "apply_to_product_info",
+      "label": "Apply to product information",
+      "default": true,
+      "info": "Apply to product titles, prices, descriptions, and variant selectors"
+    },
+    {
+      "type": "checkbox",
+      "id": "apply_to_cards",
+      "label": "Apply to cards",
+      "default": true,
+      "info": "Apply to product cards, collection cards, and blog cards"
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS",
+      "info": "Add custom CSS rules to target specific elements. Use the font family variable: var(--ai-custom-font-family-{{ block.id | replace: '_', '' | downcase }})"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Custom Font Loader"
+    }
+  ]
+}
+{% endschema %}

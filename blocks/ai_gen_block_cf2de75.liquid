@@ -1,0 +1,907 @@
+{% doc %}
+  @prompt
+    I am making a section on the product page to display the free gifts we give when you spend a certain amount. Here are the offers:
+    
+    	1	$50 → Free Air Freshener ($6 Value)
+    	2	$75 → + Free Sticker Pack ($10 Value, $16 Total)
+    	3	$150 → + Free Lanyard ($12 Value, $28 Total)
+    	4	$200 → + Free Socks ($12 Value, $40 Total)
+    
+    Please generate me a clean on-brand block to add to the product page, This is a good start but I need to show a picture in each block and I need each block to open a pop up when clicked and I need to be able to edit each pop up with a picture and paragraph showing the deal. Can you make this happen?
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .ai-free-gifts-{{ ai_gen_id }} {
+    background-color: {{ block.settings.background_color }};
+    border: {{ block.settings.border_width }}px solid {{ block.settings.border_color }};
+    border-radius: {{ block.settings.border_radius }}px;
+    padding: {{ block.settings.padding }}px;
+    margin: {{ block.settings.margin }}px 0;
+  }
+
+  .ai-free-gifts-header-{{ ai_gen_id }} {
+    text-align: center;
+    margin-bottom: 24px;
+  }
+
+  .ai-free-gifts-title-{{ ai_gen_id }} {
+    color: {{ block.settings.title_color }};
+    font-size: {{ block.settings.title_size }}px;
+    font-weight: 600;
+    margin: 0 0 8px 0;
+  }
+
+  .ai-free-gifts-subtitle-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.text_size }}px;
+    margin: 0;opacity: 0.8;
+  }
+
+  .ai-free-gifts-tiers-{{ ai_gen_id }} {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .ai-free-gifts-tier-{{ ai_gen_id }} {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    background-color: {{ block.settings.tier_background_color }};
+    border:1px solid {{ block.settings.tier_border_color }};
+    border-radius: {{ block.settings.tier_border_radius }}px;transition: all 0.2s ease;
+    cursor: pointer;}
+
+  .ai-free-gifts-tier-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.tier_hover_background_color }};
+    border-color: {{ block.settings.tier_hover_border_color }};
+    transform: translateY(-2px);
+  }
+
+  .ai-free-gifts-threshold-{{ ai_gen_id }} {
+    flex-shrink: 0;
+    width: 80px;
+    height: 80px;
+    background-color: {{ block.settings.threshold_background_color }};
+    color: {{ block.settings.threshold_text_color }};
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 18px;
+    margin-right: 20px;
+  }
+
+  .ai-free-gifts-tier-image-{{ ai_gen_id }} {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    margin-right: 16px;
+    border-radius: {{ block.settings.image_border_radius }}px;
+    overflow: hidden;
+  }
+
+  .ai-free-gifts-tier-image-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-free-gifts-tier-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-free-gifts-tier-image-placeholder-{{ ai_gen_id }} svg {
+    width: 30px;
+    height: 30px;
+    opacity: 0.5;
+  }
+
+  .ai-free-gifts-content-{{ ai_gen_id }} {
+    flex-grow: 1;
+  }
+
+  .ai-free-gifts-items-{{ ai_gen_id }} {
+    color: {{ block.settings.text_color }};
+    font-size: {{ block.settings.text_size }}px;
+    font-weight: 600;
+    margin: 0 0 4px 0;
+  }
+
+  .ai-free-gifts-value-{{ ai_gen_id }} {
+    color: {{ block.settings.value_color }};
+    font-size: {{ block.settings.value_size }}px;
+    font-weight: 500;
+    margin: 0;
+  }
+
+  .ai-free-gifts-arrow-{{ ai_gen_id }} {
+    flex-shrink: 0;
+    margin-left: 16px;
+    color: {{ block.settings.arrow_color }};
+    opacity: 0.6;
+  }
+
+  .ai-free-gifts-arrow-{{ ai_gen_id }} svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .ai-free-gifts-overlay-{{ ai_gen_id }} {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .ai-free-gifts-overlay-{{ ai_gen_id }}.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .ai-free-gifts-popup-{{ ai_gen_id }} {
+    background-color: {{ block.settings.popup_background_color }};
+    border-radius: {{ block.settings.popup_border_radius }}px;
+    max-width: {{ block.settings.popup_max_width }}px;
+    width: 90%;
+    max-height:80vh;
+    overflow-y: auto;
+    position: relative;
+    transform: scale(0.9) translateY(20px);
+    transition: transform 0.3s ease;}
+
+  .ai-free-gifts-overlay-{{ ai_gen_id }}.active .ai-free-gifts-popup-{{ ai_gen_id }} {
+    transform: scale(1) translateY(0);
+  }
+
+  .ai-free-gifts-popup-header-{{ ai_gen_id }} {
+    position: relative;
+    padding: 24px 24px 0;
+  }
+
+  .ai-free-gifts-popup-close-{{ ai_gen_id }} {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    color: {{ block.settings.popup_text_color }};
+    opacity: 0.7;
+    border-radius: 50%;
+    transition: opacity 0.2s ease, background-color 0.2s ease;
+  }
+
+  .ai-free-gifts-popup-close-{{ ai_gen_id }}:hover {
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  .ai-free-gifts-popup-close-{{ ai_gen_id }} svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .ai-free-gifts-popup-content-{{ ai_gen_id }} {
+    padding: 0 24px 24px;
+  }
+
+  .ai-free-gifts-popup-image-{{ ai_gen_id }} {
+    width: 100%;
+    height: 200px;
+    margin-bottom: 20px;
+    border-radius: {{ block.settings.popup_image_border_radius }}px;
+    overflow: hidden;
+  }
+
+  .ai-free-gifts-popup-image-{{ ai_gen_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .ai-free-gifts-popup-image-placeholder-{{ ai_gen_id }} {
+    width: 100%;
+    height: 100%;
+    background-color: #f4f4f4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ai-free-gifts-popup-image-placeholder-{{ ai_gen_id }} svg {
+    width: 60px;
+    height: 60px;
+    opacity: 0.5;
+  }
+
+  .ai-free-gifts-popup-title-{{ ai_gen_id }} {
+    color: {{ block.settings.popup_title_color }};
+    font-size: {{ block.settings.popup_title_size }}px;
+    font-weight: 700;
+    margin: 0 0 16px 0;
+  }
+
+  .ai-free-gifts-popup-text-{{ ai_gen_id }} {
+    color: {{ block.settings.popup_text_color }};
+    font-size: {{ block.settings.popup_text_size }}px;
+    line-height: 1.5;
+    margin: 0;
+  }
+
+  @media screen and (max-width: 749px) {
+    .ai-free-gifts-{{ ai_gen_id }} {
+      padding: {{ block.settings.padding | times: 0.75 }}px;
+    }
+
+    .ai-free-gifts-threshold-{{ ai_gen_id }} {
+      width: 60px;
+      height: 60px;
+      font-size: 16px;
+      margin-right: 16px;
+    }
+
+    .ai-free-gifts-tier-image-{{ ai_gen_id }} {
+      width: 50px;
+      height: 50px;
+      margin-right: 12px;
+    }
+
+    .ai-free-gifts-tier-{{ ai_gen_id }} {
+      padding: 12px;
+    }
+
+    .ai-free-gifts-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.title_size | times: 0.9 }}px;
+    }
+
+    .ai-free-gifts-items-{{ ai_gen_id }} {
+      font-size: {{ block.settings.text_size | times: 0.9 }}px;
+    }
+
+    .ai-free-gifts-popup-{{ ai_gen_id }} {
+      width: 95%;}
+
+    .ai-free-gifts-popup-content-{{ ai_gen_id }} {
+      padding: 0 16px 16px;
+    }
+
+    .ai-free-gifts-popup-header-{{ ai_gen_id }} {
+      padding: 16px 16px 0;
+    }
+  }
+{% endstyle %}
+
+<free-gifts-tiers-{{ ai_gen_id }} class="ai-free-gifts-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-free-gifts-header-{{ ai_gen_id }}">
+    <h3 class="ai-free-gifts-title-{{ ai_gen_id }}">{{ block.settings.title }}</h3>
+    {% if block.settings.subtitle != blank %}
+      <p class="ai-free-gifts-subtitle-{{ ai_gen_id }}">{{ block.settings.subtitle }}</p>
+    {% endif %}
+  </div>
+
+  <div class="ai-free-gifts-tiers-{{ ai_gen_id }}">
+    <div class="ai-free-gifts-tier-{{ ai_gen_id }}" data-tier="1">
+      <div class="ai-free-gifts-threshold-{{ ai_gen_id }}">
+        $50
+      </div>
+      <div class="ai-free-gifts-tier-image-{{ ai_gen_id }}">
+        {% if block.settings.tier_1_image %}
+          <img
+            src="{{ block.settings.tier_1_image | image_url: width: 120 }}"
+            alt="{{ block.settings.tier_1_image.alt | escape }}"
+            loading="lazy"
+            width="120"
+            height="120"
+          >
+        {% else %}
+          <div class="ai-free-gifts-tier-image-placeholder-{{ ai_gen_id }}">
+            {{ 'product-1' | placeholder_svg_tag }}
+          </div>
+        {% endif %}
+      </div>
+      <div class="ai-free-gifts-content-{{ ai_gen_id }}">
+        <p class="ai-free-gifts-items-{{ ai_gen_id }}">Free Air Freshener</p>
+        <p class="ai-free-gifts-value-{{ ai_gen_id }}">$6Value</p>
+      </div>
+      <div class="ai-free-gifts-arrow-{{ ai_gen_id }}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="ai-free-gifts-tier-{{ ai_gen_id }}" data-tier="2">
+      <div class="ai-free-gifts-threshold-{{ ai_gen_id }}">
+        $75
+      </div>
+      <div class="ai-free-gifts-tier-image-{{ ai_gen_id }}">
+        {% if block.settings.tier_2_image %}
+          <img
+            src="{{ block.settings.tier_2_image | image_url: width: 120 }}"
+            alt="{{ block.settings.tier_2_image.alt | escape }}"
+            loading="lazy"
+            width="120"
+            height="120"
+          >
+        {% else %}
+          <div class="ai-free-gifts-tier-image-placeholder-{{ ai_gen_id }}">
+            {{ 'product-1' | placeholder_svg_tag }}
+          </div>
+        {% endif %}
+      </div>
+      <div class="ai-free-gifts-content-{{ ai_gen_id }}">
+        <p class="ai-free-gifts-items-{{ ai_gen_id }}">+ Free Sticker Pack</p>
+        <p class="ai-free-gifts-value-{{ ai_gen_id }}">$10 Value • $16 Total</p>
+      </div>
+      <div class="ai-free-gifts-arrow-{{ ai_gen_id }}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="ai-free-gifts-tier-{{ ai_gen_id }}" data-tier="3">
+      <div class="ai-free-gifts-threshold-{{ ai_gen_id }}">
+        $150
+      </div>
+      <div class="ai-free-gifts-tier-image-{{ ai_gen_id }}">
+        {% if block.settings.tier_3_image %}
+          <img
+            src="{{ block.settings.tier_3_image | image_url: width: 120 }}"
+            alt="{{ block.settings.tier_3_image.alt | escape }}"
+            loading="lazy"
+            width="120"
+            height="120"
+          >
+        {% else %}
+          <div class="ai-free-gifts-tier-image-placeholder-{{ ai_gen_id }}">
+            {{ 'product-1' | placeholder_svg_tag }}
+          </div>
+        {% endif %}
+      </div>
+      <div class="ai-free-gifts-content-{{ ai_gen_id }}">
+        <p class="ai-free-gifts-items-{{ ai_gen_id }}">+ Free Lanyard</p>
+        <p class="ai-free-gifts-value-{{ ai_gen_id }}">$12 Value • $28 Total</p>
+      </div>
+      <div class="ai-free-gifts-arrow-{{ ai_gen_id }}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="ai-free-gifts-tier-{{ ai_gen_id }}" data-tier="4">
+      <div class="ai-free-gifts-threshold-{{ ai_gen_id }}">
+        $200
+      </div>
+      <div class="ai-free-gifts-tier-image-{{ ai_gen_id }}">
+        {% if block.settings.tier_4_image %}
+          <img
+            src="{{ block.settings.tier_4_image | image_url: width: 120 }}"
+            alt="{{ block.settings.tier_4_image.alt | escape }}"
+            loading="lazy"
+            width="120"
+            height="120"
+          >
+        {% else %}
+          <div class="ai-free-gifts-tier-image-placeholder-{{ ai_gen_id }}">
+            {{ 'product-1' | placeholder_svg_tag }}
+          </div>
+        {% endif %}
+      </div>
+      <div class="ai-free-gifts-content-{{ ai_gen_id }}">
+        <p class="ai-free-gifts-items-{{ ai_gen_id }}">+ Free Socks</p>
+        <p class="ai-free-gifts-value-{{ ai_gen_id }}">$12 Value • $40 Total</p>
+      </div>
+      <div class="ai-free-gifts-arrow-{{ ai_gen_id }}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m9 18 6-6-6-6"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="ai-free-gifts-overlay-{{ ai_gen_id }}" id="ai-free-gifts-overlay-{{ ai_gen_id }}">
+    <div class="ai-free-gifts-popup-{{ ai_gen_id }}">
+      <div class="ai-free-gifts-popup-header-{{ ai_gen_id }}">
+        <button class="ai-free-gifts-popup-close-{{ ai_gen_id }}" aria-label="Close popup">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="ai-free-gifts-popup-content-{{ ai_gen_id }}">
+        <div class="ai-free-gifts-popup-image-{{ ai_gen_id }}" id="ai-popup-image-{{ ai_gen_id }}">
+        </div>
+        <h3 class="ai-free-gifts-popup-title-{{ ai_gen_id }}" id="ai-popup-title-{{ ai_gen_id }}"></h3>
+        <div class="ai-free-gifts-popup-text-{{ ai_gen_id }}" id="ai-popup-text-{{ ai_gen_id }}"></div>
+      </div>
+    </div>
+  </div>
+</free-gifts-tiers-{{ ai_gen_id }}>
+
+<script>
+  (function() {
+    class FreeGiftsTiers{{ ai_gen_id }} extends HTMLElement {
+      constructor() {
+        super();
+        this.tiers = this.querySelectorAll('.ai-free-gifts-tier-{{ ai_gen_id }}');
+        this.overlay = this.querySelector('.ai-free-gifts-overlay-{{ ai_gen_id }}');
+        this.closeButton = this.querySelector('.ai-free-gifts-popup-close-{{ ai_gen_id }}');
+        this.popupImage = this.querySelector('#ai-popup-image-{{ ai_gen_id }}');
+        this.popupTitle = this.querySelector('#ai-popup-title-{{ ai_gen_id }}');
+        this.popupText = this.querySelector('#ai-popup-text-{{ ai_gen_id }}');
+
+        this.tierData = {
+          1: {
+            image: '{{ block.settings.tier_1_popup_image | image_url: width: 400 }}',
+            hasImage: {{ block.settings.tier_1_popup_image | json }},
+            title: {{ block.settings.tier_1_popup_title | json }},
+            text: {{ block.settings.tier_1_popup_text | json }}
+          },
+          2: {
+            image: '{{ block.settings.tier_2_popup_image | image_url: width: 400 }}',
+            hasImage: {{ block.settings.tier_2_popup_image | json }},
+            title: {{ block.settings.tier_2_popup_title | json }},
+            text: {{ block.settings.tier_2_popup_text | json }}
+          },
+          3: {
+            image: '{{ block.settings.tier_3_popup_image | image_url: width: 400 }}',
+            hasImage: {{ block.settings.tier_3_popup_image | json }},
+            title: {{ block.settings.tier_3_popup_title | json }},
+            text: {{ block.settings.tier_3_popup_text | json }}
+          },
+          4: {
+            image: '{{ block.settings.tier_4_popup_image | image_url: width: 400 }}',
+            hasImage: {{ block.settings.tier_4_popup_image | json }},
+            title: {{ block.settings.tier_4_popup_title | json }},
+            text: {{ block.settings.tier_4_popup_text | json }}
+          }
+        };
+      }
+
+      connectedCallback() {
+        this.setupEventListeners();
+      }
+
+      setupEventListeners() {
+        this.tiers.forEach(tier => {
+          tier.addEventListener('click', () => {
+            const tierId = tier.getAttribute('data-tier');
+            this.openPopup(tierId);
+          });
+        });
+
+        this.closeButton.addEventListener('click', () => {
+          this.closePopup();
+        });
+
+        this.overlay.addEventListener('click', (e) => {
+          if (e.target === this.overlay) {
+            this.closePopup();
+          }
+        });document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && this.overlay.classList.contains('active')) {
+            this.closePopup();
+          }
+        });
+      }
+
+      openPopup(tierId) {
+        const data = this.tierData[tierId];
+        if (data.hasImage) {
+          this.popupImage.innerHTML = `<img src="${data.image}" alt="" loading="lazy">`;} else {
+          this.popupImage.innerHTML = `<div class="ai-free-gifts-popup-image-placeholder-{{ ai_gen_id }}">${'{{ "product-1" | placeholder_svg_tag }}'}</div>`;
+        }
+
+        this.popupTitle.textContent = data.title;
+        this.popupText.innerHTML = data.text;
+
+        this.overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      closePopup() {
+        this.overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+
+    customElements.define('free-gifts-tiers-{{ ai_gen_id }}', FreeGiftsTiers{{ ai_gen_id }});
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Free Gifts Tiers",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Free Gifts with Purchase"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Spend more and get amazing free gifts!"
+    },
+    {
+      "type": "header",
+      "content": "Tier 1 - $50"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_1_image",
+      "label": "Tier image"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_1_popup_image",
+      "label": "Popup image"
+    },
+    {
+      "type": "text",
+      "id": "tier_1_popup_title",
+      "label": "Popup title",
+      "default": "Free Air Freshener - $50Purchase"
+    },
+    {
+      "type": "richtext",
+      "id": "tier_1_popup_text",
+      "label": "Popup description",
+      "default": "<p>Get a premium air freshener absolutely free when you spend $50 or more! Keep your space smelling fresh with our signature scent.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Tier 2 - $75"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_2_image",
+      "label": "Tier image"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_2_popup_image",
+      "label": "Popup image"
+    },
+    {
+      "type": "text",
+      "id": "tier_2_popup_title",
+      "label": "Popup title",
+      "default": "Free Sticker Pack + Air Freshener - $75 Purchase"
+    },
+    {
+      "type": "richtext",
+      "id": "tier_2_popup_text",
+      "label": "Popup description",
+      "default": "<p>Upgrade your order to $75 and get our exclusive sticker pack plus the air freshener! Perfect for personalizing your gear with our brand.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Tier 3 - $150"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_3_image",
+      "label": "Tier image"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_3_popup_image",
+      "label": "Popup image"
+    },
+    {
+      "type": "text",
+      "id": "tier_3_popup_title",
+      "label": "Popup title",
+      "default": "Free Lanyard + Previous Gifts - $150 Purchase"
+    },
+    {
+      "type": "richtext",
+      "id": "tier_3_popup_text",
+      "label": "Popup description",
+      "default": "<p>Reach $150 and receive our premium lanyard along with all previous gifts! A practical accessory that shows off your style.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Tier 4 - $200"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_4_image",
+      "label": "Tier image"
+    },
+    {
+      "type": "image_picker",
+      "id": "tier_4_popup_image",
+      "label": "Popup image"
+    },
+    {
+      "type": "text",
+      "id": "tier_4_popup_title",
+      "label": "Popup title",
+      "default": "Free Socks + All Previous Gifts - $200 Purchase"
+    },
+    {
+      "type": "richtext",
+      "id": "tier_4_popup_text",
+      "label": "Popup description",
+      "default": "<p>The ultimate gift bundle! Spend $200 and get our comfortable branded socks plus all previous gifts. Maximum value for our best customers!</p>"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#e9ecef"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#063d49"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#063d49"
+    },
+    {
+      "type": "color",
+      "id": "value_color",
+      "label": "Value color",
+      "default": "#28a745"
+    },
+    {
+      "type": "color",
+      "id": "threshold_background_color",
+      "label": "Threshold background",
+      "default": "#063d49"
+    },
+    {
+      "type": "color",
+      "id": "threshold_text_color",
+      "label": "Threshold text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "tier_background_color",
+      "label": "Tier background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "tier_border_color",
+      "label": "Tier border color",
+      "default": "#e9ecef"
+    },
+    {
+      "type": "color",
+      "id": "tier_hover_background_color",
+      "label": "Tier hover background",
+      "default": "#f8f9fa"
+    },
+    {
+      "type": "color",
+      "id": "tier_hover_border_color",
+      "label": "Tier hover border",
+      "default": "#063d49"
+    },
+    {
+      "type": "color",
+      "id": "arrow_color",
+      "label": "Arrow color",
+      "default": "#063d49"
+    },
+    {
+      "type": "color",
+      "id": "popup_background_color",
+      "label": "Popup background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "popup_title_color",
+      "label": "Popup title color",
+      "default": "#063d49"
+    },
+    {
+      "type": "color",
+      "id": "popup_text_color",
+      "label": "Popup text color",
+      "default": "#063d49"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 16,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Title size",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "text_size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Text size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "value_size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Value text size",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "popup_title_size",
+      "min": 18,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Popup title size",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "popup_text_size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "label": "Popup text size",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "min": 16,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin",
+      "min": 0,
+      "max": 32,
+      "step": 4,
+      "unit": "px",
+      "label": "Margin",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Border width",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "tier_border_radius",
+      "min": 0,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "label": "Tier border radius",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "label": "Tier image border radius",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "popup_border_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Popup border radius",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "popup_image_border_radius",
+      "min": 0,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "label": "Popup image border radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "popup_max_width",
+      "min": 400,
+      "max": 600,
+      "step": 50,
+      "unit": "px",
+      "label": "Popup max width",
+      "default": 500
+    }
+  ],
+  "presets": [
+    {
+      "name": "Free Gifts Tiers"
+    }
+  ]
+}
+{% endschema %}

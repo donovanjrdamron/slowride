@@ -1,0 +1,301 @@
+{% doc %}
+  @prompt
+    Add custom font SlowRide-Regular from TTF file URL https://cdn.shopify.com/s/files/1/0670/2723/9198/files/SlowRide-Regular_9ad7dd36-7063-4c22-ac3f-aa99b774fd27.ttf?v=1749679231 and apply it to all text elements across the entire website using CSS @font-face declaration and global font-family rules, make the font apply to the entire site
+    , please remove all of the text in this section. the only reason for this block is to apply the font to the entire site. 
+    , please apply the font to the ENTIRE SITE not just the homepage
+    , the font is only applying to the homepage. It needs to be on every page globally 
+    , The font still isn't showing on any of the other pages. please make it show on every page in every section.
+    
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  @font-face {
+    font-family: 'SlowRide-Regular';
+    src: url('{{ block.settings.font_url }}') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+  }
+
+  :root {
+    --custom-font-family: 'SlowRide-Regular', {{ block.settings.fallback_font }};
+  }
+
+  html {
+    font-family: var(--custom-font-family) !important;
+  }
+
+  body {
+    font-family: var(--custom-font-family) !important;
+  }
+
+  * {
+    font-family: var(--custom-font-family) !important;
+  }
+
+  *::before,
+  *::after {
+    font-family: var(--custom-font-family) !important;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--custom-font-family) !important;
+  }
+
+  p, span, div, a, li, ul, ol, dl, dt, dd {
+    font-family: var(--custom-font-family) !important;
+  }
+
+  button, input, textarea, select, option {
+    font-family: var(--custom-font-family) !important;
+  }
+
+  label, legend, fieldset {
+    font-family: var(--custom-font-family) !important;
+  }
+
+  table, th, td, caption {
+    font-family: var(--custom-font-family) !important;
+  }
+
+  .shopify-section,
+  .shopify-section *,
+  .shopify-block,
+  .shopify-block * {
+    font-family: var(--custom-font-family) !important;
+  }
+
+  [id*="shopify-section"],
+  [id*="shopify-section"] *,
+  [class*="shopify"],
+  [class*="shopify"] * {
+    font-family: var(--custom-font-family) !important;
+  }
+
+  .template-index,
+  .template-index *,
+  .template-product,
+  .template-product *,
+  .template-collection,
+  .template-collection *,
+  .template-blog,
+  .template-blog *,
+  .template-article,
+  .template-article *,
+  .template-page,
+  .template-page *,
+  .template-cart,
+  .template-cart *,
+  .template-search,
+  .template-search *,
+  .template-customers-login,
+  .template-customers-login *,
+  .template-customers-register,
+  .template-customers-register *,
+  .template-customers-account,
+  .template-customers-account *,
+  .template-customers-order,
+  .template-customers-order *,
+  .template-404,
+  .template-404 * {
+    font-family: var(--custom-font-family) !important;
+  }
+
+  #shopify-section-header,
+  #shopify-section-header *,
+  #shopify-section-footer,
+  #shopify-section-footer *,
+  .site-header,
+  .site-header *,
+  .site-footer,
+  .site-footer * {
+    font-family: var(--custom-font-family) !important;
+  }
+
+  .main-content,
+  .main-content *,
+  .page-width,
+  .page-width *,
+  .container,
+  .container *,
+  .wrapper,
+  .wrapper *,
+  .content,
+  .content * {
+    font-family: var(--custom-font-family) !important;
+  }
+
+  .product-form,
+  .product-form *,
+  .product-info,
+  .product-info *,
+  .collection-grid,
+  .collection-grid *,
+  .collection-list,
+  .collection-list *,
+  .cart-form,
+  .cart-form *,
+  .cart-drawer,
+  .cart-drawer * {
+    font-family: var(--custom-font-family) !important;
+  }
+
+  .ai-global-font-container-{{ ai_gen_id }} {
+    position: absolute;
+    left: -9999px;
+    top: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
+  }
+{% endstyle %}
+
+<div class="ai-global-font-container-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <span style="font-family: 'SlowRide-Regular', {{ block.settings.fallback_font }};">Font preloader</span>
+</div>
+
+<script>
+(function() {
+  const fontUrl = '{{ block.settings.font_url }}';
+  const fallbackFont = '{{ block.settings.fallback_font }}';
+  const customFontFamily = `'SlowRide-Regular', ${fallbackFont}`;
+
+  function loadAndApplyFont() {
+    const font = new FontFace('SlowRide-Regular', `url(${fontUrl})`);
+    
+    font.load().then((loadedFont) => {
+      document.fonts.add(loadedFont);
+      applyFontToAllElements();
+    }).catch((error) => {
+      console.warn('Failed to load SlowRide-Regular font:', error);
+      applyFontToAllElements();
+    });
+  }
+
+  function applyFontToAllElements() {
+    const globalStyle = document.createElement('style');
+    globalStyle.id = 'global-slowride-font-{{ ai_gen_id }}';
+    globalStyle.textContent = `
+      html, body, * {
+        font-family: ${customFontFamily} !important;
+      }
+      *::before, *::after {
+        font-family: ${customFontFamily} !important;
+      }
+    `;
+    
+    if (document.head) {
+      document.head.appendChild(globalStyle);
+    }
+
+    document.documentElement.style.setProperty('font-family', customFontFamily, 'important');
+    document.body.style.setProperty('font-family', customFontFamily, 'important');
+
+    const allElements = document.querySelectorAll('*');
+    allElements.forEach(element => {
+      element.style.setProperty('font-family', customFontFamily, 'important');
+    });
+
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => {
+        mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            node.style.setProperty('font-family', customFontFamily, 'important');
+            const childElements = node.querySelectorAll('*');
+            childElements.forEach(child => {
+              child.style.setProperty('font-family', customFontFamily, 'important');
+            });
+          }
+        });
+      });
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadAndApplyFont);
+  } else {
+    loadAndApplyFont();
+  }
+
+  window.addEventListener('load', () => {
+    setTimeout(applyFontToAllElements, 100);
+  });
+
+  document.addEventListener('shopify:section:load', applyFontToAllElements);
+  document.addEventListener('shopify:section:reorder', applyFontToAllElements);
+  document.addEventListener('shopify:section:select', applyFontToAllElements);
+  document.addEventListener('shopify:section:deselect', applyFontToAllElements);
+
+  class GlobalFontLoader{{ai_gen_id}} extends HTMLElement {
+    constructor() {
+      super();
+    }
+
+    connectedCallback() {
+      applyFontToAllElements();
+    }
+  }
+
+  customElements.define('global-font-loader-{{ ai_gen_id }}', GlobalFontLoader{{ai_gen_id}});
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Global Font Loader",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Font Configuration"
+    },
+    {
+      "type": "text",
+      "id": "font_url",
+      "label": "Font URL",
+      "default": "https://cdn.shopify.com/s/files/1/0670/2723/9198/files/SlowRide-Regular_9ad7dd36-7063-4c22-ac3f-aa99b774fd27.ttf?v=1749679231"
+    },
+    {
+      "type": "select",
+      "id": "fallback_font",
+      "label": "Fallback font",
+      "options": [
+        {
+          "value": "Arial, sans-serif",
+          "label": "Arial"
+        },
+        {
+          "value": "Georgia, serif",
+          "label": "Georgia"
+        },
+        {
+          "value": "Times, serif",
+          "label": "Times"
+        },
+        {
+          "value": "Helvetica, sans-serif",
+          "label": "Helvetica"
+        },
+        {
+          "value": "Courier, monospace",
+          "label": "Courier"
+        }
+      ],
+      "default": "Arial, sans-serif"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Global Font Loader"
+    }
+  ]
+}
+{% endschema %}

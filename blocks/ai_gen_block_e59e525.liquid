@@ -1,0 +1,469 @@
+{% doc %}
+  @prompt
+    create me a custom video section for my product page. I want the section to play the video from  the Product Video metafield and if the product does not have a video connected to hat metafield i dont want the section to show, right now it is not working and just  displays a black screen with this written on it.
+    
+    gid://shopify/Video/53824390201630
+    , 
+    Liquid error (temp/ai_gen_block_bb3fdea line 69): video_tag does not support Metafields::MetafieldDrop
+    , i want the aspect ratio of the video to be the same as the original video. i also want to be able to add a paragraph under the heading. make the section fully customizable , right now the section looks good on mobile but on desktop it takes up the entire screen and looks to big. i want the text to be on the side of the video on desktop so that it still looks normal and not to big and i want the positioning of the text next to it to be adjustable as well
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+{% assign product_video = product.metafields.custom.product_video.value %}
+
+{% if product_video != blank %}
+  {% style %}
+    .ai-product-video-{{ ai_gen_id }} {
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: {{ block.settings.padding_top }}px {{ block.settings.padding_horizontal }}px {{ block.settings.padding_bottom }}px;
+      background-color: {{ block.settings.section_background }};
+    }
+
+    .ai-product-video-inner-{{ ai_gen_id }} {
+      max-width: {{ block.settings.max_width }}px;
+      margin: 0 auto;
+    }
+
+    .ai-product-video-content-{{ ai_gen_id }} {
+      display: flex;
+      flex-direction: column;
+      gap: {{ block.settings.content_gap }}px;
+      align-items: center;
+    }
+
+    .ai-product-video-text-{{ ai_gen_id }} {
+      width: 100%;
+    }
+
+    .ai-product-video-heading-{{ ai_gen_id }} {
+      text-align: {{ block.settings.heading_alignment }};
+      margin: 0 0 {{ block.settings.heading_spacing }}px;
+      color: {{ block.settings.heading_color }};
+      font-size: {{ block.settings.heading_size }}px;
+      font-weight: {{ block.settings.heading_weight }};
+    }
+
+    .ai-product-video-description-{{ ai_gen_id }} {
+      text-align: {{ block.settings.heading_alignment }};
+      margin: 0;
+      color: {{ block.settings.description_color }};
+      font-size: {{ block.settings.description_size }}px;
+      line-height: 1.6;
+    }
+
+    .ai-product-video-media-{{ ai_gen_id }} {
+      width: 100%;
+    }
+
+    .ai-product-video-container-{{ ai_gen_id }} {
+      position: relative;
+      width: 100%;
+      border-radius: {{ block.settings.border_radius }}px;
+      overflow: hidden;
+      background-color: {{ block.settings.video_background }};
+      {% if block.settings.show_shadow %}
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      {% endif %}
+    }
+
+    .ai-product-video-wrapper-{{ ai_gen_id }} {
+      position: relative;
+      width: 100%;
+    }
+
+    .ai-product-video-wrapper-{{ ai_gen_id }} video {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    @media screen and (min-width: 750px) {
+      .ai-product-video-content-{{ ai_gen_id }} {
+        flex-direction: {{ block.settings.desktop_layout }};
+        align-items: {{ block.settings.desktop_alignment }};
+        gap: {{ block.settings.desktop_gap }}px;
+      }
+
+      {% if block.settings.desktop_layout == 'row' or block.settings.desktop_layout == 'row-reverse' %}
+        .ai-product-video-text-{{ ai_gen_id }} {
+          width: {{ block.settings.text_width }}%;
+          flex-shrink: 0;
+        }
+
+        .ai-product-video-media-{{ ai_gen_id }} {
+          width: {{ 100 | minus: block.settings.text_width }}%;
+          flex-shrink: 0;
+        }
+      {% endif %}
+
+      .ai-product-video-heading-{{ ai_gen_id }} {
+        font-size: {{ block.settings.heading_size }}px;
+        margin-bottom: {{ block.settings.heading_spacing }}px;
+      }
+
+      .ai-product-video-description-{{ ai_gen_id }} {
+        font-size: {{ block.settings.description_size }}px;
+      }
+    }
+
+    @media screen and (max-width: 749px) {
+      .ai-product-video-{{ ai_gen_id }} {
+        padding: {{ block.settings.padding_top | times: 0.7 }}px {{ block.settings.padding_horizontal | times: 0.7 }}px {{ block.settings.padding_bottom | times: 0.7 }}px;
+      }
+
+      .ai-product-video-heading-{{ ai_gen_id }} {
+        font-size: {{ block.settings.heading_size | times: 0.8 }}px;
+        margin-bottom: {{ block.settings.heading_spacing | times: 0.7 }}px;
+      }
+
+      .ai-product-video-description-{{ ai_gen_id }} {
+        font-size: {{ block.settings.description_size | times: 0.9 }}px;
+      }
+
+      .ai-product-video-content-{{ ai_gen_id }} {
+        gap: {{ block.settings.content_gap | times: 0.7 }}px;
+      }
+    }
+  {% endstyle %}
+
+  <div class="ai-product-video-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+    <div class="ai-product-video-inner-{{ ai_gen_id }}">
+      <div class="ai-product-video-content-{{ ai_gen_id }}">
+        <div class="ai-product-video-text-{{ ai_gen_id }}">
+          {% if block.settings.heading != blank %}
+            <h2 class="ai-product-video-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h2>
+          {% endif %}
+
+          {% if block.settings.description != blank %}
+            <div class="ai-product-video-description-{{ ai_gen_id }}">{{ block.settings.description }}</div>
+          {% endif %}
+        </div>
+
+        <div class="ai-product-video-media-{{ ai_gen_id }}">
+          <div class="ai-product-video-container-{{ ai_gen_id }}">
+            <div class="ai-product-video-wrapper-{{ ai_gen_id }}">
+              {{
+                product_video
+                | video_tag:
+                  autoplay: block.settings.autoplay,
+                  loop: block.settings.loop,
+                  controls: block.settings.controls,
+                  muted: block.settings.muted,
+                  playsinline: true
+              }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Product video",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description"
+    },
+    {
+      "type": "paragraph",
+      "content": "Video is pulled from the Product Video metafield. If no video is set, this block will not display."
+    },
+    {
+      "type": "header",
+      "content": "Desktop layout"
+    },
+    {
+      "type": "select",
+      "id": "desktop_layout",
+      "label": "Layout",
+      "options": [
+        {
+          "value": "row",
+          "label": "Text left, video right"
+        },
+        {
+          "value": "row-reverse",
+          "label": "Video left, text right"
+        },
+        {
+          "value": "column",
+          "label": "Stacked"
+        }
+      ],
+      "default": "row"
+    },
+    {
+      "type": "select",
+      "id": "desktop_alignment",
+      "label": "Vertical alignment",
+      "options": [
+        {
+          "value": "flex-start",
+          "label": "Top"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "flex-end",
+          "label": "Bottom"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "text_width",
+      "min": 20,
+      "max": 60,
+      "step": 5,
+      "unit": "%",
+      "label": "Text width",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "desktop_gap",
+      "min": 20,
+      "max": 100,
+      "step": 10,
+      "unit": "px",
+      "label": "Gap between text and video",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Heading style"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 16,
+      "max": 56,
+      "step": 2,
+      "unit": "px",
+      "label": "Size",
+      "default": 32
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Weight",
+      "options": [
+        {
+          "value": "400",
+          "label": "Normal"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "heading_spacing",
+      "min": 0,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "label": "Bottom spacing",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Description style"
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Size",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Color",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Text alignment"
+    },
+    {
+      "type": "select",
+      "id": "heading_alignment",
+      "label": "Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Video settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "loop",
+      "label": "Loop video",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "controls",
+      "label": "Show controls",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "muted",
+      "label": "Mute video",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Video container"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Border radius",
+      "default": 8
+    },
+    {
+      "type": "color",
+      "id": "video_background",
+      "label": "Background color",
+      "default": "#000000"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shadow",
+      "label": "Show shadow",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Section layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 600,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "label": "Max width",
+      "default": 1200
+    },
+    {
+      "type": "color",
+      "id": "section_background",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "content_gap",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Mobile gap",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding top",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding bottom",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Padding horizontal",
+      "default": 20
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product video"
+    }
+  ],
+  "tag": null
+}
+{% endschema %}

@@ -1,0 +1,278 @@
+{% doc %}
+  @prompt
+    Hello Sidekick,
+    
+    I need to redesign my main blog page that lists all my articles. I want it to be a visual grid, inspired by the attached image, but with several specific requirements.
+    
+    Please generate the code for a new blog template that follows these rules:
+    
+    1. Main Layout & Grid:
+    
+    The page should be a full-width grid of blog posts. There should be no padding or margins on the left and right sides of the main grid container.
+    On desktop, the grid should have 4 columns.
+    On mobile, the grid should have 2 columns.
+    Each item in the grid must be a perfect 1:1 square.
+    Please use a small gap between the squares for visual separation.
+    2. Grid Item Style:
+    
+    Each square in the grid should use that blog post's featured image as its background.
+    Apply a semi-transparent dark overlay to the image to make the white text on top easy to read, similar to the example image.
+    The title of the blog post should be displayed on top of the image.
+    3. Interactivity & Functionality:
+    
+    On Desktop:
+    
+    The blog post title should be visible by default.
+    When a user hovers over a square, a "Read More" button should appear.
+    The entire square (image, title, and button) should be a single clickable link to the full blog post.
+    On Mobile:
+    
+    The blog post title should be visible by default.
+    A "Read More" button should also be visible by default, positioned directly underneath the title.
+    The entire square should be a clickable link to the blog post.
+    Please provide the necessary Liquid and CSS code to create a new blog.liquid template that achieves this layout and interactive behavior., it isn't showing anything. The section should automatically populate with all of my Shopify blog posts. 
+    , This is off to great start. here are some changes:
+    
+    - the section should not have gaps in between each post. 
+    - On desktop the text should be centered in each thumbnail and when the user hovers it should show a read more button
+    - on mobile there should be a read more button below the text on each thumbnail
+    - the blog should automatically populate every time a new blog post is posted. 
+    , please make the text on each thumbnail smaller so that it is not covering the entire picture for each one. 
+    , please make the title size adjuster fully functional and the overlay opacity fully functional as well. Right now when I adjust them nothing happens. 
+    , the overlay opacity and title size still dont work. when I adjust them nothing happens 
+    , The overlay opacity and title size adjusters still aren't functional. Nothing chan
+
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .blog-grid-{{ ai_gen_id }} {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: 100%;
+    gap: {{ block.settings.grid_gap }}px;}
+
+  .blog-grid-item-{{ ai_gen_id }} {
+    position: relative;
+    aspect-ratio: 1/1;
+    overflow: hidden;}
+
+  .blog-grid-item-link-{{ ai_gen_id }} {
+    display: block;
+    height: 100%;
+    width: 100%;
+    text-decoration: none;
+    color: #fff;
+  }
+
+  .blog-grid-item-image-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+  }
+  
+  .blog-grid-item-image-placeholder-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    background-color: #f4f4f4;
+  }
+  
+  .blog-grid-item-image-placeholder-{{ ai_gen_id }} svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .blog-grid-item-overlay-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, {{ block.settings.overlay_opacity }});
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  .blog-grid-item-title-{{ ai_gen_id }} {
+    font-size: {{ block.settings.title_size }}px;
+    font-weight: 600;
+    margin: 0;
+    z-index: 3;
+    max-width: 100%;
+    line-height: 1.3;
+  }
+
+  .blog-grid-item-button-{{ ai_gen_id }} {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: {{ block.settings.button_color }};
+    color: {{ block.settings.button_text_color }};
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-top: 15px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    z-index: 3;
+  }
+
+  .blog-grid-item-link-{{ ai_gen_id }}:hover .blog-grid-item-button-{{ ai_gen_id }} {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media screen and (max-width: 749px) {
+    .blog-grid-{{ ai_gen_id }} {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .blog-grid-item-button-{{ ai_gen_id }} {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    .blog-grid-item-title-{{ ai_gen_id }} {
+      font-size: {{ block.settings.mobile_title_size }}px;
+    }
+  }
+{% endstyle %}
+
+<div class="blog-grid-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  {% assign blog_handle = block.settings.blog %}
+  {% if blog_handle != blank %}
+    {% assign blog_obj = blogs[blog_handle] %}
+    {% for article in blog_obj.articles limit: block.settings.post_limit %}
+      <div class="blog-grid-item-{{ ai_gen_id }}">
+        <a href="{{ article.url }}" class="blog-grid-item-link-{{ ai_gen_id }}">
+          {% if article.image %}
+            <img 
+              src="{{ article.image | img_url: '600x600', crop: 'center' }}" 
+              alt="{{ article.title | escape }}" 
+              class="blog-grid-item-image-{{ ai_gen_id }}" 
+              loading="lazy"
+              width="600"
+              height="600"
+            >
+          {% else %}
+            <div class="blog-grid-item-image-placeholder-{{ ai_gen_id }}">
+              {{ 'image' | placeholder_svg_tag }}
+            </div>
+          {% endif %}
+          <div class="blog-grid-item-overlay-{{ ai_gen_id }}">
+            <h3 class="blog-grid-item-title-{{ ai_gen_id }}">{{ article.title }}</h3>
+            <span class="blog-grid-item-button-{{ ai_gen_id }}">{{ block.settings.button_text }}</span>
+          </div>
+        </a>
+      </div>
+    {% endfor %}
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Blog Grid",
+  "tag": null,
+  "settings": [
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog"
+    },
+    {
+      "type": "range",
+      "id": "post_limit",
+      "min": 4,
+      "max": 40,
+      "step": 4,
+      "label": "Maximum posts",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Grid Settings"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "label": "Grid gap",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "min": 0.1,
+      "max": 0.9,
+      "step": 0.1,
+      "label": "Overlay opacity",
+      "default": 0.5
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "label": "Title size (desktop)",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "mobile_title_size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Title size (mobile)",
+      "default": 14
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "Read More"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text color",
+      "default": "#000000"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Blog Grid"
+    }
+  ]
+}
+{% endschema %}
