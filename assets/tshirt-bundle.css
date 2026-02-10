@@ -10,7 +10,12 @@
   margin: 0 auto;
   padding: 40px 20px 120px;
   font-family: var(--font-primary--family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif);
-  color: #111;
+  color: #111 !important;
+}
+
+/* Override theme link colors within the bundle section */
+.tshirt-bundle a:not(.bundle-cta):not(.bundle-card__add-btn) {
+  color: inherit;
 }
 
 /* ---------- Two-column layout ---------- */
@@ -38,7 +43,7 @@
   font-weight: 700;
   line-height: 1.2;
   margin: 0;
-  color: var(--button-color, #111);
+  color: var(--button-color, #111) !important;
 }
 
 .bundle-sidebar__subtitle {
@@ -378,7 +383,7 @@
 }
 
 .bundle-card__title-link {
-  color: #111;
+  color: #111 !important;
   text-decoration: none;
 }
 
@@ -502,11 +507,16 @@
   left: 0;
   right: 0;
   background: #fff;
-  color: #111;
+  color: #111 !important;
   box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
   z-index: 999;
   border-radius: 16px 16px 0 0;
   transition: transform 0.3s ease;
+}
+
+/* Override theme link colors within the mobile bar */
+.bundle-mobile-bar a {
+  color: inherit;
 }
 
 .bundle-mobile-bar__toggle {
@@ -527,17 +537,18 @@
 .bundle-mobile-bar__title {
   font-size: 15px;
   font-weight: 700;
-  color: var(--button-color, #111);
+  color: var(--button-color, #111) !important;
 }
 
 .bundle-mobile-bar__chevron {
   transition: transform 0.3s ease;
-  color: var(--button-color, #111);
+  color: var(--button-color, #111) !important;
 }
 
 /* Ensure mobile bar icons use the button color */
 .bundle-mobile-bar svg {
-  color: var(--button-color, #111);
+  color: var(--button-color, #111) !important;
+  stroke: currentColor;
 }
 
 .bundle-mobile-bar--expanded .bundle-mobile-bar__chevron {
@@ -776,7 +787,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  color: #111;
+  color: #111 !important;
 }
 
 .bundle-variant-modal__title {

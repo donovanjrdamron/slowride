@@ -15,7 +15,7 @@
   data-bundle-price="{{ bundle_price }}"
   data-bundle-price-cents="{{ bundle_price_cents }}"
   data-per-item-cents="{{ per_item_cents }}"
-  style="--bundle-size: {{ bundle_size }}; --progress-start: {{ section.settings.progress_color_start | default: '#48bb78' }}; --progress-end: {{ section.settings.progress_color_end | default: '#38a169' }}; --accent-color: {{ section.settings.accent_color | default: '#e53e3e' }}; --button-color: {{ section.settings.button_color | default: '#111111' }}; --button-text-color: {{ section.settings.button_text_color | default: '#ffffff' }}; --badge-color: {{ section.settings.badge_color | default: '#e53e3e' }}; --step-inactive-color: {{ section.settings.step_inactive_color | default: '#e0e0e0' }}; --step-text-inactive-color: {{ section.settings.step_text_inactive_color | default: '#cccccc' }};"
+  style="--bundle-size: {{ bundle_size }}; --progress-start: {{ section.settings.progress_color_start | default: '#48bb78' }}; --progress-end: {{ section.settings.progress_color_end | default: '#38a169' }}; --accent-color: {{ section.settings.accent_color | default: '#e53e3e' }}; --button-color: {{ section.settings.button_color | default: '#111111' }}; --button-text-color: {{ section.settings.button_text_color | default: '#ffffff' }}; --badge-color: {{ section.settings.badge_color | default: '#e53e3e' }}; --step-inactive-color: {{ section.settings.step_inactive_color | default: '#e0e0e0' }}; --step-text-inactive-color: {{ section.settings.step_text_inactive_color | default: '#cccccc' }}; --color-foreground: #111111; --color-primary: {{ section.settings.button_color | default: '#111111' }}; --color-primary-hover: {{ section.settings.button_color | default: '#111111' }}; --color: #111111;"
 >
   <!-- ==================== DESKTOP LAYOUT ==================== -->
   <div class="bundle-layout">
@@ -182,7 +182,7 @@
   </div>
 
   <!-- ==================== VARIANT PICKER MODAL ==================== -->
-  <div class="bundle-variant-modal" id="BundleVariantModal" aria-hidden="true">
+  <div class="bundle-variant-modal" id="BundleVariantModal" aria-hidden="true" style="--color-foreground: #111111; --color-primary: {{ section.settings.button_color | default: '#111111' }}; --color-primary-hover: {{ section.settings.button_color | default: '#111111' }}; --color: #111111; --button-color: {{ section.settings.button_color | default: '#111111' }}; --button-text-color: {{ section.settings.button_text_color | default: '#ffffff' }}; --accent-color: {{ section.settings.accent_color | default: '#e53e3e' }};">
     <div class="bundle-variant-modal__backdrop" id="BundleVariantBackdrop"></div>
     <div class="bundle-variant-modal__dialog" role="dialog" aria-modal="true">
       <button type="button" class="bundle-variant-modal__close" id="BundleVariantClose" aria-label="Close">
@@ -204,7 +204,7 @@
   </div>
 
   <!-- ==================== MOBILE BOTTOM BAR ==================== -->
-  <div class="bundle-mobile-bar" id="BundleMobileBar">
+  <div class="bundle-mobile-bar" id="BundleMobileBar" style="--color-foreground: #111111; --color-primary: {{ section.settings.button_color | default: '#111111' }}; --color-primary-hover: {{ section.settings.button_color | default: '#111111' }}; --color: #111111; --button-color: {{ section.settings.button_color | default: '#111111' }}; --button-text-color: {{ section.settings.button_text_color | default: '#ffffff' }}; --accent-color: {{ section.settings.accent_color | default: '#e53e3e' }}; --progress-start: {{ section.settings.progress_color_start | default: '#48bb78' }}; --progress-end: {{ section.settings.progress_color_end | default: '#38a169' }}; --step-inactive-color: {{ section.settings.step_inactive_color | default: '#e0e0e0' }}; --step-text-inactive-color: {{ section.settings.step_text_inactive_color | default: '#cccccc' }}; --bundle-size: {{ bundle_size }};">
     <!-- Header row: title + chevron toggle -->
     <button type="button" class="bundle-mobile-bar__toggle" id="BundleMobileToggle" aria-expanded="false">
       <div class="bundle-mobile-bar__header">
