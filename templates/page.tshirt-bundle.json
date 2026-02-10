@@ -18,7 +18,15 @@
         "bundle_price": "$75",
         "bundle_price_cents": 7500,
         "collection": "t-shirts",
-        "color_scheme": ""
+        "color_scheme": "",
+        "progress_color_start": "#48bb78",
+        "progress_color_end": "#38a169",
+        "step_inactive_color": "#e0e0e0",
+        "step_text_inactive_color": "#cccccc",
+        "accent_color": "#e53e3e",
+        "badge_color": "#e53e3e",
+        "button_color": "#263d60",
+        "button_text_color": "#ffffff"
       }
     }
   },
