@@ -6,12 +6,12 @@
   endif
 -%}
 
-{%- if is_marquee == false and section.blocks.size > 1 -%}
+{% if is_marquee == false and section.blocks.size > 1 %}
   <script
     src="{{ 'announcement-bar.js' | asset_url }}"
     type="module"
   ></script>
-{%- endif -%}
+{% endif %}
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <aside
@@ -20,26 +20,63 @@
 >
   {%- if is_marquee -%}
     {%- comment -%} ========== MARQUEE / SCROLLING TICKER MODE ========== {%- endcomment -%}
-    {%- comment -%} Capture block output so we can repeat it for seamless loop {%- endcomment -%}
-    {%- capture block_content -%}
-      {% content_for 'blocks' %}
-    {%- endcapture -%}
 
-    {%- assign speed_factor = section.settings.marquee_speed | default: 4 | times: 5 -%}
+    {%- capture marquee_items -%}
+      {%- for block in section.blocks -%}
+        {%- assign plain_text = block.settings.text | strip_newlines | strip_html | strip -%}
+        {%- unless plain_text == '' -%}
+          <span
+            class="
+              announcement-bar__marquee-item
+              custom-typography
+              {% if block.settings.font_size != '' %}custom-font-size{% endif %}
+              {% if block.settings.weight != '' %}custom-font-weight{% endif %}
+            "
+            style="{% render 'typography-style', settings: block.settings, preset: 'custom' %} --line-height: 1;"
+          >
+            <span class="announcement-bar__text-inner">
+              {{- block.settings.text -}}
+              {%- if block.settings.show_scribble -%}
+                <svg class="announcement-bar__scribble announcement-bar__scribble--marquee" viewBox="0 0 200 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <path d="M0,7 C8,1 16,13 28,7 C40,1 48,13 60,7 C72,1 80,13 92,7 C104,1 112,13 124,7 C136,1 144,13 156,7 C168,1 176,13 188,7 C196,1 200,7 200,7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" pathLength="100"/>
+                </svg>
+              {%- endif -%}
+            </span>
+
+            {%- if block.settings.separator_icon != 'none' -%}
+              <span class="announcement-bar__separator" aria-hidden="true">
+                {%- case block.settings.separator_icon -%}
+                  {%- when 'circle' -%}
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/></svg>
+                  {%- when 'dot' -%}
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="5" fill="currentColor"/></svg>
+                  {%- when 'diamond' -%}
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L22 12L12 22L2 12Z" stroke="currentColor" stroke-width="2"/></svg>
+                  {%- when 'star' -%}
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/></svg>
+                  {%- when 'slash' -%}
+                    <svg viewBox="0 0 12 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 2L2 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                {%- endcase -%}
+              </span>
+            {%- endif -%}
+          </span>
+        {%- endunless -%}
+      {%- endfor -%}
+    {%- endcapture -%}
 
     <div
       class="announcement-bar__marquee"
       style="
-        --marquee-duration: {{ 120 | divided_by: speed_factor }}s;
+        --marquee-duration: {{ section.settings.marquee_speed }}s;
         --marquee-direction: {% if section.settings.scroll_direction == 'right' %}reverse{% else %}normal{% endif %};
       "
     >
       <div class="announcement-bar__marquee-track">
         <div class="announcement-bar__marquee-content">
-          {{ block_content }}{{ block_content }}{{ block_content }}{{ block_content }}{{ block_content }}{{ block_content }}
+          {{ marquee_items }}{{ marquee_items }}{{ marquee_items }}{{ marquee_items }}
         </div>
         <div class="announcement-bar__marquee-content" aria-hidden="true">
-          {{ block_content }}{{ block_content }}{{ block_content }}{{ block_content }}{{ block_content }}{{ block_content }}
+          {{ marquee_items }}{{ marquee_items }}{{ marquee_items }}{{ marquee_items }}
         </div>
       </div>
     </div>
@@ -168,18 +205,27 @@
   .announcement-bar__marquee {
     overflow: hidden;
     width: 100%;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 3%,
+      black 97%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 3%,
+      black 97%,
+      transparent 100%
+    );
   }
 
   .announcement-bar__marquee-track {
     display: flex;
     width: max-content;
-  }
-
-  @media (prefers-reduced-motion: no-preference) {
-    .announcement-bar__marquee-track {
-      animation: announcement-marquee-scroll var(--marquee-duration, 20s) linear infinite;
-      animation-direction: var(--marquee-direction, normal);
-    }
+    animation: marquee-scroll var(--marquee-duration, 20s) linear infinite;
+    animation-direction: var(--marquee-direction, normal);
   }
 
   .announcement-bar__marquee:hover .announcement-bar__marquee-track {
@@ -193,7 +239,29 @@
     white-space: nowrap;
   }
 
-  @keyframes announcement-marquee-scroll {
+  .announcement-bar__marquee-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    white-space: nowrap;
+    padding-inline: 0.25em;
+  }
+
+  .announcement-bar__separator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-inline: 1.5em;
+    flex-shrink: 0;
+  }
+
+  .announcement-bar__separator svg {
+    width: 1em;
+    height: 1em;
+    display: block;
+  }
+
+  @keyframes marquee-scroll {
     0% {
       transform: translateX(0);
     }
@@ -253,11 +321,12 @@
       "type": "range",
       "id": "marquee_speed",
       "label": "Scroll speed",
-      "info": "Higher = faster scrolling",
-      "min": 1,
-      "max": 10,
-      "step": 1,
-      "default": 4
+      "info": "Seconds for one full scroll cycle (lower = faster)",
+      "min": 10,
+      "max": 60,
+      "step": 2,
+      "default": 20,
+      "unit": "sec"
     },
     {
       "type": "select",
