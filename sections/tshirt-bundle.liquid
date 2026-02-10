@@ -171,13 +171,16 @@
 
   <!-- ==================== MOBILE BOTTOM BAR ==================== -->
   <div class="bundle-mobile-bar" id="BundleMobileBar">
+    <!-- Header row: title + chevron toggle -->
     <button type="button" class="bundle-mobile-bar__toggle" id="BundleMobileToggle" aria-expanded="false">
       <div class="bundle-mobile-bar__header">
         <span class="bundle-mobile-bar__title">{{ section.settings.bundle_title | default: 'T-Shirt Bundle' }}</span>
         <svg class="bundle-mobile-bar__chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
       </div>
     </button>
-    <div class="bundle-mobile-bar__content" id="BundleMobileContent">
+
+    <!-- Always-visible summary (shown in collapsed AND expanded state) -->
+    <div class="bundle-mobile-bar__summary">
       <div class="bundle-mobile-bar__subtitle">
         {{ section.settings.bundle_subtitle | default: '<p>Buy 3 only $75 + FREE Shipping</p>' }}
       </div>
@@ -221,6 +224,31 @@
       >
         Add {{ bundle_size }} more
       </button>
+    </div>
+
+    <!-- Expandable area: selection slots with thumbnails (only visible when expanded) -->
+    <div class="bundle-mobile-bar__expandable" id="BundleMobileExpandable">
+      <div class="bundle-mobile-slots" id="BundleMobileSlots">
+        {%- for i in (1..bundle_size) -%}
+          <div class="bundle-slot" data-slot="{{ i }}">
+            <div class="bundle-slot__empty">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </div>
+            <div class="bundle-slot__filled" style="display:none;">
+              <div class="bundle-slot__image-wrap">
+                <img class="bundle-slot__image" src="" alt="" loading="lazy" width="80" height="80">
+                <button type="button" class="bundle-slot__remove" aria-label="Remove item" data-slot-index="{{ i }}">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+              </div>
+              <div class="bundle-slot__info">
+                <span class="bundle-slot__name"></span>
+                <span class="bundle-slot__price"></span>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
     </div>
   </div>
 </div>

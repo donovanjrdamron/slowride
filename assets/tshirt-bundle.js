@@ -29,11 +29,11 @@
   // Mobile refs
   const mobileBar = document.getElementById('BundleMobileBar');
   const mobileToggle = document.getElementById('BundleMobileToggle');
-  const mobileContent = document.getElementById('BundleMobileContent');
   const mobileCTA = document.getElementById('BundleCTAMobile');
   const mobileProgressEl = document.getElementById('BundleProgressMobile');
   const mobileCountEls = document.querySelectorAll('.bundle-count-mobile');
   const mobileTotalEls = document.querySelectorAll('.bundle-total-mobile');
+  const mobileSlotsContainer = document.getElementById('BundleMobileSlots');
 
   // Product cards
   const cards = document.querySelectorAll('.bundle-card');
@@ -159,9 +159,9 @@
     });
   }
 
-  function updateSlots() {
-    if (!bundleSlots) return;
-    const slots = bundleSlots.querySelectorAll('.bundle-slot');
+  function updateSlotsInContainer(container) {
+    if (!container) return;
+    const slots = container.querySelectorAll('.bundle-slot');
 
     slots.forEach((slot, i) => {
       const emptyEl = slot.querySelector('.bundle-slot__empty');
@@ -194,6 +194,11 @@
         filledEl.style.display = 'none';
       }
     });
+  }
+
+  function updateSlots() {
+    updateSlotsInContainer(bundleSlots);
+    updateSlotsInContainer(mobileSlotsContainer);
   }
 
   // ---------- Cart Submission ----------
@@ -303,9 +308,10 @@
     }
   });
 
-  // Slot remove buttons
-  if (bundleSlots) {
-    bundleSlots.addEventListener('click', function (e) {
+  // Slot remove buttons (desktop + mobile)
+  [bundleSlots, mobileSlotsContainer].forEach(function (container) {
+    if (!container) return;
+    container.addEventListener('click', function (e) {
       const removeBtn = e.target.closest('.bundle-slot__remove');
       if (!removeBtn) return;
       const slotIndex = parseInt(removeBtn.dataset.slotIndex, 10) - 1;
@@ -313,7 +319,7 @@
         removeFromBundle(slotIndex);
       }
     });
-  }
+  });
 
   // CTA buttons
   if (bundleCTA) {
