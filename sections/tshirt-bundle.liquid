@@ -149,7 +149,9 @@
 
               <!-- Info -->
               <div class="bundle-card__info">
-                <h3 class="bundle-card__title">{{ product.title }}</h3>
+                <h3 class="bundle-card__title">
+                  <a href="{{ product.url }}" class="bundle-card__title-link">{{ product.title }}</a>
+                </h3>
                 <div class="bundle-card__prices">
                   <span class="bundle-card__price">{{ variant.price | money }}</span>
                 </div>
