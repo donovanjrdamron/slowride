@@ -1,51 +1,114 @@
 
 {% assign plain_text = block.settings.text | strip_newlines | strip_html | strip %}
 {%- assign block_index = section.blocks | find_index: 'id', block.id -%}
+{%- assign is_marquee_mode = false -%}
+{%- if section.settings.display_mode == 'marquee' -%}
+  {%- assign is_marquee_mode = true -%}
+{%- endif -%}
 
 {%- unless plain_text == '' -%}
-  <slideshow-slide
-    ref="slides[]"
-    class="
-      announcement-bar__slide
-      text-block
-      text-block--{{ block.id }}
-      text-block--align-center
-      text-block--full-width
-      custom-typography
-      {% if block.settings.font_size != "" %}custom-font-size{% endif %}
-      {% if block.settings.weight != "" %}custom-font-weight{% endif %}
-    "
-    style="
-      {% render 'typography-style', settings: block.settings, preset: 'custom' %}
-      --width: 100%;
-      --text-align: center;
-      --line-height: 1;
-    "
-    {{ block.shopify_attributes }}
-    aria-hidden="{% if block_index == 0 %}false{% else %}true{% endif %}"
-  >
-    <p class="announcement-bar__text">
+  {%- if is_marquee_mode -%}
+    {%- comment -%} ===== MARQUEE MODE: Render as inline ticker item ===== {%- endcomment -%}
+    <span
+      class="
+        announcement-bar__marquee-item
+        custom-typography
+        {% if block.settings.font_size != '' %}custom-font-size{% endif %}
+        {% if block.settings.weight != '' %}custom-font-weight{% endif %}
+      "
+      style="{% render 'typography-style', settings: block.settings, preset: 'custom' %} --line-height: 1;"
+      {{ block.shopify_attributes }}
+    >
+      {%- if block.settings.link != blank -%}
+        <a class="announcement-bar__marquee-link" href="{{ block.settings.link }}">
+      {%- endif -%}
+
       <span class="announcement-bar__text-inner">
-        {{ block.settings.text }}
+        {{- block.settings.text -}}
         {%- if block.settings.show_scribble -%}
-          <svg class="announcement-bar__scribble" viewBox="0 0 200 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <svg class="announcement-bar__scribble announcement-bar__scribble--marquee" viewBox="0 0 200 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <path d="M0,7 C8,1 16,13 28,7 C40,1 48,13 60,7 C72,1 80,13 92,7 C104,1 112,13 124,7 C136,1 144,13 156,7 C168,1 176,13 188,7 C196,1 200,7 200,7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" pathLength="100"/>
           </svg>
         {%- endif -%}
       </span>
-    </p>
 
-    {% if block.settings.link != blank %}
-      <a
-        class="announcement-bar__link"
-        href="{{ block.settings.link }}"
-      >
-        <span class="visually-hidden">
-          {{ block.settings.text | strip_html }}
+      {%- if block.settings.link != blank -%}
+        </a>
+      {%- endif -%}
+
+      {%- if block.settings.separator_icon != 'none' -%}
+        <span class="announcement-bar__separator" aria-hidden="true">
+          {%- if block.settings.separator_icon == 'custom' and block.settings.custom_separator_image != blank -%}
+            <img
+              src="{{ block.settings.custom_separator_image | image_url: width: 48 }}"
+              alt=""
+              class="announcement-bar__custom-icon"
+              loading="eager"
+            >
+          {%- else -%}
+            {%- case block.settings.separator_icon -%}
+              {%- when 'circle' -%}
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/></svg>
+              {%- when 'dot' -%}
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="5" fill="currentColor"/></svg>
+              {%- when 'diamond' -%}
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L22 12L12 22L2 12Z" stroke="currentColor" stroke-width="2"/></svg>
+              {%- when 'star' -%}
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/></svg>
+              {%- when 'slash' -%}
+                <svg viewBox="0 0 12 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 2L2 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            {%- endcase -%}
+          {%- endif -%}
         </span>
-      </a>
-    {% endif %}
-  </slideshow-slide>
+      {%- endif -%}
+    </span>
+
+  {%- else -%}
+    {%- comment -%} ===== STATIC MODE: Render as slideshow slide ===== {%- endcomment -%}
+    <slideshow-slide
+      ref="slides[]"
+      class="
+        announcement-bar__slide
+        text-block
+        text-block--{{ block.id }}
+        text-block--align-center
+        text-block--full-width
+        custom-typography
+        {% if block.settings.font_size != "" %}custom-font-size{% endif %}
+        {% if block.settings.weight != "" %}custom-font-weight{% endif %}
+      "
+      style="
+        {% render 'typography-style', settings: block.settings, preset: 'custom' %}
+        --width: 100%;
+        --text-align: center;
+        --line-height: 1;
+      "
+      {{ block.shopify_attributes }}
+      aria-hidden="{% if block_index == 0 %}false{% else %}true{% endif %}"
+    >
+      <p class="announcement-bar__text">
+        <span class="announcement-bar__text-inner">
+          {{ block.settings.text }}
+          {%- if block.settings.show_scribble -%}
+            <svg class="announcement-bar__scribble" viewBox="0 0 200 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M0,7 C8,1 16,13 28,7 C40,1 48,13 60,7 C72,1 80,13 92,7 C104,1 112,13 124,7 C136,1 144,13 156,7 C168,1 176,13 188,7 C196,1 200,7 200,7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" pathLength="100"/>
+            </svg>
+          {%- endif -%}
+        </span>
+      </p>
+
+      {% if block.settings.link != blank %}
+        <a
+          class="announcement-bar__link"
+          href="{{ block.settings.link }}"
+        >
+          <span class="visually-hidden">
+            {{ block.settings.text | strip_html }}
+          </span>
+        </a>
+      {% endif %}
+    </slideshow-slide>
+  {%- endif -%}
 {%- endunless -%}
 
 {% stylesheet %}
@@ -100,7 +163,7 @@
     }
   }
 
-  /* Redraw animation on hover (static mode) */
+  /* Redraw animation on hover (static mode only) */
   .announcement-bar__slide:hover .announcement-bar__scribble {
     animation: scribble-redraw 0.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
   }
@@ -114,6 +177,42 @@
     }
   }
 
+  /* Marquee item styles */
+  .announcement-bar__marquee-item {
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+    padding-inline: 0.5em;
+    position: relative;
+  }
+
+  .announcement-bar__marquee-link {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .announcement-bar__separator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-inline-start: 1.5em;
+    flex-shrink: 0;
+  }
+
+  .announcement-bar__separator svg {
+    width: 1em;
+    height: 1em;
+    display: block;
+  }
+
+  .announcement-bar__custom-icon {
+    width: 1em;
+    height: 1em;
+    display: block;
+    object-fit: contain;
+  }
+
+  /* Text block styles */
   .text-block {
     width: var(--width);
     max-width: 100%;
@@ -127,7 +226,6 @@
 
   .text-block:not(.text-block--full-width).rte,
   .text-block:not(.text-block--full-width).paragraph {
-    /* Safari doesn't support pretty, so fallback to balance */
     text-wrap: balance;
     text-wrap: pretty;
   }
@@ -141,7 +239,6 @@
     text-wrap: balance;
   }
 
-  /* Hide underline unless text is using paragraph styles. */
   .text-block:is(.h1, .h2, .h3, .h4, .h5, .h6) a {
     text-decoration-color: transparent;
   }
@@ -248,11 +345,21 @@
           "label": "Slash"
         },
         {
+          "value": "custom",
+          "label": "Custom image"
+        },
+        {
           "value": "none",
           "label": "None"
         }
       ],
       "default": "circle"
+    },
+    {
+      "type": "image_picker",
+      "id": "custom_separator_image",
+      "label": "Custom separator image",
+      "info": "Upload an SVG or small icon. Used when separator is set to 'Custom image'."
     },
     {
       "type": "header",

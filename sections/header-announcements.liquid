@@ -6,12 +6,17 @@
   endif
 -%}
 
-{% if is_marquee == false and section.blocks.size > 1 %}
+{%- if is_marquee -%}
+  <script
+    src="{{ 'marquee.js' | asset_url }}"
+    type="module"
+  ></script>
+{%- elsif section.blocks.size > 1 -%}
   <script
     src="{{ 'announcement-bar.js' | asset_url }}"
     type="module"
   ></script>
-{% endif %}
+{%- endif -%}
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <aside
@@ -20,66 +25,31 @@
 >
   {%- if is_marquee -%}
     {%- comment -%} ========== MARQUEE / SCROLLING TICKER MODE ========== {%- endcomment -%}
+    {%- assign speed_factor = section.settings.marquee_speed | times: 5 -%}
 
-    {%- capture marquee_items -%}
-      {%- for block in section.blocks -%}
-        {%- assign plain_text = block.settings.text | strip_newlines | strip_html | strip -%}
-        {%- unless plain_text == '' -%}
-          <span
-            class="
-              announcement-bar__marquee-item
-              custom-typography
-              {% if block.settings.font_size != '' %}custom-font-size{% endif %}
-              {% if block.settings.weight != '' %}custom-font-weight{% endif %}
-            "
-            style="{% render 'typography-style', settings: block.settings, preset: 'custom' %} --line-height: 1;"
-          >
-            <span class="announcement-bar__text-inner">
-              {{- block.settings.text -}}
-              {%- if block.settings.show_scribble -%}
-                <svg class="announcement-bar__scribble announcement-bar__scribble--marquee" viewBox="0 0 200 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                  <path d="M0,7 C8,1 16,13 28,7 C40,1 48,13 60,7 C72,1 80,13 92,7 C104,1 112,13 124,7 C136,1 144,13 156,7 C168,1 176,13 188,7 C196,1 200,7 200,7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" pathLength="100"/>
-                </svg>
-              {%- endif -%}
-            </span>
-
-            {%- if block.settings.separator_icon != 'none' -%}
-              <span class="announcement-bar__separator" aria-hidden="true">
-                {%- case block.settings.separator_icon -%}
-                  {%- when 'circle' -%}
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2"/></svg>
-                  {%- when 'dot' -%}
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="5" fill="currentColor"/></svg>
-                  {%- when 'diamond' -%}
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L22 12L12 22L2 12Z" stroke="currentColor" stroke-width="2"/></svg>
-                  {%- when 'star' -%}
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" fill="currentColor"/></svg>
-                  {%- when 'slash' -%}
-                    <svg viewBox="0 0 12 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M10 2L2 22" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-                {%- endcase -%}
-              </span>
-            {%- endif -%}
-          </span>
-        {%- endunless -%}
-      {%- endfor -%}
-    {%- endcapture -%}
-
-    <div
-      class="announcement-bar__marquee"
+    <marquee-component
+      class="announcement-bar__marquee-component"
+      data-speed-factor="{{ speed_factor }}"
+      data-movement-direction="{% if section.settings.scroll_direction == 'right' %}normal{% else %}reverse{% endif %}"
       style="
-        --marquee-duration: {{ section.settings.marquee_speed }}s;
-        --marquee-direction: {% if section.settings.scroll_direction == 'right' %}reverse{% else %}normal{% endif %};
+        --marquee-direction: {% if section.settings.scroll_direction == 'right' %}normal{% else %}reverse{% endif %};
+        --marquee-gap: 0px;
       "
     >
-      <div class="announcement-bar__marquee-track">
-        <div class="announcement-bar__marquee-content">
-          {{ marquee_items }}{{ marquee_items }}{{ marquee_items }}{{ marquee_items }}
-        </div>
-        <div class="announcement-bar__marquee-content" aria-hidden="true">
-          {{ marquee_items }}{{ marquee_items }}{{ marquee_items }}{{ marquee_items }}
+      <div
+        class="marquee__wrapper"
+        ref="wrapper"
+      >
+        <div
+          class="marquee__content"
+          ref="content"
+        >
+          <div class="marquee__repeated-items">
+            {% content_for 'blocks' %}
+          </div>
         </div>
       </div>
-    </div>
+    </marquee-component>
 
   {%- else -%}
     {%- comment -%} ========== STATIC MODE (existing fade/rotate) ========== {%- endcomment -%}
@@ -202,71 +172,54 @@
   }
 
   /* ===== Marquee / scrolling ticker styles ===== */
-  .announcement-bar__marquee {
-    overflow: hidden;
+  .announcement-bar__marquee-component {
+    display: block;
     width: 100%;
-    -webkit-mask-image: linear-gradient(
-      to right,
-      transparent 0%,
-      black 3%,
-      black 97%,
-      transparent 100%
-    );
-    mask-image: linear-gradient(
-      to right,
-      transparent 0%,
-      black 3%,
-      black 97%,
-      transparent 100%
-    );
+    overflow: hidden;
   }
 
-  .announcement-bar__marquee-track {
+  .announcement-bar__marquee-component .marquee__wrapper {
     display: flex;
-    width: max-content;
-    animation: marquee-scroll var(--marquee-duration, 20s) linear infinite;
-    animation-direction: var(--marquee-direction, normal);
-  }
-
-  .announcement-bar__marquee:hover .announcement-bar__marquee-track {
-    animation-play-state: paused;
-  }
-
-  .announcement-bar__marquee-content {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
+    gap: var(--marquee-gap, 0px);
+    width: fit-content;
     white-space: nowrap;
   }
 
-  .announcement-bar__marquee-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 0;
-    white-space: nowrap;
-    padding-inline: 0.25em;
+  .announcement-bar__marquee-component .marquee__content {
+    min-width: max-content;
+    display: flex;
+    gap: var(--marquee-gap, 0px);
   }
 
-  .announcement-bar__separator {
-    display: inline-flex;
+  .announcement-bar__marquee-component .marquee__content :is(p, h1, h2, h3, h4, h5, h6) {
+    white-space: nowrap;
+  }
+
+  .announcement-bar__marquee-component .marquee__content .marquee__repeated-items * {
+    max-width: none;
+  }
+
+  .announcement-bar__marquee-component .marquee__repeated-items {
+    min-width: max-content;
+    display: flex;
+    gap: var(--marquee-gap, 0px);
     align-items: center;
     justify-content: center;
-    margin-inline: 1.5em;
-    flex-shrink: 0;
   }
 
-  .announcement-bar__separator svg {
-    width: 1em;
-    height: 1em;
-    display: block;
+  .announcement-bar__marquee-component .marquee__repeated-items > * {
+    align-content: center;
   }
 
-  @keyframes marquee-scroll {
-    0% {
-      transform: translateX(0);
+  @media (prefers-reduced-motion: no-preference) {
+    .announcement-bar__marquee-component:not([data-disabled]) .marquee__wrapper {
+      animation: announcement-marquee-motion var(--marquee-speed, 30s) linear infinite var(--marquee-direction, normal);
     }
-    100% {
-      transform: translateX(-50%);
+  }
+
+  @keyframes announcement-marquee-motion {
+    to {
+      transform: translate3d(calc(-50% - (var(--marquee-gap, 0px) / 2)), 0, 0);
     }
   }
 {% endstylesheet %}
@@ -321,12 +274,11 @@
       "type": "range",
       "id": "marquee_speed",
       "label": "Scroll speed",
-      "info": "Seconds for one full scroll cycle (lower = faster)",
-      "min": 10,
-      "max": 60,
-      "step": 2,
-      "default": 20,
-      "unit": "sec"
+      "info": "Higher = faster scrolling",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 4
     },
     {
       "type": "select",
