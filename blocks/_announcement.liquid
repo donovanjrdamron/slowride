@@ -26,7 +26,12 @@
     aria-hidden="{% if block_index == 0 %}false{% else %}true{% endif %}"
   >
     <p class="announcement-bar__text">
-      {{ block.settings.text }}
+      <span class="announcement-bar__text-inner">
+        {{ block.settings.text }}
+        <svg class="announcement-bar__scribble" viewBox="0 0 200 8" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M0,5 C10,2 20,8 30,5 C40,2 50,8 60,5 C70,2 80,8 90,5 C100,2 110,8 120,5 C130,2 140,8 150,5 C160,2 170,8 180,5 C190,2 200,8 200,5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" pathLength="100"/>
+        </svg>
+      </span>
     </p>
 
     {% if block.settings.link != blank %}
@@ -43,6 +48,65 @@
 {%- endunless -%}
 
 {% stylesheet %}
+  /* Scribble underline animation */
+  .announcement-bar__text-inner {
+    position: relative;
+    display: inline-block;
+  }
+
+  .announcement-bar__scribble {
+    position: absolute;
+    bottom: -4px;
+    left: -2%;
+    width: 104%;
+    height: 6px;
+    overflow: visible;
+    opacity: 0.85;
+    stroke-dasharray: 100;
+    stroke-dashoffset: 100;
+    animation: scribble-draw 1.4s cubic-bezier(0.65, 0, 0.35, 1) 0.3s forwards,
+               scribble-pulse 3s ease-in-out 1.7s infinite;
+  }
+
+  @keyframes scribble-draw {
+    0% {
+      stroke-dashoffset: 100;
+      opacity: 0;
+    }
+    10% {
+      opacity: 0.85;
+    }
+    100% {
+      stroke-dashoffset: 0;
+      opacity: 0.85;
+    }
+  }
+
+  @keyframes scribble-pulse {
+    0%, 100% {
+      opacity: 0.85;
+      transform: scaleY(1);
+    }
+    50% {
+      opacity: 0.55;
+      transform: scaleY(0.8);
+    }
+  }
+
+  /* Redraw animation on hover */
+  .announcement-bar__slide:hover .announcement-bar__scribble {
+    animation: scribble-redraw 0.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  }
+
+  @keyframes scribble-redraw {
+    0% {
+      stroke-dashoffset: 100;
+    }
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+
   .text-block {
     width: var(--width);
     max-width: 100%;
