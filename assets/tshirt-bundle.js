@@ -22,6 +22,7 @@
   // ---------- DOM refs ----------
   const bundleCount = document.getElementById('BundleCount');
   const bundleTotal = document.getElementById('BundleTotal');
+  const bundleTotalCompare = document.getElementById('BundleTotalCompare');
   const bundleCTA = document.getElementById('BundleCTA');
   const bundleSlots = document.getElementById('BundleSlots');
   const bundleProgress = document.getElementById('BundleProgress');
@@ -33,6 +34,7 @@
   const mobileProgressEl = document.getElementById('BundleProgressMobile');
   const mobileCountEls = document.querySelectorAll('.bundle-count-mobile');
   const mobileTotalEls = document.querySelectorAll('.bundle-total-mobile');
+  const mobileTotalCompareEls = document.querySelectorAll('.bundle-total-compare-mobile');
   const mobileSlotsContainer = document.getElementById('BundleMobileSlots');
 
   // Product cards
@@ -87,6 +89,20 @@
     const totalStr = formatMoney(totalCents);
     if (bundleTotal) bundleTotal.textContent = totalStr;
     mobileTotalEls.forEach(el => { el.textContent = totalStr; });
+
+    // --- Compare-at total (sum of original prices) ---
+    const compareTotalCents = selectedItems.reduce((sum, item) => {
+      // Use compare_at_price if available, otherwise use the regular price
+      return sum + (item.comparePrice > 0 ? item.comparePrice : item.price);
+    }, 0);
+    const compareStr = count > 0 ? formatMoney(compareTotalCents) : '';
+    const showCompare = count > 0 && compareTotalCents > totalCents;
+    if (bundleTotalCompare) {
+      bundleTotalCompare.textContent = showCompare ? compareStr : '';
+    }
+    mobileTotalCompareEls.forEach(el => {
+      el.textContent = showCompare ? compareStr : '';
+    });
 
     // --- CTA buttons ---
     updateCTAButton(bundleCTA, isFull, remaining);

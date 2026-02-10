@@ -71,8 +71,8 @@
 }
 
 .bundle-progress__step--active {
-  border-color: #48bb78;
-  background: #48bb78;
+  border-color: var(--progress-end, #38a169);
+  background: var(--progress-end, #38a169);
 }
 
 .bundle-progress__step--active .bundle-progress__number {
@@ -80,12 +80,12 @@
 }
 
 .bundle-progress__step--current {
-  border-color: #48bb78;
+  border-color: var(--progress-start, #48bb78);
   background: #fff;
 }
 
 .bundle-progress__step--current .bundle-progress__number {
-  color: #48bb78;
+  color: var(--progress-start, #48bb78);
 }
 
 .bundle-progress__number {
@@ -106,7 +106,7 @@
 .bundle-progress__bar-fill {
   height: 100%;
   width: 0%;
-  background: #48bb78;
+  background: linear-gradient(to right, var(--progress-start, #48bb78), var(--progress-end, #38a169));
   border-radius: 2px;
   transition: width 0.4s ease;
 }
@@ -233,6 +233,19 @@
   border-top: 1px solid #eee;
 }
 
+.bundle-total__prices {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bundle-total__compare {
+  color: #e53e3e;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: line-through;
+}
+
 /* ---------- CTA Button ---------- */
 .bundle-cta {
   width: 100%;
@@ -289,9 +302,7 @@
 }
 
 .bundle-card--selected .bundle-card__image-wrap {
-  outline: 2px solid #48bb78;
-  outline-offset: -2px;
-  border-radius: 8px;
+  /* no border highlight on selected cards */
 }
 
 /* Badge */

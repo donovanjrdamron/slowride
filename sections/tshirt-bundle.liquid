@@ -15,6 +15,7 @@
   data-bundle-price="{{ bundle_price }}"
   data-bundle-price-cents="{{ bundle_price_cents }}"
   data-per-item-cents="{{ per_item_cents }}"
+  style="--progress-start: {{ section.settings.progress_color_start | default: '#48bb78' }}; --progress-end: {{ section.settings.progress_color_end | default: '#38a169' }};"
 >
   <!-- ==================== DESKTOP LAYOUT ==================== -->
   <div class="bundle-layout">
@@ -77,7 +78,10 @@
         <!-- Total -->
         <div class="bundle-total">
           <span class="bundle-total__label">TOTAL</span>
-          <span class="bundle-total__amount" id="BundleTotal">$0.00</span>
+          <div class="bundle-total__prices">
+            <span class="bundle-total__amount" id="BundleTotal">$0.00</span>
+            <s class="bundle-total__compare" id="BundleTotalCompare"></s>
+          </div>
         </div>
 
         <!-- CTA Button -->
@@ -212,7 +216,10 @@
       <!-- Mobile Total -->
       <div class="bundle-total">
         <span class="bundle-total__label">TOTAL</span>
-        <span class="bundle-total__amount bundle-total-mobile">$0.00</span>
+        <div class="bundle-total__prices">
+          <span class="bundle-total__amount bundle-total-mobile">$0.00</span>
+          <s class="bundle-total__compare bundle-total-compare-mobile"></s>
+        </div>
       </div>
 
       <!-- Mobile CTA -->
@@ -305,6 +312,22 @@
       "id": "color_scheme",
       "label": "Color Scheme",
       "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Progress Bar"
+    },
+    {
+      "type": "color",
+      "id": "progress_color_start",
+      "label": "Progress Bar Gradient Start",
+      "default": "#48bb78"
+    },
+    {
+      "type": "color",
+      "id": "progress_color_end",
+      "label": "Progress Bar Gradient End",
+      "default": "#38a169"
     }
   ],
   "presets": [
