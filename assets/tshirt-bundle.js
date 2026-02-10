@@ -193,6 +193,16 @@
       }
     });
 
+    // Immediately update image based on the option just clicked
+    // (even if not all options are selected yet)
+    var optionKey = 'option' + (optionIndex + 1);
+    var matchForImage = currentVariants.find(function (v) {
+      return v[optionKey] === value && v.image;
+    });
+    if (matchForImage && matchForImage.image && variantImage) {
+      variantImage.src = matchForImage.image;
+    }
+
     // Try to find matching variant
     var matchedVariant = findMatchingVariant();
 
