@@ -15,7 +15,7 @@
   data-bundle-price="{{ bundle_price }}"
   data-bundle-price-cents="{{ bundle_price_cents }}"
   data-per-item-cents="{{ per_item_cents }}"
-  style="--progress-start: {{ section.settings.progress_color_start | default: '#48bb78' }}; --progress-end: {{ section.settings.progress_color_end | default: '#38a169' }};"
+  style="--progress-start: {{ section.settings.progress_color_start | default: '#48bb78' }}; --progress-end: {{ section.settings.progress_color_end | default: '#38a169' }}; --accent-color: {{ section.settings.accent_color | default: '#e53e3e' }}; --button-color: {{ section.settings.button_color | default: '#111111' }}; --button-text-color: {{ section.settings.button_text_color | default: '#ffffff' }}; --badge-color: {{ section.settings.badge_color | default: '#e53e3e' }}; --step-inactive-color: {{ section.settings.step_inactive_color | default: '#e0e0e0' }}; --step-text-inactive-color: {{ section.settings.step_text_inactive_color | default: '#cccccc' }};"
 >
   <!-- ==================== DESKTOP LAYOUT ==================== -->
   <div class="bundle-layout">
@@ -29,7 +29,8 @@
         </div>
 
         <!-- Progress Steps -->
-        <div class="bundle-progress" id="BundleProgress">
+        {%- assign num_bars = bundle_size | minus: 1 -%}
+        <div class="bundle-progress" id="BundleProgress" style="--num-bars: {{ num_bars }};">
           {%- for i in (1..bundle_size) -%}
             <div class="bundle-progress__step {% if i == 1 %}bundle-progress__step--first{% endif %}" data-step="{{ i }}">
               <span class="bundle-progress__number">
@@ -37,8 +38,15 @@
               </span>
             </div>
             {%- unless i == bundle_size -%}
+              {%- assign bar_idx = i | minus: 1 -%}
+              {%- if num_bars > 1 -%}
+                {%- assign bar_divisor = num_bars | minus: 1 -%}
+                {%- assign bar_pos = bar_idx | times: 100 | divided_by: bar_divisor -%}
+              {%- else -%}
+                {%- assign bar_pos = 0 -%}
+              {%- endif -%}
               <div class="bundle-progress__bar">
-                <div class="bundle-progress__bar-fill" data-bar="{{ i }}"></div>
+                <div class="bundle-progress__bar-fill" data-bar="{{ i }}" style="background-position: {{ bar_pos }}% 0;"></div>
               </div>
             {%- endunless -%}
           {%- endfor -%}
@@ -190,7 +198,7 @@
       </div>
 
       <!-- Mobile Progress -->
-      <div class="bundle-progress bundle-progress--mobile" id="BundleProgressMobile">
+      <div class="bundle-progress bundle-progress--mobile" id="BundleProgressMobile" style="--num-bars: {{ num_bars }};">
         {%- for i in (1..bundle_size) -%}
           <div class="bundle-progress__step {% if i == 1 %}bundle-progress__step--first{% endif %}" data-step="{{ i }}">
             <span class="bundle-progress__number">
@@ -198,8 +206,15 @@
             </span>
           </div>
           {%- unless i == bundle_size -%}
+            {%- assign bar_idx = i | minus: 1 -%}
+            {%- if num_bars > 1 -%}
+              {%- assign bar_divisor = num_bars | minus: 1 -%}
+              {%- assign bar_pos = bar_idx | times: 100 | divided_by: bar_divisor -%}
+            {%- else -%}
+              {%- assign bar_pos = 0 -%}
+            {%- endif -%}
             <div class="bundle-progress__bar">
-              <div class="bundle-progress__bar-fill" data-bar="{{ i }}"></div>
+              <div class="bundle-progress__bar-fill" data-bar="{{ i }}" style="background-position: {{ bar_pos }}% 0;"></div>
             </div>
           {%- endunless -%}
         {%- endfor -%}
@@ -315,7 +330,7 @@
     },
     {
       "type": "header",
-      "content": "Progress Bar"
+      "content": "Colors"
     },
     {
       "type": "color",
@@ -328,6 +343,43 @@
       "id": "progress_color_end",
       "label": "Progress Bar Gradient End",
       "default": "#38a169"
+    },
+    {
+      "type": "color",
+      "id": "step_inactive_color",
+      "label": "Progress Step Inactive Border",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "color",
+      "id": "step_text_inactive_color",
+      "label": "Progress Step Inactive Text",
+      "default": "#cccccc"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color (subtitle, compare prices)",
+      "default": "#e53e3e"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "NEW Badge Background",
+      "default": "#e53e3e"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button Color",
+      "default": "#111111",
+      "info": "Used for CTA button, card buttons, and borders"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
     }
   ],
   "presets": [

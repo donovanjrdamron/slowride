@@ -41,7 +41,7 @@
 
 .bundle-sidebar__subtitle {
   font-size: 14px;
-  color: #e53e3e;
+  color: var(--accent-color, #e53e3e);
   font-weight: 600;
 }
 
@@ -64,7 +64,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--step-inactive-color, #e0e0e0);
   background: #fff;
   flex-shrink: 0;
   transition: all 0.3s ease;
@@ -91,14 +91,14 @@
 .bundle-progress__number {
   font-size: 11px;
   font-weight: 700;
-  color: #ccc;
+  color: var(--step-text-inactive-color, #ccc);
   transition: color 0.3s ease;
 }
 
 .bundle-progress__bar {
   flex: 1;
   height: 4px;
-  background: #e0e0e0;
+  background: var(--step-inactive-color, #e0e0e0);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -107,6 +107,7 @@
   height: 100%;
   width: 0%;
   background: linear-gradient(to right, var(--progress-start, #48bb78), var(--progress-end, #38a169));
+  background-size: calc(var(--num-bars, 2) * 100%) 100%;
   border-radius: 2px;
   transition: width 0.4s ease;
 }
@@ -217,7 +218,7 @@
 }
 
 .bundle-slot__price {
-  color: #e53e3e;
+  color: var(--accent-color, #e53e3e);
   font-weight: 600;
   font-size: 11px;
 }
@@ -240,7 +241,7 @@
 }
 
 .bundle-total__compare {
-  color: #e53e3e;
+  color: var(--accent-color, #e53e3e);
   font-size: 14px;
   font-weight: 500;
   text-decoration: line-through;
@@ -251,9 +252,9 @@
   width: 100%;
   padding: 16px 24px;
   border-radius: 100px;
-  border: 2px solid #111;
+  border: 2px solid var(--button-color, #111);
   background: #fff;
-  color: #111;
+  color: var(--button-color, #111);
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
@@ -267,14 +268,13 @@
 }
 
 .bundle-cta--ready {
-  background: #111;
-  color: #fff;
-  border-color: #111;
+  background: var(--button-color, #111);
+  color: var(--button-text-color, #fff);
+  border-color: var(--button-color, #111);
 }
 
 .bundle-cta--ready:hover {
-  background: #333;
-  border-color: #333;
+  opacity: 0.85;
 }
 
 /* ---------- RIGHT: PRODUCT GRID ---------- */
@@ -310,7 +310,7 @@
   position: absolute;
   top: 10px;
   left: 10px;
-  background: #e53e3e;
+  background: var(--badge-color, #e53e3e);
   color: #fff;
   font-size: 11px;
   font-weight: 700;
@@ -387,7 +387,7 @@
 }
 
 .bundle-card__compare-price {
-  color: #999;
+  color: var(--accent-color, #e53e3e);
   font-size: 13px;
   text-decoration: line-through;
 }
@@ -400,10 +400,10 @@
 .bundle-card__add-btn {
   width: 100%;
   padding: 10px 16px;
-  border: 2px solid #111;
+  border: 2px solid var(--button-color, #111);
   border-radius: 100px;
   background: #fff;
-  color: #111;
+  color: var(--button-color, #111);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -412,8 +412,8 @@
 }
 
 .bundle-card__add-btn:hover:not(:disabled) {
-  background: #111;
-  color: #fff;
+  background: var(--button-color, #111);
+  color: var(--button-text-color, #fff);
 }
 
 .bundle-card__add-btn:disabled {
@@ -427,7 +427,7 @@
   align-items: center;
   justify-content: center;
   gap: 0;
-  border: 2px solid #111;
+  border: 2px solid var(--button-color, #111);
   border-radius: 100px;
   overflow: hidden;
 }
@@ -443,7 +443,7 @@
   font-size: 14px;
   font-weight: 600;
   transition: background 0.2s ease;
-  color: #111;
+  color: var(--button-color, #111);
 }
 
 .bundle-card__qty-btn:hover {
@@ -456,14 +456,14 @@
 
 .bundle-card__qty-add {
   border-left: 1px solid #e0e0e0;
-  background: #111;
-  color: #fff;
+  background: var(--button-color, #111);
+  color: var(--button-text-color, #fff);
   padding: 10px 20px;
   border-radius: 0 100px 100px 0;
 }
 
 .bundle-card__qty-add:hover {
-  background: #333;
+  opacity: 0.85;
 }
 
 .bundle-card__qty-value {
@@ -533,7 +533,7 @@
 
 .bundle-mobile-bar__subtitle {
   font-size: 12px;
-  color: #e53e3e;
+  color: var(--accent-color, #e53e3e);
   font-weight: 600;
   margin-bottom: 6px;
 }
