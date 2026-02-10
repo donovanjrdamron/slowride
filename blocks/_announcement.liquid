@@ -1,5 +1,4 @@
 
-
 {% assign plain_text = block.settings.text | strip_newlines | strip_html | strip %}
 {%- assign block_index = section.blocks | find_index: 'id', block.id -%}
 
@@ -28,9 +27,11 @@
     <p class="announcement-bar__text">
       <span class="announcement-bar__text-inner">
         {{ block.settings.text }}
-        <svg class="announcement-bar__scribble" viewBox="0 0 200 8" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <path d="M0,5 C10,2 20,8 30,5 C40,2 50,8 60,5 C70,2 80,8 90,5 C100,2 110,8 120,5 C130,2 140,8 150,5 C160,2 170,8 180,5 C190,2 200,8 200,5" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" pathLength="100"/>
-        </svg>
+        {%- if block.settings.show_scribble -%}
+          <svg class="announcement-bar__scribble" viewBox="0 0 200 14" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M0,7 C8,1 16,13 28,7 C40,1 48,13 60,7 C72,1 80,13 92,7 C104,1 112,13 124,7 C136,1 144,13 156,7 C168,1 176,13 188,7 C196,1 200,7 200,7" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" pathLength="100"/>
+          </svg>
+        {%- endif -%}
       </span>
     </p>
 
@@ -56,16 +57,22 @@
 
   .announcement-bar__scribble {
     position: absolute;
-    bottom: -4px;
+    bottom: -5px;
     left: -2%;
     width: 104%;
-    height: 6px;
+    height: 10px;
     overflow: visible;
-    opacity: 0.85;
+    opacity: 0.9;
     stroke-dasharray: 100;
     stroke-dashoffset: 100;
     animation: scribble-draw 1.4s cubic-bezier(0.65, 0, 0.35, 1) 0.3s forwards,
                scribble-pulse 3s ease-in-out 1.7s infinite;
+  }
+
+  /* In marquee mode, scribble is always fully drawn (no draw-in animation) */
+  .announcement-bar__scribble--marquee {
+    stroke-dashoffset: 0;
+    animation: scribble-pulse 3s ease-in-out infinite;
   }
 
   @keyframes scribble-draw {
@@ -74,26 +81,26 @@
       opacity: 0;
     }
     10% {
-      opacity: 0.85;
+      opacity: 0.9;
     }
     100% {
       stroke-dashoffset: 0;
-      opacity: 0.85;
+      opacity: 0.9;
     }
   }
 
   @keyframes scribble-pulse {
     0%, 100% {
-      opacity: 0.85;
+      opacity: 0.9;
       transform: scaleY(1);
     }
     50% {
-      opacity: 0.55;
-      transform: scaleY(0.8);
+      opacity: 0.6;
+      transform: scaleY(0.85);
     }
   }
 
-  /* Redraw animation on hover */
+  /* Redraw animation on hover (static mode) */
   .announcement-bar__slide:hover .announcement-bar__scribble {
     animation: scribble-redraw 0.6s cubic-bezier(0.65, 0, 0.35, 1) forwards;
   }
@@ -203,6 +210,49 @@
       "type": "url",
       "id": "link",
       "label": "t:settings.link"
+    },
+    {
+      "type": "header",
+      "content": "Scribble & separator"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scribble",
+      "label": "Show scribble underline",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "separator_icon",
+      "label": "Separator icon (marquee mode)",
+      "info": "Icon shown between text repetitions in scrolling mode",
+      "options": [
+        {
+          "value": "circle",
+          "label": "Circle (ring)"
+        },
+        {
+          "value": "dot",
+          "label": "Dot (filled)"
+        },
+        {
+          "value": "diamond",
+          "label": "Diamond"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        },
+        {
+          "value": "slash",
+          "label": "Slash"
+        },
+        {
+          "value": "none",
+          "label": "None"
+        }
+      ],
+      "default": "circle"
     },
     {
       "type": "header",
