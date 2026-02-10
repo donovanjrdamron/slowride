@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "tshirt-bundle",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}

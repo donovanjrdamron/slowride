@@ -1,0 +1,288 @@
+{{ 'tshirt-bundle.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign collection = section.settings.collection
+  assign bundle_size = section.settings.bundle_size | default: 3
+  assign bundle_price = section.settings.bundle_price | default: '$75'
+  assign bundle_price_cents = section.settings.bundle_price_cents | default: 7500
+  assign per_item_cents = bundle_price_cents | divided_by: bundle_size
+-%}
+
+<div
+  class="tshirt-bundle color-{{ section.settings.color_scheme }}"
+  id="TshirtBundle-{{ section.id }}"
+  data-bundle-size="{{ bundle_size }}"
+  data-bundle-price="{{ bundle_price }}"
+  data-bundle-price-cents="{{ bundle_price_cents }}"
+  data-per-item-cents="{{ per_item_cents }}"
+>
+  <!-- ==================== DESKTOP LAYOUT ==================== -->
+  <div class="bundle-layout">
+
+    <!-- LEFT SIDEBAR (sticky) -->
+    <aside class="bundle-sidebar" id="BundleSidebar">
+      <div class="bundle-sidebar__inner">
+        <h1 class="bundle-sidebar__title">{{ section.settings.bundle_title | default: 'T-Shirt Bundle' }}</h1>
+        <div class="bundle-sidebar__subtitle">
+          {{ section.settings.bundle_subtitle | default: '<p>Buy 3 only $75 + FREE Shipping</p>' }}
+        </div>
+
+        <!-- Progress Steps -->
+        <div class="bundle-progress" id="BundleProgress">
+          {%- for i in (1..bundle_size) -%}
+            <div class="bundle-progress__step {% if i == 1 %}bundle-progress__step--first{% endif %}" data-step="{{ i }}">
+              <span class="bundle-progress__number">
+                {% if i < 10 %}0{{ i }}{% else %}{{ i }}{% endif %}
+              </span>
+            </div>
+            {%- unless i == bundle_size -%}
+              <div class="bundle-progress__bar">
+                <div class="bundle-progress__bar-fill" data-bar="{{ i }}"></div>
+              </div>
+            {%- endunless -%}
+          {%- endfor -%}
+        </div>
+
+        <!-- Counter + Price -->
+        <div class="bundle-counter">
+          <span class="bundle-counter__text">
+            <span id="BundleCount">0</span> of {{ bundle_size }} selected
+          </span>
+          <span class="bundle-counter__price">{{ bundle_price }}</span>
+        </div>
+
+        <!-- Selection Slots -->
+        <div class="bundle-slots" id="BundleSlots">
+          {%- for i in (1..bundle_size) -%}
+            <div class="bundle-slot" data-slot="{{ i }}">
+              <div class="bundle-slot__empty">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </div>
+              <div class="bundle-slot__filled" style="display:none;">
+                <div class="bundle-slot__image-wrap">
+                  <img class="bundle-slot__image" src="" alt="" loading="lazy" width="80" height="80">
+                  <button type="button" class="bundle-slot__remove" aria-label="Remove item" data-slot-index="{{ i }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  </button>
+                </div>
+                <div class="bundle-slot__info">
+                  <span class="bundle-slot__name"></span>
+                  <span class="bundle-slot__price"></span>
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        <!-- Total -->
+        <div class="bundle-total">
+          <span class="bundle-total__label">TOTAL</span>
+          <span class="bundle-total__amount" id="BundleTotal">$0.00</span>
+        </div>
+
+        <!-- CTA Button -->
+        <button
+          type="button"
+          class="bundle-cta"
+          id="BundleCTA"
+          disabled
+        >
+          Add {{ bundle_size }} more
+        </button>
+      </div>
+    </aside>
+
+    <!-- RIGHT: PRODUCT GRID -->
+    <div class="bundle-products">
+      {%- if collection != blank and collection.products.size > 0 -%}
+        <div class="bundle-grid">
+          {%- for product in collection.products -%}
+            {%- assign variant = product.selected_or_first_available_variant -%}
+            {%- assign product_image = product.featured_image -%}
+            <div
+              class="bundle-card"
+              data-product-id="{{ product.id }}"
+              data-variant-id="{{ variant.id }}"
+              data-product-title="{{ product.title | escape }}"
+              data-product-image="{{ product_image | image_url: width: 600 }}"
+              data-product-thumb="{{ product_image | image_url: width: 200 }}"
+              data-product-price="{{ variant.price }}"
+              data-compare-price="{{ variant.compare_at_price }}"
+            >
+              <!-- Badge -->
+              {%- if product.tags contains 'new' -%}
+                <span class="bundle-card__badge">NEW</span>
+              {%- endif -%}
+
+              <!-- Image -->
+              <div class="bundle-card__image-wrap">
+                {%- if product_image != blank -%}
+                  <img
+                    class="bundle-card__image"
+                    src="{{ product_image | image_url: width: 600 }}"
+                    alt="{{ product_image.alt | escape }}"
+                    loading="lazy"
+                    width="600"
+                    height="{{ 600 | divided_by: product_image.aspect_ratio | round }}"
+                  >
+                {%- else -%}
+                  <div class="bundle-card__placeholder">
+                    {{ 'product-1' | placeholder_svg_tag }}
+                  </div>
+                {%- endif -%}
+              </div>
+
+              <!-- Info -->
+              <div class="bundle-card__info">
+                <h3 class="bundle-card__title">{{ product.title }}</h3>
+                <div class="bundle-card__prices">
+                  <span class="bundle-card__price">{{ per_item_cents | money }}</span>
+                  {%- if variant.compare_at_price > variant.price -%}
+                    <s class="bundle-card__compare-price">{{ variant.compare_at_price | money }}</s>
+                  {%- elsif variant.price > per_item_cents -%}
+                    <s class="bundle-card__compare-price">{{ variant.price | money }}</s>
+                  {%- endif -%}
+                </div>
+              </div>
+
+              <!-- Add to Bundle Controls -->
+              <div class="bundle-card__actions">
+                <div class="bundle-card__qty-wrap" style="display:none;">
+                  <button type="button" class="bundle-card__qty-btn bundle-card__qty-minus" aria-label="Decrease quantity">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                  </button>
+                  <span class="bundle-card__qty-value">1</span>
+                  <button type="button" class="bundle-card__qty-btn bundle-card__qty-add" aria-label="Add">Add</button>
+                </div>
+                <button type="button" class="bundle-card__add-btn">
+                  Add to Bundle
+                </button>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="bundle-empty">
+          <p>No products found. Please select a collection in the theme editor.</p>
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  <!-- ==================== MOBILE BOTTOM BAR ==================== -->
+  <div class="bundle-mobile-bar" id="BundleMobileBar">
+    <button type="button" class="bundle-mobile-bar__toggle" id="BundleMobileToggle" aria-expanded="false">
+      <div class="bundle-mobile-bar__header">
+        <span class="bundle-mobile-bar__title">{{ section.settings.bundle_title | default: 'T-Shirt Bundle' }}</span>
+        <svg class="bundle-mobile-bar__chevron" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+      </div>
+    </button>
+    <div class="bundle-mobile-bar__content" id="BundleMobileContent">
+      <div class="bundle-mobile-bar__subtitle">
+        {{ section.settings.bundle_subtitle | default: '<p>Buy 3 only $75 + FREE Shipping</p>' }}
+      </div>
+
+      <!-- Mobile Progress -->
+      <div class="bundle-progress bundle-progress--mobile" id="BundleProgressMobile">
+        {%- for i in (1..bundle_size) -%}
+          <div class="bundle-progress__step {% if i == 1 %}bundle-progress__step--first{% endif %}" data-step="{{ i }}">
+            <span class="bundle-progress__number">
+              {% if i < 10 %}0{{ i }}{% else %}{{ i }}{% endif %}
+            </span>
+          </div>
+          {%- unless i == bundle_size -%}
+            <div class="bundle-progress__bar">
+              <div class="bundle-progress__bar-fill" data-bar="{{ i }}"></div>
+            </div>
+          {%- endunless -%}
+        {%- endfor -%}
+      </div>
+
+      <!-- Mobile Counter -->
+      <div class="bundle-counter">
+        <span class="bundle-counter__text">
+          <span class="bundle-count-mobile">0</span> of {{ bundle_size }} selected
+        </span>
+        <span class="bundle-counter__price">{{ bundle_price }}</span>
+      </div>
+
+      <!-- Mobile Total -->
+      <div class="bundle-total">
+        <span class="bundle-total__label">TOTAL</span>
+        <span class="bundle-total__amount bundle-total-mobile">$0.00</span>
+      </div>
+
+      <!-- Mobile CTA -->
+      <button
+        type="button"
+        class="bundle-cta bundle-cta--mobile"
+        id="BundleCTAMobile"
+        disabled
+      >
+        Add {{ bundle_size }} more
+      </button>
+    </div>
+  </div>
+</div>
+
+<script src="{{ 'tshirt-bundle.js' | asset_url }}" defer></script>
+
+{% schema %}
+{
+  "name": "T-Shirt Bundle",
+  "class": "section-tshirt-bundle",
+  "settings": [
+    {
+      "type": "text",
+      "id": "bundle_title",
+      "label": "Bundle Title",
+      "default": "T-Shirt Bundle"
+    },
+    {
+      "type": "richtext",
+      "id": "bundle_subtitle",
+      "label": "Bundle Subtitle",
+      "default": "<p>Buy 3 only $75 + FREE Shipping</p>"
+    },
+    {
+      "type": "range",
+      "id": "bundle_size",
+      "label": "Bundle Size (number of items)",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "text",
+      "id": "bundle_price",
+      "label": "Bundle Display Price",
+      "default": "$75",
+      "info": "The display price shown on the page (e.g. $75)"
+    },
+    {
+      "type": "number",
+      "id": "bundle_price_cents",
+      "label": "Bundle Price (in cents)",
+      "default": 7500,
+      "info": "The bundle price in cents for per-item price calculations (e.g. 7500 = $75.00)"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "T-Shirt Collection"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "default": "scheme-1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "T-Shirt Bundle"
+    }
+  ]
+}
+{% endschema %}
