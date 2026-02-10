@@ -1,9 +1,28 @@
+/*
+ * ------------------------------------------------------------
+ * IMPORTANT: The contents of this file are auto-generated.
+ *
+ * This file may be updated by the Shopify admin theme editor
+ * or related systems. Please exercise caution as any changes
+ * made to this file may be overwritten.
+ * ------------------------------------------------------------
+ */
 {
   "sections": {
     "main": {
       "type": "tshirt-bundle",
-      "settings": {}
+      "settings": {
+        "bundle_title": "T-Shirt Bundle",
+        "bundle_subtitle": "<p>Buy 3 only $75 + FREE Shipping</p>",
+        "bundle_size": 3,
+        "bundle_price": "$75",
+        "bundle_price_cents": 7500,
+        "collection": "t-shirts",
+        "color_scheme": ""
+      }
     }
   },
-  "order": ["main"]
+  "order": [
+    "main"
+  ]
 }
