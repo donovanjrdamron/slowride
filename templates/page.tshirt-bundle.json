@@ -13,9 +13,9 @@
       "type": "tshirt-bundle",
       "settings": {
         "bundle_title": "T-Shirt Bundle",
-        "bundle_subtitle": "<p>Buy 3 only $75 + FREE Shipping</p>",
-        "bundle_size": 3,
-        "bundle_price": "$75",
+        "bundle_subtitle": "<p>Buy 4 only $99 + FREE Shipping</p>",
+        "bundle_size": 4,
+        "bundle_price": "$99",
         "bundle_price_cents": 7500,
         "collection": "t-shirts",
         "color_scheme": "",
