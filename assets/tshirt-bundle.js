@@ -176,6 +176,12 @@
 
       group.appendChild(btnsWrap);
       variantOptionsContainer.appendChild(group);
+
+      // Auto-select the first available value
+      var firstAvailableBtn = btnsWrap.querySelector('.bundle-variant-modal__option-btn:not(.bundle-variant-modal__option-btn--unavailable)');
+      if (firstAvailableBtn) {
+        firstAvailableBtn.click();
+      }
     });
   }
 
@@ -396,6 +402,12 @@
         card.classList.add('bundle-card--selected');
         if (addBtn) addBtn.style.display = 'none';
         if (qtyWrap) qtyWrap.style.display = 'flex';
+        // Disable the "Add" qty button when bundle is full
+        var qtyAddBtn = card.querySelector('.bundle-card__qty-add');
+        if (qtyAddBtn) {
+          qtyAddBtn.disabled = isFull;
+          qtyAddBtn.textContent = isFull ? 'Full' : 'Add';
+        }
       } else {
         card.classList.remove('bundle-card--selected');
         if (addBtn) {
