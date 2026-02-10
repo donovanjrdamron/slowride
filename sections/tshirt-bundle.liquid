@@ -148,12 +148,7 @@
               <div class="bundle-card__info">
                 <h3 class="bundle-card__title">{{ product.title }}</h3>
                 <div class="bundle-card__prices">
-                  <span class="bundle-card__price">{{ per_item_cents | money }}</span>
-                  {%- if variant.compare_at_price > variant.price -%}
-                    <s class="bundle-card__compare-price">{{ variant.compare_at_price | money }}</s>
-                  {%- elsif variant.price > per_item_cents -%}
-                    <s class="bundle-card__compare-price">{{ variant.price | money }}</s>
-                  {%- endif -%}
+                  <span class="bundle-card__price">{{ variant.price | money }}</span>
                 </div>
               </div>
 
