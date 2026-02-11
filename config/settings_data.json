@@ -161,6 +161,11 @@
         "type": "shopify://apps/discounty/blocks/sdk/d65eb522-0d94-499f-9831-d4b3301f5340",
         "disabled": false,
         "settings": {}
+      },
+      "8232719769135528861": {
+        "type": "shopify://apps/qikify-volume-discount/blocks/app-embed/f0592105-7af5-4bc5-afd2-d674b4b2de92",
+        "disabled": false,
+        "settings": {}
       }
     },
     "color_schemes": {
