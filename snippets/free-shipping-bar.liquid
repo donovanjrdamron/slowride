@@ -1,0 +1,154 @@
+{% comment %}
+  Free Shipping Progress Bar
+  Usage: {% render 'free-shipping-bar', threshold_cents: 10000, bar_bg: '#e0e0e0', bar_fill: '#48bb78', ... %}
+{% endcomment %}
+
+{%- liquid
+  assign threshold = threshold_cents | default: 10000
+  assign cart_total = cart.total_price
+  assign remaining_cents = threshold | minus: cart_total
+  assign progress_pct = cart_total | times: 100 | divided_by: threshold
+  if progress_pct > 100
+    assign progress_pct = 100
+  endif
+  assign remaining_dollars = remaining_cents | money
+  assign qualified = false
+  if cart_total >= threshold
+    assign qualified = true
+  endif
+
+  assign bg_color = bar_bg | default: '#e5e7eb'
+  assign fill_color = bar_fill | default: '#48bb78'
+  assign txt_color = text_color | default: '#111111'
+  assign icon_color = icon_clr | default: fill_color
+  assign almost_msg = almost_message | default: "You're **{amount}** away from FREE shipping!"
+  assign success_msg = success_message | default: "Congrats! You've unlocked **FREE shipping!**"
+  assign show_icon = show_truck_icon | default: true
+  assign bar_style = bar_variant | default: 'rounded'
+  assign bar_height_val = bar_height_px | default: 10
+-%}
+
+<div
+  class="free-shipping-bar {% if qualified %}free-shipping-bar--qualified{% endif %}"
+  style="
+    --fsb-bg: {{ bg_color }};
+    --fsb-fill: {{ fill_color }};
+    --fsb-text: {{ txt_color }};
+    --fsb-icon: {{ icon_color }};
+    --fsb-height: {{ bar_height_val }}px;
+    --fsb-radius: {% if bar_style == 'rounded' %}100px{% elsif bar_style == 'slightly-rounded' %}4px{% else %}0px{% endif %};
+  "
+>
+  <div class="free-shipping-bar__message">
+    {%- if show_icon -%}
+      <span class="free-shipping-bar__icon" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="1" y="3" width="15" height="13" rx="1"/>
+          <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/>
+          <circle cx="5.5" cy="18.5" r="2.5"/>
+          <circle cx="18.5" cy="18.5" r="2.5"/>
+        </svg>
+      </span>
+    {%- endif -%}
+    <span class="free-shipping-bar__text">
+      {%- if qualified -%}
+        {{ success_msg | replace_first: '**', '<strong>' | replace_first: '**', '</strong>' | replace_first: '**', '<strong>' | replace_first: '**', '</strong>' }}
+      {%- else -%}
+        {%- assign msg_with_amount = almost_msg | replace: '{amount}', remaining_dollars -%}
+        {{ msg_with_amount | replace_first: '**', '<strong>' | replace_first: '**', '</strong>' | replace_first: '**', '<strong>' | replace_first: '**', '</strong>' }}
+      {%- endif -%}
+    </span>
+  </div>
+
+  <div class="free-shipping-bar__track">
+    <div class="free-shipping-bar__fill" style="width: {{ progress_pct }}%;"></div>
+    {%- if qualified -%}
+      <span class="free-shipping-bar__checkmark" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </span>
+    {%- endif -%}
+  </div>
+</div>
+
+<style>
+  .free-shipping-bar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 14px 20px;
+    color: var(--fsb-text);
+    font-family: inherit;
+  }
+
+  .free-shipping-bar__message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .free-shipping-bar__icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: var(--fsb-icon);
+    transition: transform 0.3s ease;
+  }
+
+  .free-shipping-bar--qualified .free-shipping-bar__icon {
+    animation: fsb-truck-arrive 0.6s ease forwards;
+  }
+
+  .free-shipping-bar__text {
+    flex: 1;
+  }
+
+  .free-shipping-bar__text strong {
+    font-weight: 700;
+  }
+
+  .free-shipping-bar__track {
+    position: relative;
+    width: 100%;
+    height: var(--fsb-height);
+    background: var(--fsb-bg);
+    border-radius: var(--fsb-radius);
+    overflow: hidden;
+  }
+
+  .free-shipping-bar__fill {
+    height: 100%;
+    background: var(--fsb-fill);
+    border-radius: var(--fsb-radius);
+    transition: width 0.5s ease;
+    min-width: 0;
+  }
+
+  .free-shipping-bar__checkmark {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    background: var(--fsb-fill);
+    border-radius: 50%;
+    animation: fsb-pop 0.3s ease 0.3s both;
+  }
+
+  @keyframes fsb-truck-arrive {
+    0% { transform: translateX(-8px); opacity: 0.5; }
+    60% { transform: translateX(3px); }
+    100% { transform: translateX(0); opacity: 1; }
+  }
+
+  @keyframes fsb-pop {
+    0% { transform: translateY(-50%) scale(0); }
+    70% { transform: translateY(-50%) scale(1.2); }
+    100% { transform: translateY(-50%) scale(1); }
+  }
+</style>

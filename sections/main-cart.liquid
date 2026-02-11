@@ -8,6 +8,23 @@
   <div
     class="section color-{{ section.settings.color_scheme }} section--{{ section.settings.section_width }}"
   >
+    {%- if section.settings.show_shipping_bar and cart.empty? == false -%}
+      <div class="cart-page__shipping-bar">
+        {%- render 'free-shipping-bar',
+          threshold_cents: section.settings.shipping_threshold_cents,
+          bar_bg: section.settings.shipping_bar_bg,
+          bar_fill: section.settings.shipping_bar_fill,
+          text_color: section.settings.shipping_bar_text_color,
+          icon_clr: section.settings.shipping_bar_icon_color,
+          almost_message: section.settings.shipping_bar_message,
+          success_message: section.settings.shipping_bar_success,
+          show_truck_icon: section.settings.shipping_bar_show_icon,
+          bar_variant: section.settings.shipping_bar_style,
+          bar_height_px: section.settings.shipping_bar_height
+        -%}
+      </div>
+    {%- endif -%}
+
     <div
       class="cart-page spacing-style{% if cart.empty? %} cart-page--empty{% endif %}"
       style="{% render 'spacing-style', settings: section.settings %}"
@@ -34,6 +51,12 @@
 </cart-items-component>
 
 {% stylesheet %}
+  .cart-page__shipping-bar {
+    max-width: var(--page-width, 1400px);
+    margin: 0 auto;
+    padding: 0 var(--page-gutter, 20px);
+  }
+
   .cart-page {
     --cart-font-size--2xs: var(--font-size--2xs);
     --cart-font-size--xs: var(--font-size--xs);
@@ -148,6 +171,92 @@
     }
   ],
   "settings": [
+    {
+      "type": "header",
+      "content": "Free Shipping Progress Bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shipping_bar",
+      "label": "Show free shipping bar",
+      "default": true
+    },
+    {
+      "type": "number",
+      "id": "shipping_threshold_cents",
+      "label": "Free shipping threshold (cents)",
+      "default": 10000,
+      "info": "Amount in cents. E.g. 10000 = $100.00"
+    },
+    {
+      "type": "text",
+      "id": "shipping_bar_message",
+      "label": "Progress message",
+      "default": "You're **{amount}** away from FREE shipping!",
+      "info": "Use {amount} for the remaining dollar amount. Wrap text in ** for bold."
+    },
+    {
+      "type": "text",
+      "id": "shipping_bar_success",
+      "label": "Success message",
+      "default": "Congrats! You've unlocked **FREE shipping!**",
+      "info": "Shown when the threshold is reached. Wrap text in ** for bold."
+    },
+    {
+      "type": "checkbox",
+      "id": "shipping_bar_show_icon",
+      "label": "Show truck icon",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "shipping_bar_style",
+      "label": "Bar style",
+      "options": [
+        { "value": "rounded", "label": "Fully rounded" },
+        { "value": "slightly-rounded", "label": "Slightly rounded" },
+        { "value": "square", "label": "Square" }
+      ],
+      "default": "rounded"
+    },
+    {
+      "type": "range",
+      "id": "shipping_bar_height",
+      "label": "Bar height",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "color",
+      "id": "shipping_bar_bg",
+      "label": "Bar background color",
+      "default": "#e5e7eb"
+    },
+    {
+      "type": "color",
+      "id": "shipping_bar_fill",
+      "label": "Bar fill color",
+      "default": "#48bb78"
+    },
+    {
+      "type": "color",
+      "id": "shipping_bar_text_color",
+      "label": "Text color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "shipping_bar_icon_color",
+      "label": "Icon color",
+      "default": "#48bb78"
+    },
+    {
+      "type": "header",
+      "content": "Section Layout"
+    },
     {
       "type": "select",
       "id": "section_width",

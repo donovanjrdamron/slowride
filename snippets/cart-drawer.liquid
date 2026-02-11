@@ -81,6 +81,23 @@
             </button>
           </div>
 
+          {%- if section.settings.show_shipping_bar -%}
+            <div class="cart-drawer__shipping-bar">
+              {%- render 'free-shipping-bar',
+                threshold_cents: section.settings.shipping_threshold_cents,
+                bar_bg: section.settings.shipping_bar_bg,
+                bar_fill: section.settings.shipping_bar_fill,
+                text_color: section.settings.shipping_bar_text_color,
+                icon_clr: section.settings.shipping_bar_icon_color,
+                almost_message: section.settings.shipping_bar_message,
+                success_message: section.settings.shipping_bar_success,
+                show_truck_icon: section.settings.shipping_bar_show_icon,
+                bar_variant: section.settings.shipping_bar_style,
+                bar_height_px: section.settings.shipping_bar_height
+              -%}
+            </div>
+          {%- endif -%}
+
           <div
             class="cart-drawer__content motion-reduce"
             aria-label="{{ 'accessibility.cart' | t }}"
@@ -161,5 +178,18 @@
     position: sticky;
     bottom: 0;
     z-index: 1;
+  }
+
+  .cart-drawer__shipping-bar {
+    border-bottom: 1px solid var(--color-border, #e5e7eb);
+    flex-shrink: 0;
+  }
+
+  .cart-drawer__shipping-bar .free-shipping-bar {
+    padding: 10px 16px;
+  }
+
+  .cart-drawer__shipping-bar .free-shipping-bar__message {
+    font-size: 13px;
   }
 {% endstylesheet %}
