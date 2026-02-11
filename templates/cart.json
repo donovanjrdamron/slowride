@@ -61,7 +61,7 @@
         "show_shipping_bar": true,
         "shipping_threshold_cents": 10000,
         "shipping_bar_message": "You're **{amount}** away from FREE shipping!",
-        "shipping_bar_success": "Congrats! You've unlocked **FREE shipping!**",
+        "shipping_bar_success": "Congrats! You've unlocked **FREE shipping!** Code: Ship 100",
         "shipping_bar_show_icon": true,
         "shipping_bar_style": "rounded",
         "shipping_bar_height": 10,
