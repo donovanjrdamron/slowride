@@ -507,69 +507,108 @@
       btn.textContent = 'Adding...';
     });
 
-    try {
-      var response = await fetch(
-        (window.Theme ? Theme.routes.root : '/') + 'cart/add.js',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify({
-            items: selectedItems.map(function (item) {
-              return {
-                id: parseInt(item.variantId, 10),
-                quantity: 1,
-                properties: {
-                  _bundle_id: 'tshirt-bundle'
-                }
-              };
-            })
-          })
+    // Build the items payload
+    var items = selectedItems.map(function (item) {
+      return {
+        id: parseInt(item.variantId, 10),
+        quantity: 1,
+        properties: {
+          _bundle_id: 'tshirt-bundle'
         }
-      );
+      };
+    });
 
-      var data = await response.json();
-
-      if (data.status && data.status === 422) {
-        alert(data.message || 'Could not add items to cart. Please try again.');
-        ctaButtons.forEach(function (btn) {
-          btn.disabled = false;
-          btn.textContent = 'Add to Cart';
-        });
-        return;
+    // Collect section IDs so the cart drawer/page can update via morphing
+    var sectionIds = [];
+    document.querySelectorAll('cart-items-component').forEach(function (el) {
+      if (el.dataset && el.dataset.sectionId) {
+        sectionIds.push(el.dataset.sectionId);
       }
+    });
 
-      try {
-        window.dispatchEvent(new CustomEvent('cart:update', {
-          bubbles: true,
-          detail: {
-            resource: data,
-            sourceId: 'tshirt-bundle',
-            data: {
-              source: 'tshirt-bundle',
-              itemCount: selectedItems.length
-            }
-          }
-        }));
-      } catch (e) {
-        // Event dispatch is non-critical
-      }
-
-      ctaButtons.forEach(function (btn) {
-        btn.textContent = 'Added! Redirecting...';
-      });
-
-      setTimeout(function () {
-        window.location.href = (window.Theme ? Theme.routes.cart_url : '/cart');
-      }, 800);
-
-    } catch (err) {
-      console.error('Bundle add to cart error:', err);
-      alert('Something went wrong. Please try again.');
-      ctaButtons.forEach(function (btn) {
-        btn.disabled = false;
-        btn.textContent = 'Add to Cart';
-      });
+    var bodyPayload = { items: items };
+    if (sectionIds.length > 0) {
+      bodyPayload.sections = sectionIds.join(',');
+      bodyPayload.sections_url = window.location.pathname;
     }
+
+    var cartAddUrl = '/cart/add.js';
+    if (window.Theme && Theme.routes && Theme.routes.cart_add_url) {
+      cartAddUrl = Theme.routes.cart_add_url;
+    }
+
+    var response;
+    try {
+      response = await fetch(cartAddUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify(bodyPayload)
+      });
+    } catch (networkErr) {
+      console.error('Bundle add to cart - network error:', networkErr);
+      alert('Network error. Please check your connection and try again.');
+      ctaButtons.forEach(function (btn) { btn.disabled = false; btn.textContent = 'Add to Cart'; });
+      return;
+    }
+
+    // Parse the response body
+    var data;
+    try {
+      data = await response.json();
+    } catch (parseErr) {
+      console.error('Bundle add to cart - parse error:', parseErr, 'Status:', response.status);
+      alert('Unexpected response from server. Please try again.');
+      ctaButtons.forEach(function (btn) { btn.disabled = false; btn.textContent = 'Add to Cart'; });
+      return;
+    }
+
+    // Handle Shopify errors (422 = validation error, e.g. sold out)
+    if (!response.ok || (data.status && data.status >= 400)) {
+      var errorMsg = data.message || data.description || 'Could not add items to cart.';
+      console.error('Bundle add to cart - API error:', data);
+      alert(errorMsg);
+      ctaButtons.forEach(function (btn) { btn.disabled = false; btn.textContent = 'Add to Cart'; });
+      return;
+    }
+
+    // Success - dispatch cart update event for the theme's cart drawer / icon
+    try {
+      document.querySelectorAll('cart-items-component').forEach(function (el) {
+        var sectionId = el.dataset.sectionId;
+        if (sectionId && data.sections && data.sections[sectionId]) {
+          // Trigger section morphing like the theme does natively
+          el.dispatchEvent(new CustomEvent('cart:add', {
+            bubbles: true,
+            detail: {
+              data: {
+                source: 'tshirt-bundle',
+                itemCount: selectedItems.length,
+                sections: data.sections
+              }
+            }
+          }));
+        }
+      });
+    } catch (e) {
+      // Event dispatch is non-critical
+    }
+
+    ctaButtons.forEach(function (btn) {
+      btn.textContent = 'Added! Redirecting...';
+    });
+
+    var cartUrl = '/cart';
+    if (window.Theme && Theme.routes && Theme.routes.cart_url) {
+      cartUrl = Theme.routes.cart_url;
+    }
+
+    setTimeout(function () {
+      window.location.href = cartUrl;
+    }, 800);
   }
 
   // ---------- Event Listeners ----------
