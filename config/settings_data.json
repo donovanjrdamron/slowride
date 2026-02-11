@@ -58,7 +58,7 @@
     "show_cart_note": false,
     "show_add_discount_code": true,
     "show_installments": false,
-    "show_accelerated_checkout_buttons": true,
+    "show_accelerated_checkout_buttons": false,
     "drawer_drop_shadow": true,
     "icon_stroke": "default",
     "input_border_width": 1,
