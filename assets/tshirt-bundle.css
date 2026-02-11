@@ -177,7 +177,7 @@
   width: 100%;
   flex: 1;
   overflow: hidden;
-  background: #f5f5f5;
+  background: #fff;
 }
 
 .bundle-slot__image {
@@ -194,9 +194,9 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  border: none;
+  background: #fff;
+  color: #111;
+  border: 1px solid #e0e0e0;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -207,7 +207,7 @@
 }
 
 .bundle-slot__remove:hover {
-  background: rgba(0, 0, 0, 0.85);
+  background: #f0f0f0;
 }
 
 .bundle-slot__info {

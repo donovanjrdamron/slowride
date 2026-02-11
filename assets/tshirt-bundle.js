@@ -601,6 +601,10 @@
       btn.textContent = 'Added! Redirecting...';
     });
 
+    // Clear the selection state so returning to this page shows a fresh bundle
+    selectedItems = [];
+    updateUI();
+
     var cartUrl = '/cart';
     if (window.Theme && Theme.routes && Theme.routes.cart_url) {
       cartUrl = Theme.routes.cart_url;
@@ -694,4 +698,13 @@
 
   // ---------- Initialize ----------
   updateUI();
+
+  // Handle back-forward cache: reset state when user navigates back to this page
+  window.addEventListener('pageshow', function (event) {
+    if (event.persisted) {
+      // Page was loaded from bfcache — reset the bundle state
+      selectedItems = [];
+      updateUI();
+    }
+  });
 })();
