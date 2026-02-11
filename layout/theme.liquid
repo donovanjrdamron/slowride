@@ -34,18 +34,6 @@
 
     {{ content_for_header }}
   {% capture boostersnippet %}{% include "booster-apps-common" %}{% endcapture %}{% unless boostersnippet contains "Liquid error" %}{{ boostersnippet }}{% endunless %}
-
-    <!-- Hide Qikify Quantity Discount widget (discount still applies server-side) -->
-    <style>
-      [data-block-id="8232719769135528861"],
-      [class*="qikify"],
-      [id*="qikify"] {
-        display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-        overflow: hidden !important;
-      }
-    </style>
 </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
