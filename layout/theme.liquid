@@ -34,6 +34,13 @@
 
     {{ content_for_header }}
   {% capture boostersnippet %}{% include "booster-apps-common" %}{% endcapture %}{% unless boostersnippet contains "Liquid error" %}{{ boostersnippet }}{% endunless %}
+
+    <!-- Fix: override inline display:block injected by Qikify app on quantity selector -->
+    <style>
+      .quantity-selector {
+        display: flex !important;
+      }
+    </style>
 </head>
 
   <body class="page-width-{{ settings.page_width }} card-hover-effect-{{ settings.card_hover_effect }}">
