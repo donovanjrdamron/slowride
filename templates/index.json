@@ -116,7 +116,7 @@
                 "width": "100%",
                 "max_width": "normal",
                 "alignment": "left",
-                "type_preset": "h1",
+                "type_preset": "h3",
                 "font": "var(--font-body--family)",
                 "font_size": "1rem",
                 "line_height": "normal",
@@ -302,7 +302,7 @@
         "horizontal_alignment": "center",
         "gap": 40,
         "color_scheme": "scheme-1",
-        "padding-block-start": 22,
+        "padding-block-start": 72,
         "padding-block-end": 37
       }
     },
