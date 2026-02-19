@@ -65,7 +65,7 @@
         "custom_width": 1400,
         "desktop_aspect_ratio": "16/9",
         "mobile_aspect_ratio": "1/1",
-        "corner_radius_top": 0,
+        "corner_radius_top": 14,
         "corner_radius_bottom": 14,
         "autoplay": true,
         "autoplay_speed": 5,
