@@ -16,6 +16,7 @@
     --hero-radius-top: {{ radius_top }}px;
     --hero-radius-bottom: {{ radius_bottom }}px;
     --hero-max-width: {% if section.settings.section_width == 'custom' %}{{ section.settings.custom_width }}px{% else %}none{% endif %};
+    --hero-autoplay-speed: {{ section.settings.autoplay_speed }}s;
     {% render 'spacing-style', settings: section.settings %}
   "
 >
@@ -94,16 +95,47 @@
 
     {%- capture controls_html -%}
       {%- if slide_count > 1 -%}
-        {%- render 'slideshow-controls',
-          style: section.settings.controls_style,
-          autoplay: section.settings.autoplay,
-          item_count: slide_count,
-          show_arrows: section.settings.show_arrows,
-          arrows_on_media: true,
-          controls_on_media: true,
-          icon_style: section.settings.arrow_style,
-          pagination_position: 'center'
-        -%}
+        <div class="hero-slideshow__controls">
+          <ol class="hero-slideshow__dots">
+            {%- for i in (1..slide_count) -%}
+              <li>
+                <button
+                  class="hero-slideshow__dot"
+                  aria-label="Go to slide {{ forloop.index }} of {{ slide_count }}"
+                  on:click="/select/{{ forloop.index0 }}"
+                  ref="dots[]"
+                  {% if forloop.first %}aria-selected="true"{% endif %}
+                >
+                  <span class="visually-hidden">{{ forloop.index }}</span>
+                </button>
+              </li>
+            {%- endfor -%}
+          </ol>
+
+          {%- if section.settings.autoplay -%}
+            <button
+              type="button"
+              class="hero-slideshow__pause-btn icon-pause"
+              aria-label="Pause slideshow"
+              on:click="/pause"
+            >
+              <svg width="10" height="12" viewBox="0 0 10 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <rect x="0" y="0" width="3" height="12" rx="1" fill="currentColor"/>
+                <rect x="7" y="0" width="3" height="12" rx="1" fill="currentColor"/>
+              </svg>
+            </button>
+            <button
+              type="button"
+              class="hero-slideshow__pause-btn icon-play"
+              aria-label="Play slideshow"
+              on:click="/play"
+            >
+              <svg width="10" height="12" viewBox="0 0 10 12" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M1 1.5V10.5C1 11.1 1.5 11.4 2 11.1L9.5 6.6C10 6.3 10 5.7 9.5 5.4L2 0.9C1.5 0.6 1 0.9 1 1.5Z" fill="currentColor"/>
+              </svg>
+            </button>
+          {%- endif -%}
+        </div>
       {%- endif -%}
     {%- endcapture -%}
 
@@ -136,6 +168,7 @@
   }
 
   .hero-slideshow__slider {
+    position: relative;
     border-radius: var(--hero-radius-top) var(--hero-radius-top) var(--hero-radius-bottom) var(--hero-radius-bottom);
     overflow: hidden;
   }
@@ -254,31 +287,124 @@
     color: #999;
   }
 
-  /* Dots styling override for hero */
-  .hero-slideshow .slideshow-controls__dots {
+  /* ── Custom controls bar ── */
+  .hero-slideshow__controls {
+    position: absolute;
+    bottom: 16px;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 20px;
+    pointer-events: none;
+  }
+
+  /* ── Dots ── */
+  .hero-slideshow__dots {
     list-style: none;
     display: flex;
-    gap: 8px;
+    gap: 10px;
     padding: 0;
-    margin: 12px 0 0;
-    justify-content: center;
+    margin: 0;
+    align-items: center;
+    pointer-events: auto;
   }
 
-  .hero-slideshow .slideshow-controls__dots button {
-    width: 10px;
-    height: 10px;
+  .hero-slideshow__dots li {
+    line-height: 0;
+  }
+
+  .hero-slideshow__dot {
+    position: relative;
+    width: 8px;
+    height: 8px;
     border-radius: 50%;
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.45);
     border: none;
     padding: 0;
-    font-size: 0;
     cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease;
+    transition: background 0.25s ease;
+    overflow: hidden;
+    font-size: 0;
   }
 
-  .hero-slideshow .slideshow-controls__dots button[aria-selected="true"] {
-    background: rgba(0, 0, 0, 0.7);
-    transform: scale(1.2);
+  .hero-slideshow__dot::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: #fff;
+    transform: scale(0);
+    transform-origin: center;
+    pointer-events: none;
+  }
+
+  .hero-slideshow__dot[aria-selected="true"] {
+    background: rgba(255, 255, 255, 0.45);
+  }
+
+  .hero-slideshow__dot[aria-selected="true"]::after {
+    animation: hero-dot-fill var(--hero-autoplay-speed, 5s) linear forwards;
+  }
+
+  slideshow-component[paused] .hero-slideshow__dot[aria-selected="true"]::after {
+    animation-play-state: paused;
+  }
+
+  slideshow-component:not([autoplay]) .hero-slideshow__dot::after {
+    animation: none;
+  }
+
+  slideshow-component:not([autoplay]) .hero-slideshow__dot[aria-selected="true"] {
+    background: #fff;
+  }
+
+  @keyframes hero-dot-fill {
+    0% { transform: scale(0); }
+    100% { transform: scale(1); }
+  }
+
+  /* ── Pause / Play button ── */
+  .hero-slideshow__pause-btn {
+    position: absolute;
+    right: 20px;
+    bottom: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.35);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
+    transition: background 0.2s ease;
+    padding: 0;
+  }
+
+  .hero-slideshow__pause-btn:hover {
+    background: rgba(0, 0, 0, 0.55);
+  }
+
+  .hero-slideshow__pause-btn svg {
+    width: 10px;
+    height: 12px;
+  }
+
+  .hero-slideshow__pause-btn.icon-play {
+    display: none;
+  }
+
+  slideshow-component[paused] .hero-slideshow__pause-btn.icon-pause {
+    display: none;
+  }
+
+  slideshow-component[paused] .hero-slideshow__pause-btn.icon-play {
+    display: flex;
   }
 
   @media screen and (max-width: 749px) {
@@ -286,7 +412,6 @@
       aspect-ratio: var(--hero-mobile-ratio);
     }
 
-    /* Show mobile image, hide desktop image when mobile image exists */
     .hero-slideshow__media:has(.hero-slideshow__image--mobile) > .hero-slideshow__image:not(.hero-slideshow__image--mobile) {
       display: none;
     }
@@ -297,6 +422,22 @@
 
     .hero-slideshow__content {
       padding: 20px;
+    }
+
+    .hero-slideshow__controls {
+      bottom: 12px;
+      padding: 0 14px;
+    }
+
+    .hero-slideshow__pause-btn {
+      right: 14px;
+      width: 28px;
+      height: 28px;
+    }
+
+    .hero-slideshow__pause-btn svg {
+      width: 8px;
+      height: 10px;
     }
   }
 {% endstylesheet %}
@@ -409,33 +550,6 @@
       "step": 1,
       "unit": "sec",
       "default": 5
-    },
-    {
-      "type": "select",
-      "id": "controls_style",
-      "label": "Navigation style",
-      "options": [
-        { "value": "dots", "label": "Dots" },
-        { "value": "counter", "label": "Counter (1/3)" }
-      ],
-      "default": "dots"
-    },
-    {
-      "type": "checkbox",
-      "id": "show_arrows",
-      "label": "Show navigation arrows",
-      "default": true
-    },
-    {
-      "type": "select",
-      "id": "arrow_style",
-      "label": "Arrow style",
-      "options": [
-        { "value": "arrow", "label": "Arrow" },
-        { "value": "chevron", "label": "Chevron" },
-        { "value": "none", "label": "None" }
-      ],
-      "default": "chevron"
     },
     {
       "type": "header",
