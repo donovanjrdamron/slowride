@@ -157,11 +157,6 @@
           "themeInfo": "{{theme.id}}"
         }
       },
-      "14826766009936288847": {
-        "type": "shopify://apps/discounty/blocks/sdk/d65eb522-0d94-499f-9831-d4b3301f5340",
-        "disabled": false,
-        "settings": {}
-      },
       "8232719769135528861": {
         "type": "shopify://apps/qikify-volume-discount/blocks/app-embed/f0592105-7af5-4bc5-afd2-d674b4b2de92",
         "disabled": false,
@@ -172,17 +167,17 @@
       "scheme-1": {
         "settings": {
           "background": "#ffffff",
-          "foreground_heading": "#063d49",
-          "foreground": "#063d49",
-          "primary": "#063d49",
+          "foreground_heading": "#263d60",
+          "foreground": "#263d60",
+          "primary": "#263d60",
           "primary_hover": "#000000",
           "border": "#ffffff",
           "shadow": "#000000",
           "primary_button_background": "#d1d0cf",
-          "primary_button_text": "#063d49",
+          "primary_button_text": "#263d60",
           "primary_button_border": "#ffffff",
           "primary_button_hover_background": "#f9f9ef",
-          "primary_button_hover_text": "#063d49",
+          "primary_button_hover_text": "#263d60",
           "primary_button_hover_border": "#000000",
           "secondary_button_background": "#0000000f",
           "secondary_button_text": "#000000",
@@ -191,7 +186,7 @@
           "secondary_button_hover_text": "#ffffff",
           "secondary_button_hover_border": "#333333",
           "input_background": "#ffffff",
-          "input_text_color": "#063d49",
+          "input_text_color": "#263d60",
           "input_border_color": "#f5f5f5",
           "input_hover_background": "#00000003",
           "variant_background_color": "#ffffff",
