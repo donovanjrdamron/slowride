@@ -18,12 +18,12 @@
           "type": "_announcement",
           "name": "t:names.announcement",
           "settings": {
-            "text": "Free Shipping All Orders $100+ Code: Ship100",
-            "link": "",
+            "text": "Buy 3 Shirts Only $74.99 <a href=\"/pages/t-shirt-bundle\" title=\"T-shirt bundle\">Shop Now</a>",
+            "link": "shopify://pages/t-shirt-bundle",
             "show_scribble": false,
-            "separator_icon": "circle",
+            "separator_icon": "dot",
             "font": "var(--font-body--family)",
-            "font_size": "0.75rem",
+            "font_size": "0.875rem",
             "weight": "",
             "letter_spacing": "normal",
             "case": "none"
@@ -118,7 +118,18 @@
         "enable_transparent_header_product": false,
         "product_color_scheme": "default",
         "enable_transparent_header_collection": false,
-        "collection_color_scheme": "default"
+        "collection_color_scheme": "default",
+        "show_shipping_bar": true,
+        "shipping_threshold_cents": 10000,
+        "shipping_bar_message": "You're **{amount}** away from FREE shipping!",
+        "shipping_bar_success": "Congrats! You've unlocked **FREE shipping!**",
+        "shipping_bar_show_icon": true,
+        "shipping_bar_style": "rounded",
+        "shipping_bar_height": 10,
+        "shipping_bar_bg": "#e5e7eb",
+        "shipping_bar_fill": "#48bb78",
+        "shipping_bar_text_color": "#111111",
+        "shipping_bar_icon_color": "#48bb78"
       }
     }
   },
