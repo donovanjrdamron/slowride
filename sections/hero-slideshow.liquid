@@ -173,6 +173,11 @@
     overflow: hidden;
   }
 
+  /* Keep all slides pre-rendered so the infinite-loop DOM swap doesn't flash */
+  .hero-slideshow slideshow-slide {
+    content-visibility: visible !important;
+  }
+
   .hero-slideshow__media {
     position: relative;
     width: 100%;
