@@ -232,9 +232,9 @@
       "type": "brand-story-editorial",
       "settings": {
         "layout": "text-feature",
-        "heading": "From skateshops and construction to vintage racing and workwear.",
-        "body_text": "<p>Donny Donovan started his first company at 19 years old selling blank skateboards while delivering pizzas. He was a able to sell his old VW bus and open his first skateboard shop called “Pharmacy Boardshop.” At 19 years old in Hesperia, California</p>",
-        "caption": "The origins",
+        "heading": "",
+        "body_text": "<p>Over the years of owning a skateboard shop while being on and off job-sites and wrenching/racing vintage cars on the side, his experience and knowledge led him to want to develop a workwear brand inspired by vintage racing that is comfortable and durable.</p>",
+        "caption": "",
         "text_position": "right",
         "section_width": "page-width",
         "color_scheme": "",
