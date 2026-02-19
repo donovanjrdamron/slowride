@@ -27,7 +27,7 @@
             "text_alignment": "center",
             "vertical_alignment": "center",
             "button_text": "Shop Now",
-            "button_link": "",
+            "button_link": "shopify://collections/pabst-x-slowride",
             "button_bg_color": "#ffffff",
             "button_text_color": "#111111",
             "button_radius": 8
