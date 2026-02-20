@@ -1,0 +1,411 @@
+{% liquid
+  assign widths = '300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1800, 2000, 2500, 3000, 3840'
+%}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="section section--page-width color-{{ section.settings.color_scheme }} lookbook-gallery spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  {%- if section.settings.title_visible and article.title != blank -%}
+    <header class="lookbook-gallery__header">
+      <h1 class="lookbook-gallery__title">{{ article.title }}</h1>
+      {%- if section.settings.show_date -%}
+        <time class="lookbook-gallery__date" datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+          {{ article.published_at | date: '%B %Y' }}
+        </time>
+      {%- endif -%}
+    </header>
+  {%- endif -%}
+
+  <div class="lookbook-gallery__photos">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'photo' -%}
+        <figure
+          class="lookbook-gallery__figure lookbook-gallery__figure--{{ block.settings.width }}"
+          {{ block.shopify_attributes }}
+        >
+          {%- if block.settings.image != blank -%}
+            {%- liquid
+              case block.settings.width
+                when 'full'
+                  assign img_sizes = '(min-width: 750px) 100vw, 100vw'
+                when 'large'
+                  assign img_sizes = '(min-width: 750px) 85vw, 100vw'
+                when 'medium'
+                  assign img_sizes = '(min-width: 750px) 65vw, 100vw'
+                when 'small'
+                  assign img_sizes = '(min-width: 750px) 45vw, 100vw'
+              endcase
+            -%}
+            {{
+              block.settings.image
+              | image_url: width: 3840
+              | image_tag:
+                width: block.settings.image.width,
+                widths: widths,
+                height: block.settings.image.height,
+                alt: block.settings.image.alt | default: article.title,
+                class: 'lookbook-gallery__image',
+                sizes: img_sizes,
+                loading: 'lazy'
+            }}
+          {%- else -%}
+            <div class="lookbook-gallery__placeholder">
+              {{ 'lifestyle-1' | placeholder_svg_tag: 'lookbook-gallery__placeholder-svg' }}
+            </div>
+          {%- endif -%}
+
+          {%- if block.settings.caption != blank -%}
+            <figcaption class="lookbook-gallery__caption">{{ block.settings.caption }}</figcaption>
+          {%- endif -%}
+        </figure>
+      {%- endif -%}
+
+      {%- if block.type == 'pair' -%}
+        <div
+          class="lookbook-gallery__pair"
+          {{ block.shopify_attributes }}
+        >
+          <figure class="lookbook-gallery__pair-item">
+            {%- if block.settings.image_left != blank -%}
+              {{
+                block.settings.image_left
+                | image_url: width: 2000
+                | image_tag:
+                  width: block.settings.image_left.width,
+                  widths: widths,
+                  height: block.settings.image_left.height,
+                  alt: block.settings.image_left.alt | default: article.title,
+                  class: 'lookbook-gallery__image',
+                  sizes: '(min-width: 750px) 50vw, 100vw',
+                  loading: 'lazy'
+              }}
+            {%- else -%}
+              <div class="lookbook-gallery__placeholder">
+                {{ 'lifestyle-1' | placeholder_svg_tag: 'lookbook-gallery__placeholder-svg' }}
+              </div>
+            {%- endif -%}
+          </figure>
+          <figure class="lookbook-gallery__pair-item">
+            {%- if block.settings.image_right != blank -%}
+              {{
+                block.settings.image_right
+                | image_url: width: 2000
+                | image_tag:
+                  width: block.settings.image_right.width,
+                  widths: widths,
+                  height: block.settings.image_right.height,
+                  alt: block.settings.image_right.alt | default: article.title,
+                  class: 'lookbook-gallery__image',
+                  sizes: '(min-width: 750px) 50vw, 100vw',
+                  loading: 'lazy'
+              }}
+            {%- else -%}
+              <div class="lookbook-gallery__placeholder">
+                {{ 'lifestyle-2' | placeholder_svg_tag: 'lookbook-gallery__placeholder-svg' }}
+              </div>
+            {%- endif -%}
+          </figure>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  {%- if section.settings.show_back_link -%}
+    <div class="lookbook-gallery__back">
+      <a href="{{ blog.url }}" class="lookbook-gallery__back-link">&larr; Back to {{ blog.title }}</a>
+    </div>
+  {%- endif -%}
+</div>
+
+<script type="application/ld+json">
+  {{ article | structured_data }}
+</script>
+
+{% stylesheet %}
+  .lookbook-gallery__header {
+    text-align: center;
+    padding-block-end: clamp(32px, 5vw, 72px);
+  }
+
+  .lookbook-gallery__title {
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .lookbook-gallery__date {
+    display: block;
+    margin-block-start: 8px;
+    font-size: 0.8125rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.6;
+  }
+
+  .lookbook-gallery__photos {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: clamp(12px, 2vw, 24px);
+  }
+
+  .lookbook-gallery__figure {
+    margin: 0;
+    width: 100%;
+    transition: opacity 0.3s ease;
+  }
+
+  .lookbook-gallery__figure--full {
+    max-width: 100%;
+  }
+
+  .lookbook-gallery__figure--large {
+    max-width: 85%;
+
+    @media screen and (width < 750px) {
+      max-width: 100%;
+    }
+  }
+
+  .lookbook-gallery__figure--medium {
+    max-width: 65%;
+
+    @media screen and (width < 750px) {
+      max-width: 100%;
+    }
+  }
+
+  .lookbook-gallery__figure--small {
+    max-width: 45%;
+
+    @media screen and (width < 750px) {
+      max-width: 75%;
+    }
+  }
+
+  .lookbook-gallery__image {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .lookbook-gallery__placeholder {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    background: rgba(from var(--color-foreground) r g b / 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lookbook-gallery__placeholder-svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .lookbook-gallery__caption {
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    opacity: 0.6;
+    margin-block-start: 8px;
+    text-align: center;
+  }
+
+  .lookbook-gallery__pair {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: clamp(12px, 2vw, 24px);
+    width: 100%;
+
+    @media screen and (width >= 750px) {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .lookbook-gallery__pair-item {
+    margin: 0;
+    overflow: hidden;
+  }
+
+  .lookbook-gallery__back {
+    text-align: center;
+    padding-block-start: clamp(32px, 5vw, 72px);
+  }
+
+  .lookbook-gallery__back-link {
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.2s ease;
+  }
+
+  .lookbook-gallery__back-link:hover {
+    opacity: 1;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Lookbook gallery",
+  "tag": "section",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header"]
+  },
+  "max_blocks": 30,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "checkbox",
+      "id": "title_visible",
+      "label": "Show article title",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_back_link",
+      "label": "Show back link",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "photo",
+      "name": "Photo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "select",
+          "id": "width",
+          "label": "Width",
+          "options": [
+            {
+              "value": "full",
+              "label": "Full width"
+            },
+            {
+              "value": "large",
+              "label": "Large (85%)"
+            },
+            {
+              "value": "medium",
+              "label": "Medium (65%)"
+            },
+            {
+              "value": "small",
+              "label": "Small (45%)"
+            }
+          ],
+          "default": "full"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption"
+        }
+      ]
+    },
+    {
+      "type": "pair",
+      "name": "Photo pair",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image_left",
+          "label": "Left image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_right",
+          "label": "Right image"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lookbook gallery",
+      "category": "t:categories.storytelling",
+      "blocks": [
+        {
+          "type": "photo",
+          "settings": {
+            "width": "full"
+          }
+        },
+        {
+          "type": "pair"
+        },
+        {
+          "type": "photo",
+          "settings": {
+            "width": "large"
+          }
+        },
+        {
+          "type": "photo",
+          "settings": {
+            "width": "full"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

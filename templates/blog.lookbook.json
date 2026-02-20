@@ -1,0 +1,20 @@
+{
+  "sections": {
+    "main": {
+      "type": "lookbook-grid",
+      "settings": {
+        "show_heading": true,
+        "show_description": true,
+        "columns": 3,
+        "image_ratio": "3 / 4",
+        "show_title": true,
+        "color_scheme": "",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

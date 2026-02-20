@@ -1,0 +1,60 @@
+{
+  "sections": {
+    "main": {
+      "type": "lookbook-gallery",
+      "settings": {
+        "title_visible": true,
+        "show_date": true,
+        "show_back_link": true,
+        "color_scheme": "",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      },
+      "blocks": {
+        "photo_1": {
+          "type": "photo",
+          "settings": {
+            "width": "full"
+          }
+        },
+        "photo_2": {
+          "type": "pair",
+          "settings": {}
+        },
+        "photo_3": {
+          "type": "photo",
+          "settings": {
+            "width": "large"
+          }
+        },
+        "photo_4": {
+          "type": "photo",
+          "settings": {
+            "width": "full"
+          }
+        },
+        "photo_5": {
+          "type": "pair",
+          "settings": {}
+        },
+        "photo_6": {
+          "type": "photo",
+          "settings": {
+            "width": "full"
+          }
+        }
+      },
+      "block_order": [
+        "photo_1",
+        "photo_2",
+        "photo_3",
+        "photo_4",
+        "photo_5",
+        "photo_6"
+      ]
+    }
+  },
+  "order": [
+    "main"
+  ]
+}

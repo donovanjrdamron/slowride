@@ -1,0 +1,269 @@
+{% liquid
+  assign widths = '300, 450, 600, 750, 900, 1050, 1200, 1500'
+  assign columns = section.settings.columns
+  assign desktop_image_width = 100 | divided_by: columns
+  assign sizes = '(min-width: 750px) ' | append: desktop_image_width | append: 'vw, 50vw'
+%}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="section section--page-width color-{{ section.settings.color_scheme }} lookbook-grid spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  {%- if section.settings.show_heading and blog.title != blank -%}
+    <div class="lookbook-grid__header">
+      <h1 class="lookbook-grid__title">{{ blog.title }}</h1>
+      {%- if section.settings.show_description and blog.description != blank -%}
+        <p class="lookbook-grid__description">{{ blog.description }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- paginate blog.articles by 24 -%}
+    <div
+      class="lookbook-grid__container"
+      style="--lookbook-columns: {{ columns }};"
+    >
+      {%- for article in blog.articles -%}
+        <a href="{{ article.url }}" class="lookbook-grid__item">
+          <div class="lookbook-grid__image-wrapper" style="--image-ratio: {{ section.settings.image_ratio }};">
+            {%- if article.image -%}
+              {{
+                article.image
+                | image_url: width: 1500
+                | image_tag:
+                  width: article.image.width,
+                  widths: widths,
+                  height: article.image.height,
+                  alt: article.title | escape,
+                  class: 'lookbook-grid__image',
+                  sizes: sizes,
+                  loading: 'lazy'
+              }}
+            {%- else -%}
+              <div class="lookbook-grid__placeholder">
+                {{ 'lifestyle-1' | placeholder_svg_tag: 'lookbook-grid__placeholder-svg' }}
+              </div>
+            {%- endif -%}
+          </div>
+          {%- if section.settings.show_title -%}
+            <h2 class="lookbook-grid__item-title">{{ article.title }}</h2>
+          {%- endif -%}
+        </a>
+      {%- endfor -%}
+    </div>
+
+    {%- if paginate.pages > 1 -%}
+      <div class="lookbook-grid__pagination">
+        {{- paginate | default_pagination -}}
+      </div>
+    {%- endif -%}
+  {%- endpaginate -%}
+</div>
+
+{% stylesheet %}
+  .lookbook-grid__header {
+    text-align: center;
+    padding-block-end: clamp(32px, 4vw, 64px);
+  }
+
+  .lookbook-grid__title {
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .lookbook-grid__description {
+    margin: 12px 0 0;
+    opacity: 0.7;
+    max-width: 50ch;
+    margin-inline: auto;
+  }
+
+  .lookbook-grid__container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: clamp(12px, 2vw, 24px);
+
+    @media screen and (width >= 750px) {
+      grid-template-columns: repeat(var(--lookbook-columns, 3), 1fr);
+    }
+  }
+
+  .lookbook-grid__item {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .lookbook-grid__image-wrapper {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--image-ratio, 3 / 4);
+    background: rgba(from var(--color-foreground) r g b / 0.04);
+  }
+
+  .lookbook-grid__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .lookbook-grid__item:hover .lookbook-grid__image {
+    transform: scale(1.03);
+  }
+
+  .lookbook-grid__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lookbook-grid__placeholder-svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .lookbook-grid__item-title {
+    font-family: var(--font-body--family);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 10px 0 0;
+    line-height: 1.4;
+
+    @media screen and (width >= 750px) {
+      font-size: 0.875rem;
+    }
+  }
+
+  .lookbook-grid__pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding-block-start: clamp(32px, 4vw, 64px);
+  }
+
+  .lookbook-grid__pagination a,
+  .lookbook-grid__pagination .current {
+    display: block;
+    padding: 6px 12px;
+    color: var(--color-foreground);
+    text-decoration: none;
+  }
+
+  .lookbook-grid__pagination .current,
+  .lookbook-grid__pagination a:hover {
+    border-bottom: 1px solid var(--color-foreground);
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Lookbook grid",
+  "tag": "section",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_heading",
+      "label": "Show blog title",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show blog description",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Grid"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns (desktop)",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        {
+          "value": "3 / 4",
+          "label": "Portrait (3:4)"
+        },
+        {
+          "value": "1 / 1",
+          "label": "Square (1:1)"
+        },
+        {
+          "value": "4 / 3",
+          "label": "Landscape (4:3)"
+        }
+      ],
+      "default": "3 / 4"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show article title",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    }
+  ]
+}
+{% endschema %}
