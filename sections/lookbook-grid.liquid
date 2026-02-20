@@ -3,62 +3,72 @@
   assign columns = section.settings.columns
   assign desktop_image_width = 100 | divided_by: columns
   assign sizes = '(min-width: 750px) ' | append: desktop_image_width | append: 'vw, 50vw'
+
+  if section.settings.blog != blank
+    assign target_blog = blogs[section.settings.blog]
+  elsif blog
+    assign target_blog = blog
+  endif
 %}
 
 <div class="section-background color-{{ section.settings.color_scheme }}"></div>
 <div
-  class="section section--page-width color-{{ section.settings.color_scheme }} lookbook-grid spacing-style"
+  class="section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} lookbook-grid spacing-style"
   style="{% render 'spacing-style', settings: section.settings %}"
 >
-  {%- if section.settings.show_heading and blog.title != blank -%}
+  {%- if section.settings.show_heading and target_blog.title != blank -%}
     <div class="lookbook-grid__header">
-      <h1 class="lookbook-grid__title">{{ blog.title }}</h1>
-      {%- if section.settings.show_description and blog.description != blank -%}
-        <p class="lookbook-grid__description">{{ blog.description }}</p>
+      <h1 class="lookbook-grid__title">{{ section.settings.custom_heading | default: target_blog.title }}</h1>
+      {%- if section.settings.show_description and target_blog.description != blank -%}
+        <p class="lookbook-grid__description">{{ target_blog.description }}</p>
       {%- endif -%}
     </div>
   {%- endif -%}
 
-  {%- paginate blog.articles by 24 -%}
-    <div
-      class="lookbook-grid__container"
-      style="--lookbook-columns: {{ columns }};"
-    >
-      {%- for article in blog.articles -%}
-        <a href="{{ article.url }}" class="lookbook-grid__item">
-          <div class="lookbook-grid__image-wrapper" style="--image-ratio: {{ section.settings.image_ratio }};">
-            {%- if article.image -%}
-              {{
-                article.image
-                | image_url: width: 1500
-                | image_tag:
-                  width: article.image.width,
-                  widths: widths,
-                  height: article.image.height,
-                  alt: article.title | escape,
-                  class: 'lookbook-grid__image',
-                  sizes: sizes,
-                  loading: 'lazy'
-              }}
-            {%- else -%}
-              <div class="lookbook-grid__placeholder">
-                {{ 'lifestyle-1' | placeholder_svg_tag: 'lookbook-grid__placeholder-svg' }}
-              </div>
+  {%- if target_blog != blank -%}
+    {%- paginate target_blog.articles by section.settings.posts_per_page -%}
+      <div
+        class="lookbook-grid__container"
+        style="--lookbook-columns: {{ columns }};"
+      >
+        {%- for article in target_blog.articles -%}
+          <a href="{{ article.url }}" class="lookbook-grid__item">
+            <div class="lookbook-grid__image-wrapper" style="--image-ratio: {{ section.settings.image_ratio }};">
+              {%- if article.image -%}
+                {{
+                  article.image
+                  | image_url: width: 1500
+                  | image_tag:
+                    width: article.image.width,
+                    widths: widths,
+                    height: article.image.height,
+                    alt: article.title | escape,
+                    class: 'lookbook-grid__image',
+                    sizes: sizes,
+                    loading: 'lazy'
+                }}
+              {%- else -%}
+                <div class="lookbook-grid__placeholder">
+                  {{ 'lifestyle-1' | placeholder_svg_tag: 'lookbook-grid__placeholder-svg' }}
+                </div>
+              {%- endif -%}
+            </div>
+            {%- if section.settings.show_title -%}
+              <h2 class="lookbook-grid__item-title">{{ article.title }}</h2>
             {%- endif -%}
-          </div>
-          {%- if section.settings.show_title -%}
-            <h2 class="lookbook-grid__item-title">{{ article.title }}</h2>
-          {%- endif -%}
-        </a>
-      {%- endfor -%}
-    </div>
-
-    {%- if paginate.pages > 1 -%}
-      <div class="lookbook-grid__pagination">
-        {{- paginate | default_pagination -}}
+          </a>
+        {%- endfor -%}
       </div>
-    {%- endif -%}
-  {%- endpaginate -%}
+
+      {%- if paginate.pages > 1 -%}
+        <div class="lookbook-grid__pagination">
+          {{- paginate | default_pagination -}}
+        </div>
+      {%- endif -%}
+    {%- endpaginate -%}
+  {%- else -%}
+    <p class="lookbook-grid__empty" style="text-align: center; opacity: 0.5;">Select a blog in the section settings.</p>
+  {%- endif -%}
 </div>
 
 {% stylesheet %}
@@ -176,20 +186,32 @@
   },
   "settings": [
     {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog",
+      "info": "Select a blog. On blog templates this is optional — it uses the current blog automatically."
+    },
+    {
       "type": "header",
       "content": "Header"
     },
     {
       "type": "checkbox",
       "id": "show_heading",
-      "label": "Show blog title",
+      "label": "Show heading",
       "default": true
+    },
+    {
+      "type": "text",
+      "id": "custom_heading",
+      "label": "Custom heading",
+      "info": "Leave blank to use the blog title"
     },
     {
       "type": "checkbox",
       "id": "show_description",
       "label": "Show blog description",
-      "default": true
+      "default": false
     },
     {
       "type": "header",
@@ -220,6 +242,10 @@
         {
           "value": "4 / 3",
           "label": "Landscape (4:3)"
+        },
+        {
+          "value": "16 / 9",
+          "label": "Widescreen (16:9)"
         }
       ],
       "default": "3 / 4"
@@ -229,6 +255,35 @@
       "id": "show_title",
       "label": "Show article title",
       "default": true
+    },
+    {
+      "type": "range",
+      "id": "posts_per_page",
+      "label": "Posts per page",
+      "min": 6,
+      "max": 48,
+      "step": 6,
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "Page width"
+        },
+        {
+          "value": "full-width",
+          "label": "Full width"
+        }
+      ],
+      "default": "page-width"
     },
     {
       "type": "header",
@@ -263,6 +318,21 @@
       "step": 1,
       "unit": "px",
       "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lookbook grid",
+      "category": "t:categories.storytelling",
+      "settings": {
+        "columns": 3,
+        "image_ratio": "3 / 4",
+        "show_title": true,
+        "show_heading": true,
+        "section_width": "page-width",
+        "padding-block-start": 48,
+        "padding-block-end": 48
+      }
     }
   ]
 }
