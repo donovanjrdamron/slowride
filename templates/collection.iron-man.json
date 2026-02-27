@@ -9,58 +9,42 @@
  */
 {
   "sections": {
-    "section_qMRJgR": {
-      "type": "section",
+    "17722347030e49d20c": {
+      "type": "_blocks",
       "blocks": {
-        "ai_gen_block_0875637_7VaiEB": {
-          "type": "ai_gen_block_0875637",
-          "name": "Hero Section",
+        "ai_gen_block_a645b34_tUKHhE": {
+          "type": "ai_gen_block_a645b34",
           "settings": {
-            "background_image": "shopify://shop_images/vintage_radio_banner.jpg",
-            "desktop_aspect_ratio": 40,
-            "mobile_aspect_ratio": 60,
+            "desktop_aspect_ratio": "16:9",
+            "object_fit": "cover",
+            "mobile_video": "shopify://files/videos/0227 (2)(1).mp4",
+            "mobile_aspect_ratio": "1:1",
             "heading": "",
-            "heading_color": "#063d49",
-            "desktop_heading_size": 48,
-            "mobile_heading_size": 32,
-            "show_description": true,
-            "description": "",
+            "heading_size": "large",
+            "subheading": "",
             "text_color": "#ffffff",
-            "desktop_text_size": 18,
-            "mobile_text_size": 16,
             "text_alignment": "center",
-            "horizontal_alignment": "center",
-            "vertical_alignment": "center",
-            "show_content_background": false,
-            "content_background_color": "#000000",
-            "content_border_radius": 8,
-            "content_max_width": 800,
-            "desktop_padding_top": 0,
-            "desktop_padding_right": 0,
-            "desktop_padding_bottom": 0,
-            "desktop_padding_left": 0,
-            "mobile_padding_top": 0,
-            "mobile_padding_right": 0,
-            "mobile_padding_bottom": 0,
-            "mobile_padding_left": 0,
-            "desktop_content_padding_top": 20,
-            "desktop_content_padding_right": 20,
-            "desktop_content_padding_bottom": 20,
-            "desktop_content_padding_left": 20,
-            "mobile_content_padding_top": 15,
-            "mobile_content_padding_right": 15,
-            "mobile_content_padding_bottom": 15,
-            "mobile_content_padding_left": 15,
-            "header_text_color": "#063d49",
-            "header_scrolled_text_color": "#063d49"
+            "button_1_label": "",
+            "button_1_link": "",
+            "button_1_style": "filled",
+            "button_2_label": "",
+            "button_2_link": "",
+            "button_2_style": "outlined",
+            "overlay_color": "#000000",
+            "overlay_opacity": 0,
+            "desktop_height_mode": "auto",
+            "desktop_height_px": 600,
+            "mobile_height_mode": "auto",
+            "mobile_height_px": 500,
+            "padding_top": 0,
+            "padding_bottom": 0
           },
           "blocks": {}
         }
       },
       "block_order": [
-        "ai_gen_block_0875637_7VaiEB"
+        "ai_gen_block_a645b34_tUKHhE"
       ],
-      "name": "t:names.custom_section",
       "settings": {
         "content_direction": "column",
         "vertical_on_mobile": true,
@@ -87,96 +71,6 @@
         "gradient_direction": "to top",
         "padding-block-start": 0,
         "padding-block-end": 0
-      }
-    },
-    "ss_circle_menu_JwejAf": {
-      "type": "ss-circle-menu",
-      "blocks": {
-        "image_iG8GdJ": {
-          "type": "Image",
-          "settings": {
-            "bubble_img": "shopify://shop_images/parts-service-tee-white-943391.jpg",
-            "bubble_text": "Tees",
-            "bubble_link": "shopify://collections/t-shirts"
-          }
-        },
-        "image_tgWQNJ": {
-          "type": "Image",
-          "settings": {
-            "bubble_img": "shopify://shop_images/slow-ride-racing-a-frame-hat-whiteblack-829471.jpg",
-            "bubble_text": "Hats",
-            "bubble_link": "shopify://collections/headwear-slowridehats"
-          }
-        },
-        "image_QHjtAV": {
-          "type": "Image",
-          "settings": {
-            "bubble_img": "shopify://shop_images/utility-work-pant-gray-665957.jpg",
-            "bubble_text": "Pants",
-            "bubble_link": "shopify://collections/slow-ride-pants"
-          }
-        },
-        "image_Nk6gN6": {
-          "type": "Image",
-          "settings": {
-            "bubble_img": "shopify://shop_images/the-original-hoodie-navy-472092.jpg",
-            "bubble_text": "Hoodies",
-            "bubble_link": "shopify://collections/hoodies-1"
-          }
-        },
-        "image_V73chR": {
-          "type": "Image",
-          "settings": {
-            "bubble_img": "shopify://shop_images/v1-sticker-pack-862707.jpg",
-            "bubble_text": "Extras",
-            "bubble_link": "shopify://collections/accessories"
-          }
-        }
-      },
-      "block_order": [
-        "image_iG8GdJ",
-        "image_tgWQNJ",
-        "image_QHjtAV",
-        "image_Nk6gN6",
-        "image_V73chR"
-      ],
-      "name": "SS - Circle Menu",
-      "settings": {
-        "slider_width": 100,
-        "slider_gap": 82,
-        "slider_gap_mobile": 30,
-        "icon_size": 108,
-        "icon_size_mobile": 74,
-        "icon_space": 4,
-        "icon_space_mobile": 4,
-        "icon_border_thickness": 2,
-        "icon_square": false,
-        "use_hover": true,
-        "text_custom": false,
-        "text_font": "josefin_sans_n4",
-        "text_size": 12,
-        "text_size_mobile": 10,
-        "text_height": 130,
-        "text_mt": 8,
-        "icon_border_color": "#a90f0f",
-        "icon_border_gradient": "",
-        "text_color": "#121212",
-        "background_color": "#ffffff",
-        "background_gradient": "",
-        "border_color": "#121212",
-        "border_gradient": "",
-        "margin_top": 0,
-        "margin_bottom": 0,
-        "padding_top": 36,
-        "padding_bottom": 36,
-        "padding_horizontal": 5,
-        "padding_horizontal_mobile": 1.5,
-        "full_width": true,
-        "content_width": 1500,
-        "border_thickness": 0,
-        "lazy": true,
-        "hide_mobile": false,
-        "hide_desktop": false
       }
     },
     "main": {
@@ -372,8 +266,7 @@
     }
   },
   "order": [
-    "section_qMRJgR",
-    "ss_circle_menu_JwejAf",
+    "17722347030e49d20c",
     "main"
   ]
 }
