@@ -1,6 +1,671 @@
+{% doc %}
+  @prompt
+    
+    **Prompt:**
+    
+    Build me a custom Shopify theme section called "Hero - Image & Video" as a fully self-contained `.liquid` file. This is a hero section with the following requirements:
+    
+    **Core behavior:**
+    - On desktop, the background is a **static image**
+    - On mobile, the background is a **video** (autoplay, muted, loop, playsinline)
+    - Both swap cleanly at a breakpoint of 768px using CSS only — no JavaScript required for the swap
+    - The section should stack content (text, buttons) centered over the background media
+    
+    **Schema settings — everything must be editable in the Shopify theme customizer with no URL pasting:**
+    
+    For the image:
+    - Image picker (uses Shopify's native `type: image_picker` so the merchant uploads directly from their Shopify Files or media library — no URL field)
+    - Aspect ratio selector for desktop image with options: 16:9, 4:3, 21:9, 1:1, and a "natural" option that follows the image's own ratio
+    - Object fit setting: Cover or Contain
+    
+    For the video:
+    - Video picker (uses Shopify's native `type: video` so the merchant uploads directly from Shopify Files — no URL field)
+    - Aspect ratio selector for mobile video with the same ratio options: 9:16, 4:5, 1:1, 16:9
+    - The video must use the `{{ section.settings.video }}` Shopify video object and render via the `video_tag` filter
+    
+    **Hero content (all editable in customizer):**
+    - Heading text with font size control (small/medium/large/xl)
+    - Subheading text
+    - Two CTA buttons — each with editable label, link, and style toggle (filled or outlined)
+    - Text color picker
+    - Text alignment: left, center, right
+    - Overlay opacity slider (0–100%) with a color picker for overlay color so text stays readable over any background
+    
+    **Section-level controls:**
+    - Desktop section height: auto (follows aspect ratio) or fixed height in px
+    - Mobile section height: same options
+    - Padding top and padding bottom controls
+    
+    **Technical requirements:**
+    - All styles scoped to the section ID so nothing bleeds into other sections
+    - Use CSS custom properties for aspect ratios set inline via `style` attribute on the wrapper, driven by the schema settings
+    - The image and video swap must be handled purely with a CSS media query — hide the image on mobile, hide the video on desktop
+    - Clean, well-commented code throughout
+    - Schema must be complete and valid with proper `default` values for every setting so the section looks good on first drop with no configuration
+    
+    Output the complete `.liquid` file ready to upload to my Shopify theme.
+    
+    ---
+    
+    This gives any AI coding tool everything it needs to build it right the first time., Right now, the section goes way below the video, even though I have it selected so that it should be the fixed height with the correct aspect ratio. There is also a bunch of random letters and numbers below the video that need to be gone. 
+{% enddoc %}
+{% assign ai_gen_id = block.id | replace: '_', '' | downcase %}
+
+{% liquid
+  assign desktop_aspect_ratio = block.settings.desktop_aspect_ratio
+  assign mobile_aspect_ratio = block.settings.mobile_aspect_ratio
+  
+  case desktop_aspect_ratio
+    when '16:9'
+      assign desktop_ratio_value = '56.25%'
+    when '4:3'
+      assign desktop_ratio_value = '75%'
+    when '21:9'
+      assign desktop_ratio_value = '42.86%'
+    when '1:1'
+      assign desktop_ratio_value = '100%'
+    when 'natural'
+      assign desktop_ratio_value = 'auto'
+  endcase
+  
+  case mobile_aspect_ratio
+    when '9:16'
+      assign mobile_ratio_value = '177.78%'
+    when '4:5'
+      assign mobile_ratio_value = '125%'
+    when '1:1'
+      assign mobile_ratio_value = '100%'
+    when '16:9'
+      assign mobile_ratio_value = '56.25%'
+  endcase
+  
+  assign desktop_height_mode = block.settings.desktop_height_mode
+  assign mobile_height_mode = block.settings.mobile_height_mode
+%}
+
+{% style %}
+  .ai-hero-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+    padding-top: {{ block.settings.padding_top }}px;
+    padding-bottom: {{ block.settings.padding_bottom }}px;
+    display: block;
+  }
+
+  .ai-hero-media-wrapper-{{ ai_gen_id }} {
+    position: relative;
+    width: 100%;
+    {% if desktop_height_mode == 'auto' %}
+      {% if desktop_aspect_ratio == 'natural' %}
+        height: auto;
+      {% else %}
+        padding-bottom: {{ desktop_ratio_value }};
+        height: 0;
+      {% endif %}
+    {% else %}
+      height: {{ block.settings.desktop_height_px }}px;
+      padding-bottom: 0;
+    {% endif %}
+  }
+
+  .ai-hero-image-{{ ai_gen_id }},
+  .ai-hero-video-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: {{ block.settings.object_fit }};
+  }
+
+  .ai-hero-image-{{ ai_gen_id }} {
+    display: block;
+  }
+
+  .ai-hero-video-{{ ai_gen_id }} {
+    display: none;
+  }
+
+  .ai-hero-video-{{ ai_gen_id }} video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: {{ block.settings.object_fit }};
+  }
+
+  .ai-hero-overlay-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: {{ block.settings.overlay_color }};
+    opacity: {{ block.settings.overlay_opacity | divided_by: 100.0 }};
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .ai-hero-content-{{ ai_gen_id }} {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 800px;
+    text-align: {{ block.settings.text_alignment }};
+    z-index: 2;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-hero-heading-{{ ai_gen_id }} {
+    margin: 0 0 16px;
+    color: {{ block.settings.text_color }};
+    {% case block.settings.heading_size %}
+      {% when 'small' %}
+        font-size: 32px;
+        line-height: 1.2;
+      {% when 'medium' %}
+        font-size: 48px;
+        line-height: 1.1;
+      {% when 'large' %}
+        font-size: 64px;
+        line-height: 1.1;
+      {% when 'xl' %}
+        font-size: 80px;
+        line-height: 1;
+    {% endcase %}
+  }
+
+  .ai-hero-subheading-{{ ai_gen_id }} {
+    margin: 0 0 24px;
+    font-size: 18px;
+    line-height: 1.5;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-hero-buttons-{{ ai_gen_id }} {
+    display: flex;
+    gap: 16px;
+    {% if block.settings.text_alignment == 'center' %}
+      justify-content: center;
+    {% elsif block.settings.text_alignment == 'right' %}
+      justify-content: flex-end;
+    {% else %}
+      justify-content: flex-start;
+    {% endif %}
+    flex-wrap: wrap;
+  }
+
+  .ai-hero-button-{{ ai_gen_id }} {
+    display: inline-block;
+    padding: 14px 32px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    cursor: pointer;
+  }
+
+  .ai-hero-button-filled-{{ ai_gen_id }} {
+    background-color: {{ block.settings.text_color }};
+    color: {{ block.settings.overlay_color }};
+    border: 2px solid {{ block.settings.text_color }};
+  }
+
+  .ai-hero-button-filled-{{ ai_gen_id }}:hover {
+    background-color: transparent;
+    color: {{ block.settings.text_color }};
+  }
+
+  .ai-hero-button-outlined-{{ ai_gen_id }} {
+    background-color: transparent;
+    color: {{ block.settings.text_color }};
+    border: 2px solid {{ block.settings.text_color }};
+  }
+
+  .ai-hero-button-outlined-{{ ai_gen_id }}:hover {
+    background-color: {{ block.settings.text_color }};
+    color: {{ block.settings.overlay_color }};
+  }
+
+  @media screen and (max-width: 767px) {
+    .ai-hero-media-wrapper-{{ ai_gen_id }} {
+      {% if mobile_height_mode == 'auto' %}
+        padding-bottom: {{ mobile_ratio_value }};
+        height: 0;
+      {% else %}
+        height: {{ block.settings.mobile_height_px }}px;
+        padding-bottom: 0;
+      {% endif %}
+    }
+
+    .ai-hero-image-{{ ai_gen_id }} {
+      display: none;
+    }
+
+    .ai-hero-video-{{ ai_gen_id }} {
+      display: block;
+    }
+
+    .ai-hero-heading-{{ ai_gen_id }} {
+      {% case block.settings.heading_size %}
+        {% when 'small' %}
+          font-size: 24px;
+        {% when 'medium' %}
+          font-size: 32px;
+        {% when 'large' %}
+          font-size: 40px;
+        {% when 'xl' %}
+          font-size: 48px;
+      {% endcase %}
+    }
+
+    .ai-hero-subheading-{{ ai_gen_id }} {
+      font-size: 16px;
+    }
+
+    .ai-hero-buttons-{{ ai_gen_id }} {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .ai-hero-button-{{ ai_gen_id }} {
+      text-align: center;
+    }
+  }
+{% endstyle %}
+
+<div class="ai-hero-{{ ai_gen_id }}" {{ block.shopify_attributes }}>
+  <div class="ai-hero-media-wrapper-{{ ai_gen_id }}">
+    {% if block.settings.desktop_image %}
+      <img
+        src="{{ block.settings.desktop_image | image_url: width: 2000 }}"
+        alt="{{ block.settings.desktop_image.alt | escape }}"
+        loading="lazy"
+        width="{{ block.settings.desktop_image.width }}"
+        height="{{ block.settings.desktop_image.height }}"
+        class="ai-hero-image-{{ ai_gen_id }}"
+      >
+    {% else %}
+      <div class="ai-hero-image-{{ ai_gen_id }}" style="background-color: #f4f4f4;"></div>
+    {% endif %}
+
+    {% if block.settings.mobile_video %}
+      <div class="ai-hero-video-{{ ai_gen_id }}">
+        {{ block.settings.mobile_video | video_tag: autoplay: true, loop: true, muted: true, playsinline: true, controls: false }}
+      </div>
+    {% else %}
+      <div class="ai-hero-video-{{ ai_gen_id }}" style="background-color: #333;"></div>
+    {% endif %}
+
+    <div class="ai-hero-overlay-{{ ai_gen_id }}"></div>
+
+    <div class="ai-hero-content-{{ ai_gen_id }}">
+      {% if block.settings.heading != blank %}
+        <h1 class="ai-hero-heading-{{ ai_gen_id }}">{{ block.settings.heading }}</h1>
+      {% endif %}
+
+      {% if block.settings.subheading != blank %}
+        <p class="ai-hero-subheading-{{ ai_gen_id }}">{{ block.settings.subheading }}</p>
+      {% endif %}
+
+      {% if block.settings.button_1_label != blank or block.settings.button_2_label != blank %}
+        <div class="ai-hero-buttons-{{ ai_gen_id }}">
+          {% if block.settings.button_1_label != blank %}
+            <a 
+              href="{{ block.settings.button_1_link }}" 
+              class="ai-hero-button-{{ ai_gen_id }} {% if block.settings.button_1_style == 'filled' %}ai-hero-button-filled-{{ ai_gen_id }}{% else %}ai-hero-button-outlined-{{ ai_gen_id }}{% endif %}"
+            >
+              {{ block.settings.button_1_label }}
+            </a>
+          {% endif %}
+
+          {% if block.settings.button_2_label != blank %}
+            <a 
+              href="{{ block.settings.button_2_link }}" 
+              class="ai-hero-button-{{ ai_gen_id }} {% if block.settings.button_2_style == 'filled' %}ai-hero-button-filled-{{ ai_gen_id }}{% else %}ai-hero-button-outlined-{{ ai_gen_id }}{% endif %}"
+            >
+              {{ block.settings.button_2_label }}
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
 {% schema %}
- {
-   "name": "AI_Block",
-   "tag": "shopify-ai-generated-block"
- }
+{
+  "name": "Hero - Image & Video",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Desktop media"
+    },
+    {
+      "type": "image_picker",
+      "id": "desktop_image",
+      "label": "Desktop image"
+    },
+    {
+      "type": "select",
+      "id": "desktop_aspect_ratio",
+      "label": "Desktop aspect ratio",
+      "options": [
+        {
+          "value": "16:9",
+          "label": "16:9"
+        },
+        {
+          "value": "4:3",
+          "label": "4:3"
+        },
+        {
+          "value": "21:9",
+          "label": "21:9"
+        },
+        {
+          "value": "1:1",
+          "label": "1:1"
+        },
+        {
+          "value": "natural",
+          "label": "Natural"
+        }
+      ],
+      "default": "16:9"
+    },
+    {
+      "type": "select",
+      "id": "object_fit",
+      "label": "Image fit",
+      "options": [
+        {
+          "value": "cover",
+          "label": "Cover"
+        },
+        {
+          "value": "contain",
+          "label": "Contain"
+        }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "header",
+      "content": "Mobile media"
+    },
+    {
+      "type": "video",
+      "id": "mobile_video",
+      "label": "Mobile video"
+    },
+    {
+      "type": "select",
+      "id": "mobile_aspect_ratio",
+      "label": "Mobile aspect ratio",
+      "options": [
+        {
+          "value": "9:16",
+          "label": "9:16"
+        },
+        {
+          "value": "4:5",
+          "label": "4:5"
+        },
+        {
+          "value": "1:1",
+          "label": "1:1"
+        },
+        {
+          "value": "16:9",
+          "label": "16:9"
+        }
+      ],
+      "default": "9:16"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Welcome to our store"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        },
+        {
+          "value": "xl",
+          "label": "Extra large"
+        }
+      ],
+      "default": "large"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Discover our latest collection"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Button 1"
+    },
+    {
+      "type": "text",
+      "id": "button_1_label",
+      "label": "Label",
+      "default": "Shop now"
+    },
+    {
+      "type": "url",
+      "id": "button_1_link",
+      "label": "Link"
+    },
+    {
+      "type": "select",
+      "id": "button_1_style",
+      "label": "Style",
+      "options": [
+        {
+          "value": "filled",
+          "label": "Filled"
+        },
+        {
+          "value": "outlined",
+          "label": "Outlined"
+        }
+      ],
+      "default": "filled"
+    },
+    {
+      "type": "header",
+      "content": "Button 2"
+    },
+    {
+      "type": "text",
+      "id": "button_2_label",
+      "label": "Label",
+      "default": "Learn more"
+    },
+    {
+      "type": "url",
+      "id": "button_2_link",
+      "label": "Link"
+    },
+    {
+      "type": "select",
+      "id": "button_2_style",
+      "label": "Style",
+      "options": [
+        {
+          "value": "filled",
+          "label": "Filled"
+        },
+        {
+          "value": "outlined",
+          "label": "Outlined"
+        }
+      ],
+      "default": "outlined"
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 30
+    },
+    {
+      "type": "header",
+      "content": "Desktop section height"
+    },
+    {
+      "type": "select",
+      "id": "desktop_height_mode",
+      "label": "Height mode",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto (follows aspect ratio)"
+        },
+        {
+          "value": "fixed",
+          "label": "Fixed height"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "desktop_height_px",
+      "label": "Fixed height",
+      "min": 300,
+      "max": 1000,
+      "step": 50,
+      "unit": "px",
+      "default": 600
+    },
+    {
+      "type": "header",
+      "content": "Mobile section height"
+    },
+    {
+      "type": "select",
+      "id": "mobile_height_mode",
+      "label": "Height mode",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto (follows aspect ratio)"
+        },
+        {
+          "value": "fixed",
+          "label": "Fixed height"
+        }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "mobile_height_px",
+      "label": "Fixed height",
+      "min": 300,
+      "max": 1000,
+      "step": 50,
+      "unit": "px",
+      "default": 500
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero - Image & Video"
+    }
+  ]
+}
 {% endschema %}
