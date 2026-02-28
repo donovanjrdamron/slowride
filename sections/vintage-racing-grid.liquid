@@ -229,6 +229,13 @@
     margin: 0 0 14px;
   }
 
+  .vintage-racing-section .vrg-btn-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
   .vintage-racing-section .vrg-btn {
     display: inline-block;
     padding: 10px 24px;
@@ -249,6 +256,47 @@
   .vintage-racing-section .vrg-btn:hover {
     background: #B01A0E;
     color: #FFFFFF;
+  }
+
+  .vintage-racing-section .vrg-btn--atc {
+    display: inline-block;
+    padding: 10px 24px;
+    border: 2px solid #B01A0E;
+    border-radius: 999px;
+    background: #B01A0E;
+    color: #FFFFFF;
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+    cursor: pointer;
+  }
+
+  .vintage-racing-section .vrg-btn--atc:hover {
+    background: #8a1409;
+    border-color: #8a1409;
+  }
+
+  /* ── Card badge ── */
+
+  .vintage-racing-section .vrg-card-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 4;
+    width: 48px;
+    height: 48px;
+    pointer-events: none;
+  }
+
+  .vintage-racing-section .vrg-card-badge img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
   }
 
   /* ── Empty state ── */
@@ -317,6 +365,12 @@
               <span class="vrg-race-number">{{ forloop.index | prepend: '0' }}</span>
             {%- endif -%}
 
+            {%- if section.settings.card_badge != blank -%}
+              <div class="vrg-card-badge">
+                {{ section.settings.card_badge | image_url: width: 96 | image_tag: loading: 'lazy', alt: 'Badge' }}
+              </div>
+            {%- endif -%}
+
             <div class="vrg-card-image">
               {%- if product.featured_image -%}
                 {{
@@ -334,9 +388,15 @@
             <div class="vrg-card-content">
               <h3 class="vrg-product-title">{{ product.title }}</h3>
               <p class="vrg-product-price">{{ product.price | money }}</p>
-              <a href="{{ product.url }}" class="vrg-btn">
-                {{ section.settings.button_label }}
-              </a>
+              <div class="vrg-btn-row">
+                <a href="{{ product.url }}" class="vrg-btn">
+                  {{ section.settings.button_label }}
+                </a>
+                <form action="/cart/add" method="post">
+                  <input type="hidden" name="id" value="{{ product.first_available_variant.id }}">
+                  <button type="submit" class="vrg-btn--atc">Add to Cart</button>
+                </form>
+              </div>
             </div>
           </div>
         {%- endfor -%}
@@ -379,6 +439,11 @@
       "id": "button_label",
       "label": "Button label",
       "default": "Shop Now"
+    },
+    {
+      "type": "image_picker",
+      "id": "card_badge",
+      "label": "Card badge icon"
     }
   ],
   "presets": [
