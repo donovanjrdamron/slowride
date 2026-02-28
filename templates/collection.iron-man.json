@@ -275,11 +275,38 @@
         "show_race_numbers": true,
         "button_label": "Shop Now"
       }
+    },
+    "vintage_racing_about_VKMtFb": {
+      "type": "vintage-racing-about",
+      "name": "Vintage Racing About",
+      "settings": {
+        "background_image": "shopify://shop_images/0213_1.jpg",
+        "overlay_color": "#000000",
+        "overlay_opacity": 30,
+        "show_stripes": false,
+        "stripe_color_1": "#F2A900",
+        "stripe_color_2": "#D4541A",
+        "stripe_color_3": "#B01A0E",
+        "overline": "Slow Ride",
+        "overline_color": "#ffffff",
+        "heading": "Behind The Collection",
+        "heading_color": "#ffffff",
+        "video": "shopify://files/videos/IVAN STEWART RELEASE REEL V3.mp4",
+        "autoplay": false,
+        "play_button_color": "#B01A0E",
+        "video_card_bg_color": "#ffffff",
+        "video_card_bg_opacity": 45,
+        "video_title": "Collection Story",
+        "video_title_color": "#1a1008",
+        "video_subtitle": "Vintage racing has been at the core of SlowRide since the beginning — it's the culture, the aesthetic, everything we draw from. The Iron Man Collection is the fullest expression of that yet. The 23-window bus in our main graphic isn't just a design choice; it was Ivan Stuart's personal vehicle for years before landing with the customer who gave us the chance to build around it. We've had that copy of Hot VW's magazine sitting around forever, always knowing we'd eventually do something with it. This collection is what happened when everything finally came together the way it was supposed to.",
+        "video_subtitle_color": "#D4541A"
+      }
     }
   },
   "order": [
     "17722347030e49d20c",
     "main",
-    "vintage_racing_grid_C86wHV"
+    "vintage_racing_grid_C86wHV",
+    "vintage_racing_about_VKMtFb"
   ]
 }
