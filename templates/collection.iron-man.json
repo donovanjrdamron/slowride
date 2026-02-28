@@ -264,10 +264,22 @@
         "padding-block-start": 0,
         "padding-block-end": 32
       }
+    },
+    "vintage_racing_grid_C86wHV": {
+      "type": "vintage-racing-grid",
+      "name": "Vintage Racing Grid",
+      "settings": {
+        "collection": "t-shirts",
+        "heading": "Iron Man Collection",
+        "subheading": "inspired by vintage racing",
+        "show_race_numbers": true,
+        "button_label": "Shop Now"
+      }
     }
   },
   "order": [
     "17722347030e49d20c",
-    "main"
+    "main",
+    "vintage_racing_grid_C86wHV"
   ]
 }
