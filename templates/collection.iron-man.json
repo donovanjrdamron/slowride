@@ -15,6 +15,7 @@
         "ai_gen_block_a645b34_tUKHhE": {
           "type": "ai_gen_block_a645b34",
           "settings": {
+            "desktop_image": "shopify://shop_images/Frame_1000008023.png",
             "desktop_aspect_ratio": "16:9",
             "object_fit": "cover",
             "mobile_video": "shopify://files/videos/0227 (2)(1).mp4",
