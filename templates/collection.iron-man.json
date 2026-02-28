@@ -272,7 +272,7 @@
         "collection": "t-shirts",
         "heading": "Iron Man Collection",
         "subheading": "inspired by vintage racing",
-        "show_race_numbers": true,
+        "show_race_numbers": false,
         "button_label": "Shop Now"
       }
     },
