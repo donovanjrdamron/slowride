@@ -273,7 +273,8 @@
         "heading": "Iron Man Collection",
         "subheading": "inspired by vintage racing",
         "show_race_numbers": false,
-        "button_label": "Shop Now"
+        "button_label": "Shop Now",
+        "card_badge": "shopify://shop_images/SRG.png"
       }
     },
     "vintage_racing_about_VKMtFb": {
