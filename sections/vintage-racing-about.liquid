@@ -141,10 +141,12 @@
     line-height: 1.1;
   }
 
-  /* ── Video card ── */
+  /* ── Video card — portrait, centered ── */
 
   .vintage-racing-about .vra-video-card {
     position: relative;
+    max-width: 520px;
+    margin: 0 auto;
     background: var(--vra-video-card-bg);
     backdrop-filter: blur(18px) saturate(160%);
     -webkit-backdrop-filter: blur(18px) saturate(160%);
@@ -173,9 +175,14 @@
   .vintage-racing-about .vra-video-wrap video,
   .vintage-racing-about .vra-video-wrap .vra-thumb-img {
     width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 3 / 4;
     object-fit: cover;
     display: block;
+  }
+
+  /* Hide native controls so our custom overlay handles everything cleanly */
+  .vintage-racing-about .vra-video-wrap video::-webkit-media-controls-fullscreen-button {
+    display: none;
   }
 
   /* ── Play button overlay ── */
@@ -214,6 +221,40 @@
     border-width: 10px 0 10px 18px;
     border-color: transparent transparent transparent #FFFFFF;
     margin-left: 3px;
+  }
+
+  /* ── Fullscreen button ── */
+
+  .vintage-racing-about .vra-fs-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 36px;
+    height: 36px;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+  }
+
+  .vintage-racing-about .vra-fs-btn:hover {
+    background: rgba(0, 0, 0, 0.75);
+  }
+
+  .vintage-racing-about .vra-fs-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: #fff;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
   }
 
   /* ── Caption bar ── */
@@ -266,7 +307,7 @@
 
   .vintage-racing-about .vra-video-placeholder {
     width: 100%;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 3 / 4;
     background: rgba(255, 255, 255, 0.08);
     display: flex;
     align-items: center;
@@ -275,11 +316,21 @@
     font-size: 14px;
   }
 
-  /* ── Mobile ── */
+  /* ── Mobile — 9:16 reel format ── */
 
   @media (max-width: 768px) {
     .vintage-racing-about {
       padding: 48px 0;
+    }
+
+    .vintage-racing-about .vra-video-card {
+      max-width: 100%;
+    }
+
+    .vintage-racing-about .vra-video-wrap video,
+    .vintage-racing-about .vra-video-wrap .vra-thumb-img,
+    .vintage-racing-about .vra-video-placeholder {
+      aspect-ratio: 9 / 16;
     }
   }
 </style>
@@ -311,7 +362,7 @@
     </div>
 
     <div class="vra-video-card" data-animate="media">
-      <div class="vra-video-wrap">
+      <div class="vra-video-wrap" id="vra-wrap-{{ section.id }}">
         {%- if video != blank -%}
           <video
             id="vra-video-{{ section.id }}"
@@ -319,7 +370,6 @@
             muted
             loop
             playsinline
-            controls
             {% if poster_url != '' %}poster="{{ poster_url }}"{% endif %}
           >
             {%- for source in video.sources -%}
@@ -327,6 +377,9 @@
             {%- endfor -%}
           </video>
           <div class="vra-play-btn{% if section.settings.autoplay %} is-hidden{% endif %}" id="vra-play-{{ section.id }}"></div>
+          <button class="vra-fs-btn" id="vra-fs-{{ section.id }}" aria-label="Fullscreen">
+            <svg viewBox="0 0 24 24"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+          </button>
         {%- elsif thumbnail != blank -%}
           <img class="vra-thumb-img" src="{{ thumbnail | image_url: width: 1200 }}" alt="{{ section.settings.video_title | escape }}" loading="lazy">
         {%- else -%}
@@ -355,7 +408,10 @@
 
     var video = document.getElementById('vra-video-{{ section.id }}');
     var playBtn = document.getElementById('vra-play-{{ section.id }}');
+    var fsBtn = document.getElementById('vra-fs-{{ section.id }}');
+    var wrap = document.getElementById('vra-wrap-{{ section.id }}');
 
+    /* ── Play / pause ── */
     if (video && playBtn) {
       function syncPlayBtn() {
         if (video.paused) {
@@ -370,16 +426,32 @@
       video.addEventListener('ended', syncPlayBtn);
 
       playBtn.addEventListener('click', function () {
-        if (video.paused) {
-          video.play();
-        } else {
-          video.pause();
-        }
+        if (video.paused) { video.play(); } else { video.pause(); }
+      });
+
+      video.addEventListener('click', function () {
+        if (video.paused) { video.play(); } else { video.pause(); }
       });
 
       syncPlayBtn();
     }
 
+    /* ── Fullscreen ── */
+    if (video && fsBtn) {
+      fsBtn.addEventListener('click', function () {
+        if (video.webkitEnterFullscreen) {
+          video.webkitEnterFullscreen();
+        } else if (video.requestFullscreen) {
+          video.requestFullscreen();
+        } else if (video.webkitRequestFullscreen) {
+          video.webkitRequestFullscreen();
+        } else if (video.msRequestFullscreen) {
+          video.msRequestFullscreen();
+        }
+      });
+    }
+
+    /* ── Entrance animation ── */
     var mediaCard = sectionEl.querySelector('[data-animate="media"]');
     var hasAnimated = false;
 
