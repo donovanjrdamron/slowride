@@ -180,11 +180,6 @@
     display: block;
   }
 
-  /* Hide native controls so our custom overlay handles everything cleanly */
-  .vintage-racing-about .vra-video-wrap video::-webkit-media-controls-fullscreen-button {
-    display: none;
-  }
-
   /* ── Play button overlay ── */
 
   .vintage-racing-about .vra-play-btn {
@@ -411,29 +406,15 @@
     var fsBtn = document.getElementById('vra-fs-{{ section.id }}');
     var wrap = document.getElementById('vra-wrap-{{ section.id }}');
 
-    /* ── Play / pause ── */
+    /* ── Play button: one-shot unmute + show native controls ── */
     if (video && playBtn) {
-      function syncPlayBtn() {
-        if (video.paused) {
-          playBtn.classList.remove('is-hidden');
-        } else {
-          playBtn.classList.add('is-hidden');
-        }
-      }
-
-      video.addEventListener('play', syncPlayBtn);
-      video.addEventListener('pause', syncPlayBtn);
-      video.addEventListener('ended', syncPlayBtn);
-
       playBtn.addEventListener('click', function () {
-        if (video.paused) { video.play(); } else { video.pause(); }
+        video.muted = false;
+        video.controls = true;
+        video.loop = false;
+        if (video.paused) video.play();
+        playBtn.classList.add('is-hidden');
       });
-
-      video.addEventListener('click', function () {
-        if (video.paused) { video.play(); } else { video.pause(); }
-      });
-
-      syncPlayBtn();
     }
 
     /* ── Fullscreen ── */
