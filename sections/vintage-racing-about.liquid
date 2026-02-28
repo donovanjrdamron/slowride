@@ -1,9 +1,3 @@
-{%- comment -%} RGB extraction for elements that need alpha transparency {%- endcomment -%}
-{%- assign card_r = section.settings.card_bg_color | color_extract: 'red' -%}
-{%- assign card_g = section.settings.card_bg_color | color_extract: 'green' -%}
-{%- assign card_b = section.settings.card_bg_color | color_extract: 'blue' -%}
-{%- assign card_a = section.settings.card_bg_opacity | times: 0.01 -%}
-
 {%- assign ov_r = section.settings.overlay_color | color_extract: 'red' -%}
 {%- assign ov_g = section.settings.overlay_color | color_extract: 'green' -%}
 {%- assign ov_b = section.settings.overlay_color | color_extract: 'blue' -%}
@@ -36,11 +30,6 @@
     --vra-overlay: rgba({{ ov_r }}, {{ ov_g }}, {{ ov_b }}, {{ ov_a }});
     --vra-overline-color: {{ section.settings.overline_color }};
     --vra-heading-color: {{ section.settings.heading_color }};
-    --vra-label-color: {{ section.settings.label_tag_color }};
-    --vra-card-bg: rgba({{ card_r }}, {{ card_g }}, {{ card_b }}, {{ card_a }});
-    --vra-card-shadow: rgba({{ card_r }}, {{ card_g }}, {{ card_b }}, 0.35);
-    --vra-card-heading-color: {{ section.settings.card_heading_color }};
-    --vra-body-color: {{ section.settings.body_text_color }};
     --vra-video-card-bg: rgba({{ vc_r }}, {{ vc_g }}, {{ vc_b }}, {{ vc_a }});
     --vra-video-title-color: {{ section.settings.video_title_color }};
     --vra-video-subtitle-color: {{ section.settings.video_subtitle_color }};
@@ -119,7 +108,7 @@
   .vintage-racing-about .vra-inner {
     position: relative;
     z-index: 3;
-    max-width: 1200px;
+    max-width: 900px;
     margin: 0 auto;
     padding: 0 24px;
   }
@@ -152,113 +141,7 @@
     line-height: 1.1;
   }
 
-  /* ── Two-column layout ── */
-
-  .vintage-racing-about .vra-columns {
-    display: grid;
-    grid-template-columns: 55fr 45fr;
-    gap: 48px;
-    align-items: start;
-  }
-
-  .vintage-racing-about .vra-columns.layout-text-right {
-    grid-template-columns: 45fr 55fr;
-  }
-
-  .vintage-racing-about .vra-columns.layout-text-right .vra-text-col {
-    order: 2;
-  }
-
-  .vintage-racing-about .vra-columns.layout-text-right .vra-video-col {
-    order: 1;
-  }
-
-  /* ── Text column — Glass card ── */
-
-  .vintage-racing-about .vra-glass-card {
-    position: relative;
-    background: var(--vra-card-bg);
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, 0.20);
-    border-radius: 20px;
-    box-shadow:
-      0 8px 40px var(--vra-card-shadow),
-      0 2px 8px rgba(0, 0, 0, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    padding: 48px 44px;
-    overflow: hidden;
-    opacity: 0;
-    transform: translateX(-30px);
-    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-  }
-
-  .vintage-racing-about .vra-columns.layout-text-right .vra-glass-card {
-    transform: translateX(30px);
-  }
-
-  .vintage-racing-about .vra-glass-card.is-visible {
-    opacity: 1;
-    transform: translateX(0);
-  }
-
-  .vintage-racing-about .vra-glass-card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 40%;
-    background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0.20) 0%,
-      rgba(255, 255, 255, 0.00) 100%
-    );
-    border-radius: 20px 20px 0 0;
-    pointer-events: none;
-    z-index: 3;
-  }
-
-  .vintage-racing-about .vra-label-tag {
-    display: inline-block;
-    background: rgba(255, 255, 255, 0.15);
-    border: 1px solid rgba(255, 255, 255, 0.30);
-    border-radius: 999px;
-    color: var(--vra-label-color);
-    font-family: 'Anton', Impact, sans-serif;
-    font-size: 11px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    padding: 6px 16px;
-    margin-bottom: 20px;
-    position: relative;
-    z-index: 4;
-  }
-
-  .vintage-racing-about .vra-card-heading {
-    font-family: 'Anton', Impact, sans-serif;
-    font-size: clamp(32px, 4vw, 52px);
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    line-height: 1.1;
-    color: var(--vra-card-heading-color);
-    margin: 0 0 24px;
-    position: relative;
-    z-index: 4;
-  }
-
-  .vintage-racing-about .vra-body {
-    font-family: Georgia, 'Times New Roman', serif;
-    font-size: 16px;
-    line-height: 1.8;
-    color: var(--vra-body-color);
-    margin: 0;
-    position: relative;
-    z-index: 4;
-  }
-
-  /* ── Video column — Glass card ── */
+  /* ── Video card ── */
 
   .vintage-racing-about .vra-video-card {
     position: relative;
@@ -272,17 +155,13 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.85);
     overflow: hidden;
     opacity: 0;
-    transform: translateX(30px);
-    transition: opacity 0.6s ease-out 0.15s, transform 0.6s ease-out 0.15s;
-  }
-
-  .vintage-racing-about .vra-columns.layout-text-right .vra-video-card {
-    transform: translateX(-30px);
+    transform: translateY(24px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
   }
 
   .vintage-racing-about .vra-video-card.is-visible {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
 
   .vintage-racing-about .vra-video-wrap {
@@ -337,7 +216,7 @@
     margin-left: 3px;
   }
 
-  /* ── Video caption bar ── */
+  /* ── Caption bar ── */
 
   .vintage-racing-about .vra-caption {
     padding: 20px 24px;
@@ -377,13 +256,13 @@
   .vintage-racing-about .vra-video-subtitle {
     font-family: Georgia, 'Times New Roman', serif;
     font-style: italic;
-    font-size: 12px;
+    font-size: 13px;
     color: var(--vra-video-subtitle-color);
-    margin: 4px 0 0;
-    line-height: 1.4;
+    margin: 6px 0 0;
+    line-height: 1.6;
   }
 
-  /* ── Video placeholder ── */
+  /* ── Placeholder ── */
 
   .vintage-racing-about .vra-video-placeholder {
     width: 100%;
@@ -401,24 +280,6 @@
   @media (max-width: 768px) {
     .vintage-racing-about {
       padding: 48px 0;
-    }
-
-    .vintage-racing-about .vra-columns,
-    .vintage-racing-about .vra-columns.layout-text-right {
-      grid-template-columns: 1fr;
-      gap: 32px;
-    }
-
-    .vintage-racing-about .vra-columns .vra-text-col { order: 1; }
-    .vintage-racing-about .vra-columns .vra-video-col { order: 2; }
-
-    .vintage-racing-about .vra-glass-card {
-      padding: 36px 28px;
-      transform: translateX(0);
-    }
-
-    .vintage-racing-about .vra-video-card {
-      transform: translateX(0);
     }
   }
 </style>
@@ -449,54 +310,38 @@
       {%- endif -%}
     </div>
 
-    <div class="vra-columns{% if section.settings.layout == 'text_right' %} layout-text-right{% endif %}">
-      <!-- Text column -->
-      <div class="vra-text-col">
-        <div class="vra-glass-card" data-animate="text">
-          {%- if section.settings.label_tag != blank -%}
-            <span class="vra-label-tag">{{ section.settings.label_tag }}</span>
-          {%- endif -%}
-          {%- if section.settings.collection_heading != blank -%}
-            <h3 class="vra-card-heading">{{ section.settings.collection_heading }}</h3>
-          {%- endif -%}
-          {%- if section.settings.body_text != blank -%}
-            <p class="vra-body">{{ section.settings.body_text }}</p>
-          {%- endif -%}
-        </div>
+    <div class="vra-video-card" data-animate="media">
+      <div class="vra-video-wrap">
+        {%- if video != blank -%}
+          <video
+            id="vra-video-{{ section.id }}"
+            {% if section.settings.autoplay %}autoplay{% endif %}
+            muted
+            loop
+            playsinline
+            controls
+            {% if poster_url != '' %}poster="{{ poster_url }}"{% endif %}
+          >
+            {%- for source in video.sources -%}
+              <source src="{{ source.url }}" type="{{ source.mime_type }}">
+            {%- endfor -%}
+          </video>
+          <div class="vra-play-btn{% if section.settings.autoplay %} is-hidden{% endif %}" id="vra-play-{{ section.id }}"></div>
+        {%- elsif thumbnail != blank -%}
+          <img class="vra-thumb-img" src="{{ thumbnail | image_url: width: 1200 }}" alt="{{ section.settings.video_title | escape }}" loading="lazy">
+        {%- else -%}
+          <div class="vra-video-placeholder">Add a video or image in section settings</div>
+        {%- endif -%}
       </div>
-
-      <!-- Video column -->
-      <div class="vra-video-col">
-        <div class="vra-video-card" data-animate="media">
-          <div class="vra-video-wrap">
-            {%- if video != blank -%}
-              <video
-                id="vra-video-{{ section.id }}"
-                {% if section.settings.autoplay %}autoplay{% endif %}
-                muted
-                loop
-                playsinline
-                controls
-                {% if poster_url != '' %}poster="{{ poster_url }}"{% endif %}
-              >
-                {%- for source in video.sources -%}
-                  <source src="{{ source.url }}" type="{{ source.mime_type }}">
-                {%- endfor -%}
-              </video>
-              <div class="vra-play-btn{% if section.settings.autoplay %} is-hidden{% endif %}" id="vra-play-{{ section.id }}"></div>
-            {%- elsif thumbnail != blank -%}
-              <img class="vra-thumb-img" src="{{ thumbnail | image_url: width: 1200 }}" alt="{{ section.settings.video_title | escape }}" loading="lazy">
-            {%- else -%}
-              <div class="vra-video-placeholder">Add a video or image in section settings</div>
-            {%- endif -%}
-          </div>
-          <div class="vra-caption">
-            <div class="vra-flag-icon"></div>
-            <div class="vra-caption-text">
-              <p class="vra-video-title">{{ section.settings.video_title }}</p>
-              <p class="vra-video-subtitle">{{ section.settings.video_subtitle }}</p>
-            </div>
-          </div>
+      <div class="vra-caption">
+        <div class="vra-flag-icon"></div>
+        <div class="vra-caption-text">
+          {%- if section.settings.video_title != blank -%}
+            <p class="vra-video-title">{{ section.settings.video_title }}</p>
+          {%- endif -%}
+          {%- if section.settings.video_subtitle != blank -%}
+            <p class="vra-video-subtitle">{{ section.settings.video_subtitle }}</p>
+          {%- endif -%}
         </div>
       </div>
     </div>
@@ -535,7 +380,6 @@
       syncPlayBtn();
     }
 
-    var textCard = sectionEl.querySelector('[data-animate="text"]');
     var mediaCard = sectionEl.querySelector('[data-animate="media"]');
     var hasAnimated = false;
 
@@ -543,7 +387,6 @@
       entries.forEach(function (entry) {
         if (entry.isIntersecting && !hasAnimated) {
           hasAnimated = true;
-          if (textCard) textCard.classList.add('is-visible');
           if (mediaCard) mediaCard.classList.add('is-visible');
           observer.disconnect();
         }
@@ -582,20 +425,6 @@
       "step": 5,
       "unit": "%",
       "default": 30
-    },
-    {
-      "type": "header",
-      "content": "Layout"
-    },
-    {
-      "type": "select",
-      "id": "layout",
-      "label": "Column Order",
-      "options": [
-        { "value": "text_left", "label": "Text Left · Video Right" },
-        { "value": "text_right", "label": "Video Left · Text Right" }
-      ],
-      "default": "text_left"
     },
     {
       "type": "checkbox",
@@ -651,63 +480,7 @@
     },
     {
       "type": "header",
-      "content": "Text Card"
-    },
-    {
-      "type": "text",
-      "id": "label_tag",
-      "label": "Card Label Tag",
-      "default": "About The Collection"
-    },
-    {
-      "type": "color",
-      "id": "label_tag_color",
-      "label": "Label Tag Color",
-      "default": "#F2A900"
-    },
-    {
-      "type": "text",
-      "id": "collection_heading",
-      "label": "Collection Heading",
-      "default": "Iron Man Collection"
-    },
-    {
-      "type": "color",
-      "id": "card_heading_color",
-      "label": "Card Heading Color",
-      "default": "#ffffff"
-    },
-    {
-      "type": "textarea",
-      "id": "body_text",
-      "label": "Body Text",
-      "default": "Inspired by the legendary liveries of 1980s desert racing, the Iron Man Collection captures the raw beauty of machines built to conquer the Baja peninsula. Each piece in this limited run pays homage to the fearless drivers and hand-painted race trucks that defined an era of off-road motorsport."
-    },
-    {
-      "type": "color",
-      "id": "body_text_color",
-      "label": "Body Text Color",
-      "default": "#ffffff"
-    },
-    {
-      "type": "color",
-      "id": "card_bg_color",
-      "label": "Card Background Color",
-      "default": "#B01A0E"
-    },
-    {
-      "type": "range",
-      "id": "card_bg_opacity",
-      "label": "Card Background Opacity",
-      "min": 0,
-      "max": 100,
-      "step": 5,
-      "unit": "%",
-      "default": 70
-    },
-    {
-      "type": "header",
-      "content": "Video / Media Card"
+      "content": "Video"
     },
     {
       "type": "video",
@@ -726,6 +499,36 @@
       "default": true
     },
     {
+      "type": "color",
+      "id": "play_button_color",
+      "label": "Play Button Color",
+      "default": "#B01A0E"
+    },
+    {
+      "type": "header",
+      "content": "Video Card"
+    },
+    {
+      "type": "color",
+      "id": "video_card_bg_color",
+      "label": "Card Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "video_card_bg_opacity",
+      "label": "Card Background Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 45
+    },
+    {
+      "type": "header",
+      "content": "Caption"
+    },
+    {
       "type": "text",
       "id": "video_title",
       "label": "Caption Title",
@@ -738,38 +541,16 @@
       "default": "#1a1008"
     },
     {
-      "type": "text",
+      "type": "textarea",
       "id": "video_subtitle",
-      "label": "Caption Subtitle",
+      "label": "Caption Text",
       "default": "Shot on location · Slow Ride Original"
     },
     {
       "type": "color",
       "id": "video_subtitle_color",
-      "label": "Caption Subtitle Color",
+      "label": "Caption Text Color",
       "default": "#D4541A"
-    },
-    {
-      "type": "color",
-      "id": "video_card_bg_color",
-      "label": "Video Card Background Color",
-      "default": "#ffffff"
-    },
-    {
-      "type": "range",
-      "id": "video_card_bg_opacity",
-      "label": "Video Card Background Opacity",
-      "min": 0,
-      "max": 100,
-      "step": 5,
-      "unit": "%",
-      "default": 45
-    },
-    {
-      "type": "color",
-      "id": "play_button_color",
-      "label": "Play Button Color",
-      "default": "#B01A0E"
     }
   ],
   "presets": [
