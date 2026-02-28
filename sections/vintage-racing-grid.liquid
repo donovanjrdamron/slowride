@@ -29,15 +29,6 @@
     clip-path: polygon(0% 68%, 50% 50%, 100% 42%, 100% 62%, 50% 72%, 0% 92%);
   }
 
-  .vintage-racing-section .stripe--orange {
-    background: #D4541A;
-    clip-path: polygon(0% 48%, 50% 32%, 100% 24%, 100% 40%, 50% 50%, 0% 66%);
-  }
-
-  .vintage-racing-section .stripe--red {
-    background: #B01A0E;
-    clip-path: polygon(0% 30%, 50% 16%, 100% 8%, 100% 22%, 50% 30%, 0% 46%);
-  }
 
   /* ── Content layer ── */
 
@@ -76,24 +67,6 @@
     margin: 0 0 20px;
   }
 
-  .vintage-racing-section .vrg-pinstripe {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .vintage-racing-section .vrg-pinstripe-thin {
-    width: 120px;
-    height: 1px;
-    background: #D4541A;
-  }
-
-  .vintage-racing-section .vrg-pinstripe-thick {
-    width: 120px;
-    height: 3px;
-    background: #D4541A;
-  }
 
   /* ── Product grid ── */
 
@@ -281,8 +254,6 @@
 <section class="vintage-racing-section" id="vintage-racing-grid-{{ section.id }}">
   <div class="stripe-container">
     <div class="stripe stripe--yellow"></div>
-    <div class="stripe stripe--orange"></div>
-    <div class="stripe stripe--red"></div>
   </div>
 
   <div class="vrg-inner">
@@ -291,10 +262,6 @@
       {%- if section.settings.subheading != blank -%}
         <p class="vrg-subheading">{{ section.settings.subheading }}</p>
       {%- endif -%}
-      <div class="vrg-pinstripe">
-        <div class="vrg-pinstripe-thin"></div>
-        <div class="vrg-pinstripe-thick"></div>
-      </div>
     </div>
 
     {%- assign racing_collection = collections[section.settings.collection] -%}
