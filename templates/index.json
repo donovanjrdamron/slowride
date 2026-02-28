@@ -59,6 +59,7 @@
         "slide_ayiLyA",
         "slide_f3Hdwd"
       ],
+      "disabled": true,
       "name": "Hero Slideshow",
       "settings": {
         "section_width": "full-width",
@@ -69,6 +70,71 @@
         "corner_radius_bottom": 14,
         "autoplay": true,
         "autoplay_speed": 5,
+        "padding-block-start": 0,
+        "padding-block-end": 0
+      }
+    },
+    "blocks_TdBL6y": {
+      "type": "_blocks",
+      "blocks": {
+        "ai_gen_block_a645b34_7gE6Ef": {
+          "type": "ai_gen_block_a645b34",
+          "settings": {
+            "desktop_image": "shopify://shop_images/Frame_1000008023.png",
+            "desktop_aspect_ratio": "16:9",
+            "object_fit": "cover",
+            "mobile_video": "shopify://files/videos/0227 (2)(1).mp4",
+            "mobile_aspect_ratio": "1:1",
+            "heading": "",
+            "heading_size": "large",
+            "subheading": "",
+            "text_color": "#ffffff",
+            "text_alignment": "left",
+            "button_1_label": "",
+            "button_1_link": "",
+            "button_1_style": "filled",
+            "button_2_label": "",
+            "button_2_link": "",
+            "button_2_style": "outlined",
+            "overlay_color": "#000000",
+            "overlay_opacity": 0,
+            "desktop_height_mode": "auto",
+            "desktop_height_px": 600,
+            "mobile_height_mode": "auto",
+            "mobile_height_px": 500,
+            "padding_top": 0,
+            "padding_bottom": 0
+          },
+          "blocks": {}
+        }
+      },
+      "block_order": [
+        "ai_gen_block_a645b34_7gE6Ef"
+      ],
+      "settings": {
+        "content_direction": "column",
+        "vertical_on_mobile": true,
+        "horizontal_alignment": "flex-start",
+        "vertical_alignment": "center",
+        "align_baseline": false,
+        "horizontal_alignment_flex_direction_column": "flex-start",
+        "vertical_alignment_flex_direction_column": "center",
+        "gap": 12,
+        "section_width": "full-width",
+        "section_height": "",
+        "section_height_custom": 50,
+        "color_scheme": "",
+        "background_media": "none",
+        "video_position": "cover",
+        "background_image_position": "cover",
+        "border": "none",
+        "border_width": 1,
+        "border_opacity": 100,
+        "border_radius": 17,
+        "toggle_overlay": false,
+        "overlay_color": "#00000026",
+        "overlay_style": "solid",
+        "gradient_direction": "to top",
         "padding-block-start": 0,
         "padding-block-end": 0
       }
@@ -288,7 +354,7 @@
         }
       },
       "settings": {
-        "collection": "holiday25",
+        "collection": "iron-man",
         "layout_type": "grid",
         "carousel_on_mobile": false,
         "max_products": 4,
@@ -2031,6 +2097,7 @@
   },
   "order": [
     "hero_slideshow_qGXdmh",
+    "blocks_TdBL6y",
     "product_list_qU3bEB",
     "section_Dy8nVa",
     "17621973435b295808",
