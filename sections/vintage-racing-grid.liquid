@@ -1,233 +1,235 @@
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
 
-  #vintage-racing-grid-{{ section.id }} {
-    --vrg-bg: #1a1008;
-    --vrg-accent: #C4541A;
-    --vrg-red: #8B1A0E;
-    --vrg-tan: #D4925A;
-    --vrg-text: #F0E6D3;
-    --vrg-card-bg: #231508;
-    --vrg-font: 'Anton', Impact, sans-serif;
-
+  .vintage-racing-section {
     position: relative;
-    background: var(--vrg-bg);
-    color: var(--vrg-text);
+    background: #FFFFFF;
     padding: 80px 0;
     overflow: hidden;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
 
-  /* Checkered flag border along top edge */
-  #vintage-racing-grid-{{ section.id }}::before {
-    content: '';
+  /* ── Swooping stripe system (Toyota Trophy Truck livery) ── */
+
+  .vintage-racing-section .stripe-container {
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 12px;
-    background: repeating-linear-gradient(
-      90deg,
-      var(--vrg-accent) 0px,
-      var(--vrg-accent) 12px,
-      var(--vrg-bg) 12px,
-      var(--vrg-bg) 24px
-    );
-    -webkit-mask-image: repeating-linear-gradient(
-      180deg,
-      #000 0px,
-      #000 12px,
-      transparent 12px,
-      transparent 24px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      #000 0px,
-      #000 12px,
-      transparent 12px,
-      transparent 24px
-    );
-    -webkit-mask-composite: source-in;
-    mask-image: repeating-conic-gradient(#000 0% 25%, transparent 0% 50%);
-    mask-size: 24px 24px;
-    z-index: 2;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
   }
 
-  #vintage-racing-grid-{{ section.id }} .vrg-inner {
+  .vintage-racing-section .stripe {
+    position: absolute;
+    inset: 0;
+  }
+
+  .vintage-racing-section .stripe--yellow {
+    background: #F2A900;
+    clip-path: polygon(0% 68%, 50% 50%, 100% 42%, 100% 62%, 50% 72%, 0% 92%);
+  }
+
+  .vintage-racing-section .stripe--orange {
+    background: #D4541A;
+    clip-path: polygon(0% 48%, 50% 32%, 100% 24%, 100% 40%, 50% 50%, 0% 66%);
+  }
+
+  .vintage-racing-section .stripe--red {
+    background: #B01A0E;
+    clip-path: polygon(0% 30%, 50% 16%, 100% 8%, 100% 22%, 50% 30%, 0% 46%);
+  }
+
+  /* ── Content layer ── */
+
+  .vintage-racing-section .vrg-inner {
+    position: relative;
+    z-index: 2;
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 24px;
-    position: relative;
-    z-index: 1;
   }
 
-  /* Header */
-  #vintage-racing-grid-{{ section.id }} .vrg-header {
+  /* ── Section header ── */
+
+  .vintage-racing-section .vrg-header {
     text-align: center;
     margin-bottom: 48px;
   }
 
-  #vintage-racing-grid-{{ section.id }} .vrg-heading {
-    font-family: var(--vrg-font);
-    font-size: clamp(36px, 6vw, 64px);
+  .vintage-racing-section .vrg-heading {
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: 52px;
     font-weight: 400;
-    letter-spacing: 0.15em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--vrg-text);
-    margin: 0 0 8px;
+    color: #1a1008;
+    margin: 0 0 10px;
     line-height: 1.1;
   }
 
-  #vintage-racing-grid-{{ section.id }} .vrg-subheading {
+  .vintage-racing-section .vrg-subheading {
     font-size: 14px;
-    font-weight: 300;
-    letter-spacing: 0.08em;
-    color: var(--vrg-tan);
-    margin: 0 0 24px;
+    font-weight: 400;
+    letter-spacing: 0.2em;
     text-transform: uppercase;
+    color: #D4541A;
+    margin: 0 0 20px;
   }
 
-  /* Double pinstripe rule */
-  #vintage-racing-grid-{{ section.id }} .vrg-pinstripe {
+  .vintage-racing-section .vrg-pinstripe {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
   }
 
-  #vintage-racing-grid-{{ section.id }} .vrg-pinstripe-thin {
+  .vintage-racing-section .vrg-pinstripe-thin {
     width: 120px;
     height: 1px;
-    background: var(--vrg-accent);
+    background: #D4541A;
   }
 
-  #vintage-racing-grid-{{ section.id }} .vrg-pinstripe-thick {
+  .vintage-racing-section .vrg-pinstripe-thick {
     width: 120px;
     height: 3px;
-    background: var(--vrg-accent);
+    background: #D4541A;
   }
 
-  /* Diagonal speed stripes */
-  #vintage-racing-grid-{{ section.id }} .vrg-grid-wrapper {
-    position: relative;
-  }
+  /* ── Product grid ── */
 
-  #vintage-racing-grid-{{ section.id }} .vrg-speed-stripe {
-    position: absolute;
-    top: -40px;
-    bottom: -40px;
-    width: 180px;
-    background: var(--vrg-accent);
-    opacity: 0.06;
-    transform: skewX(-25deg);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  #vintage-racing-grid-{{ section.id }} .vrg-speed-stripe--1 {
-    left: 8%;
-  }
-
-  #vintage-racing-grid-{{ section.id }} .vrg-speed-stripe--2 {
-    right: 12%;
-    width: 100px;
-  }
-
-  /* Product grid */
-  #vintage-racing-grid-{{ section.id }} .vrg-grid {
+  .vintage-racing-section .vrg-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+
+  /* ── Frosted glass product cards ── */
+
+  .vintage-racing-section .product-card {
     position: relative;
-    z-index: 1;
-  }
-
-  #vintage-racing-grid-{{ section.id }} .vrg-card:nth-child(odd) {
-    margin-top: 0;
-  }
-
-  #vintage-racing-grid-{{ section.id }} .vrg-card:nth-child(even) {
-    margin-top: 24px;
-  }
-
-  /* Product card */
-  #vintage-racing-grid-{{ section.id }} .vrg-card {
-    position: relative;
-    background: var(--vrg-card-bg);
-    border: 1px solid rgba(196, 84, 26, 0.3);
-    box-shadow: 0 4px 24px rgba(196, 84, 26, 0.12);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 16px;
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.10),
+      inset 0 1px 0 rgba(255, 255, 255, 0.85);
     overflow: hidden;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 16px;
   }
 
-  #vintage-racing-grid-{{ section.id }} .vrg-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 32px rgba(196, 84, 26, 0.25);
+  .vintage-racing-section .product-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.35) 0%,
+      rgba(255, 255, 255, 0.00) 100%
+    );
+    border-radius: 16px 16px 0 0;
+    pointer-events: none;
+    z-index: 3;
   }
 
-  /* Race number */
-  #vintage-racing-grid-{{ section.id }} .vrg-race-number {
+  .vintage-racing-section .card--odd {
+    transform: translateY(-12px);
+  }
+
+  .vintage-racing-section .card--even {
+    transform: translateY(12px);
+  }
+
+  .vintage-racing-section .card--odd:hover {
+    transform: translateY(-18px);
+    box-shadow:
+      0 14px 40px rgba(0, 0, 0, 0.16),
+      inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  }
+
+  .vintage-racing-section .card--even:hover {
+    transform: translateY(6px);
+    box-shadow:
+      0 14px 40px rgba(0, 0, 0, 0.16),
+      inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  }
+
+  /* ── Race number ── */
+
+  .vintage-racing-section .vrg-race-number {
     position: absolute;
     top: 8px;
-    right: 12px;
-    font-family: var(--vrg-font);
-    font-size: 80px;
+    right: 16px;
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: 96px;
     font-weight: 400;
     line-height: 1;
-    color: var(--vrg-accent);
-    opacity: 0.12;
-    z-index: 1;
+    color: rgba(176, 26, 14, 0.10);
+    z-index: 0;
     pointer-events: none;
     user-select: none;
   }
 
-  /* Product image */
-  #vintage-racing-grid-{{ section.id }} .vrg-card-image {
+  /* ── Product image ── */
+
+  .vintage-racing-section .vrg-card-image {
     position: relative;
+    z-index: 1;
     width: 100%;
     aspect-ratio: 1 / 1;
     overflow: hidden;
+    border-radius: 10px;
   }
 
-  #vintage-racing-grid-{{ section.id }} .vrg-card-image img {
+  .vintage-racing-section .vrg-card-image img,
+  .vintage-racing-section .vrg-card-image svg {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
   }
 
-  /* Card content */
-  #vintage-racing-grid-{{ section.id }} .vrg-card-content {
-    padding: 20px;
+  /* ── Card content ── */
+
+  .vintage-racing-section .vrg-card-content {
+    position: relative;
+    z-index: 1;
+    padding-top: 12px;
   }
 
-  #vintage-racing-grid-{{ section.id }} .vrg-product-title {
-    font-family: var(--vrg-font);
-    font-size: 18px;
+  .vintage-racing-section .vrg-product-title {
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: 16px;
     font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--vrg-text);
-    margin: 0 0 6px;
-    line-height: 1.2;
+    letter-spacing: 0.08em;
+    color: #1a1008;
+    margin: 0 0 4px;
+    line-height: 1.3;
   }
 
-  #vintage-racing-grid-{{ section.id }} .vrg-product-price {
-    font-size: 15px;
-    color: var(--vrg-tan);
-    margin: 0 0 16px;
-    font-weight: 400;
+  .vintage-racing-section .vrg-product-price {
+    font-size: 14px;
+    font-weight: 600;
+    color: #D4541A;
+    margin: 0 0 14px;
   }
 
-  #vintage-racing-grid-{{ section.id }} .vrg-btn {
+  .vintage-racing-section .vrg-btn {
     display: inline-block;
-    padding: 10px 28px;
-    border: 1.5px solid var(--vrg-accent);
+    padding: 10px 24px;
+    border: 2px solid #B01A0E;
     border-radius: 999px;
     background: transparent;
-    color: var(--vrg-text);
+    color: #B01A0E;
+    font-family: 'Anton', Impact, sans-serif;
     font-size: 12px;
-    font-weight: 600;
+    font-weight: 400;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     text-decoration: none;
@@ -235,49 +237,54 @@
     cursor: pointer;
   }
 
-  #vintage-racing-grid-{{ section.id }} .vrg-btn:hover {
-    background: var(--vrg-accent);
-    color: #fff;
+  .vintage-racing-section .vrg-btn:hover {
+    background: #B01A0E;
+    color: #FFFFFF;
   }
 
-  /* Empty state */
-  #vintage-racing-grid-{{ section.id }} .vrg-empty {
+  /* ── Empty state ── */
+
+  .vintage-racing-section .vrg-empty {
     text-align: center;
-    opacity: 0.5;
+    color: #999;
     padding: 40px 0;
     grid-column: 1 / -1;
   }
 
-  /* Mobile */
+  /* ── Mobile ── */
+
   @media (max-width: 768px) {
-    #vintage-racing-grid-{{ section.id }} {
+    .vintage-racing-section {
       padding: 48px 0;
     }
 
-    #vintage-racing-grid-{{ section.id }} .vrg-grid {
-      grid-template-columns: 1fr;
-      gap: 24px;
-    }
-
-    #vintage-racing-grid-{{ section.id }} .vrg-card:nth-child(even) {
-      margin-top: 0;
-    }
-
-    #vintage-racing-grid-{{ section.id }} .vrg-heading {
+    .vintage-racing-section .vrg-heading {
       font-size: 32px;
     }
 
-    #vintage-racing-grid-{{ section.id }} .vrg-speed-stripe {
-      width: 100px;
+    .vintage-racing-section .vrg-grid {
+      grid-template-columns: 1fr;
     }
 
-    #vintage-racing-grid-{{ section.id }} .vrg-speed-stripe--2 {
-      width: 60px;
+    .vintage-racing-section .card--odd,
+    .vintage-racing-section .card--even {
+      transform: translateY(0);
+    }
+
+    .vintage-racing-section .card--odd:hover,
+    .vintage-racing-section .card--even:hover {
+      transform: translateY(-6px);
     }
   }
 </style>
 
-<div id="vintage-racing-grid-{{ section.id }}">
+<section class="vintage-racing-section" id="vintage-racing-grid-{{ section.id }}">
+  <div class="stripe-container">
+    <div class="stripe stripe--yellow"></div>
+    <div class="stripe stripe--orange"></div>
+    <div class="stripe stripe--red"></div>
+  </div>
+
   <div class="vrg-inner">
     <div class="vrg-header">
       <h2 class="vrg-heading">{{ section.settings.heading }}</h2>
@@ -290,49 +297,45 @@
       </div>
     </div>
 
-    {%- if section.settings.collection != blank -%}
-      <div class="vrg-grid-wrapper">
-        <div class="vrg-speed-stripe vrg-speed-stripe--1"></div>
-        <div class="vrg-speed-stripe vrg-speed-stripe--2"></div>
+    {%- assign racing_collection = collections[section.settings.collection] -%}
+    {%- if racing_collection != blank and racing_collection.products.size > 0 -%}
+      <div class="vrg-grid">
+        {%- for product in racing_collection.products limit: 4 -%}
+          {%- assign card_mod = forloop.index | modulo: 2 -%}
+          <div class="product-card {% if card_mod == 1 %}card--odd{% else %}card--even{% endif %}">
+            {%- if section.settings.show_race_numbers -%}
+              <span class="vrg-race-number">{{ forloop.index | prepend: '0' }}</span>
+            {%- endif -%}
 
-        <div class="vrg-grid">
-          {%- for product in section.settings.collection.products limit: 4 -%}
-            <div class="vrg-card">
-              {%- if section.settings.show_race_numbers -%}
-                <span class="vrg-race-number">{{ forloop.index | prepend: '0' }}</span>
+            <div class="vrg-card-image">
+              {%- if product.featured_image -%}
+                {{
+                  product.featured_image
+                  | image_url: width: 600
+                  | image_tag:
+                    loading: 'lazy',
+                    alt: product.title
+                }}
+              {%- else -%}
+                {{ 'product-1' | placeholder_svg_tag }}
               {%- endif -%}
-
-              <div class="vrg-card-image">
-                {%- if product.featured_image -%}
-                  {{
-                    product.featured_image
-                    | image_url: width: 600
-                    | image_tag:
-                      loading: 'lazy',
-                      alt: product.title,
-                      class: 'vrg-img'
-                  }}
-                {%- else -%}
-                  {{ 'product-1' | placeholder_svg_tag: 'vrg-img' }}
-                {%- endif -%}
-              </div>
-
-              <div class="vrg-card-content">
-                <h3 class="vrg-product-title">{{ product.title }}</h3>
-                <p class="vrg-product-price">{{ product.price | money }}</p>
-                <a href="{{ product.url }}" class="vrg-btn">
-                  {{ section.settings.button_label }}
-                </a>
-              </div>
             </div>
-          {%- endfor -%}
-        </div>
+
+            <div class="vrg-card-content">
+              <h3 class="vrg-product-title">{{ product.title }}</h3>
+              <p class="vrg-product-price">{{ product.price | money }}</p>
+              <a href="{{ product.url }}" class="vrg-btn">
+                {{ section.settings.button_label }}
+              </a>
+            </div>
+          </div>
+        {%- endfor -%}
       </div>
     {%- else -%}
       <p class="vrg-empty">Select a collection in the section settings.</p>
     {%- endif -%}
   </div>
-</div>
+</section>
 
 {% schema %}
 {
@@ -347,7 +350,7 @@
       "type": "text",
       "id": "heading",
       "label": "Heading",
-      "default": "The Collection"
+      "default": "Iron Man Collection"
     },
     {
       "type": "text",
