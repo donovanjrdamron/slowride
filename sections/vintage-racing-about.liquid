@@ -1,0 +1,707 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Anton&display=swap');
+
+  .vintage-racing-about {
+    position: relative;
+    background: #FFFFFF;
+    padding: 80px 0;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+
+  /* ── Mirrored stripe system (bookend of the grid section) ── */
+
+  .vintage-racing-about .stripe-container {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+    transform: scaleX(-1);
+  }
+
+  .vintage-racing-about .stripe-container .stripe {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 7%;
+  }
+
+  .vintage-racing-about .stripe-container .stripe--yellow {
+    background: #F2A900;
+    bottom: 0;
+    clip-path: polygon(0% 8%, 100% 22%, 100% 50%, 0% 38%);
+  }
+
+  .vintage-racing-about .stripe-container .stripe--orange {
+    background: #D4541A;
+    bottom: 0;
+    clip-path: polygon(0% 44%, 100% 54%, 100% 78%, 0% 68%);
+  }
+
+  .vintage-racing-about .stripe-container .stripe--red {
+    background: #B01A0E;
+    bottom: 0;
+    clip-path: polygon(0% 74%, 100% 82%, 100% 100%, 0% 96%);
+  }
+
+  /* ── Subtle secondary stripe cluster (top-left accent at 20% opacity) ── */
+
+  .vintage-racing-about .stripe-container-accent {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5%;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.20;
+  }
+
+  .vintage-racing-about .stripe-container-accent .stripe {
+    position: absolute;
+    inset: 0;
+  }
+
+  .vintage-racing-about .stripe-container-accent .stripe--red {
+    background: #B01A0E;
+    clip-path: polygon(0% 0%, 100% 0%, 100% 18%, 0% 26%);
+  }
+
+  .vintage-racing-about .stripe-container-accent .stripe--orange {
+    background: #D4541A;
+    clip-path: polygon(0% 32%, 100% 22%, 100% 46%, 0% 56%);
+  }
+
+  .vintage-racing-about .stripe-container-accent .stripe--yellow {
+    background: #F2A900;
+    clip-path: polygon(0% 62%, 100% 50%, 100% 78%, 0% 92%);
+  }
+
+  /* ── Content layer ── */
+
+  .vintage-racing-about .vra-inner {
+    position: relative;
+    z-index: 2;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* ── Section header ── */
+
+  .vintage-racing-about .vra-header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .vintage-racing-about .vra-overline {
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: #D4541A;
+    margin: 0 0 10px;
+  }
+
+  .vintage-racing-about .vra-heading {
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: clamp(40px, 5vw, 64px);
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #1a1008;
+    margin: 0 0 20px;
+    line-height: 1.1;
+  }
+
+  .vintage-racing-about .vra-divider-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .vintage-racing-about .vra-divider-center span:first-child {
+    display: block;
+    width: 140px;
+    height: 1px;
+    background: #D4541A;
+  }
+
+  .vintage-racing-about .vra-divider-center span:last-child {
+    display: block;
+    width: 140px;
+    height: 3px;
+    background: #D4541A;
+  }
+
+  /* ── Two-column layout ── */
+
+  .vintage-racing-about .vra-columns {
+    display: grid;
+    grid-template-columns: 55fr 45fr;
+    gap: 48px;
+    align-items: start;
+  }
+
+  /* ── Left column — Deep red glass card ── */
+
+  .vintage-racing-about .vra-red-card {
+    position: relative;
+    background: rgba(176, 26, 14, 0.82);
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.20);
+    border-radius: 20px;
+    box-shadow:
+      0 8px 40px rgba(176, 26, 14, 0.35),
+      0 2px 8px rgba(0, 0, 0, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    padding: 48px 44px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+
+  .vintage-racing-about .vra-red-card.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .vintage-racing-about .vra-red-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 40%;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.20) 0%,
+      rgba(255, 255, 255, 0.00) 100%
+    );
+    border-radius: 20px 20px 0 0;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .vintage-racing-about .vra-label-tag {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.30);
+    border-radius: 999px;
+    color: #F2A900;
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 4;
+  }
+
+  .vintage-racing-about .vra-card-heading {
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: clamp(32px, 4vw, 52px);
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    line-height: 1.1;
+    color: #FFFFFF;
+    margin: 0 0 20px;
+    position: relative;
+    z-index: 4;
+  }
+
+  .vintage-racing-about .vra-divider-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 28px;
+    position: relative;
+    z-index: 4;
+  }
+
+  .vintage-racing-about .vra-divider-left span:first-child {
+    display: block;
+    width: 100px;
+    height: 1px;
+    background: #F2A900;
+  }
+
+  .vintage-racing-about .vra-divider-left span:last-child {
+    display: block;
+    width: 100px;
+    height: 3px;
+    background: #F2A900;
+  }
+
+  .vintage-racing-about .vra-body {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 16px;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.88);
+    margin: 0;
+    position: relative;
+    z-index: 4;
+  }
+
+  /* ── Stat bar ── */
+
+  .vintage-racing-about .vra-stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    position: relative;
+    z-index: 4;
+  }
+
+  .vintage-racing-about .vra-stat {
+    text-align: center;
+    flex: 1;
+    position: relative;
+  }
+
+  .vintage-racing-about .vra-stat + .vra-stat::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 4px;
+    bottom: 4px;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.20);
+  }
+
+  .vintage-racing-about .vra-stat-number {
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: #F2A900;
+    line-height: 1.2;
+  }
+
+  .vintage-racing-about .vra-stat-label {
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.70);
+    letter-spacing: 0.08em;
+    margin-top: 4px;
+  }
+
+  /* ── Right column — Video card ── */
+
+  .vintage-racing-about .vra-video-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.45);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid rgba(255, 255, 255, 0.75);
+    border-radius: 20px;
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.10),
+      inset 0 1px 0 rgba(255, 255, 255, 0.85);
+    overflow: hidden;
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.6s ease-out 0.15s, transform 0.6s ease-out 0.15s;
+  }
+
+  .vintage-racing-about .vra-video-card.is-visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .vintage-racing-about .vra-video-wrap {
+    position: relative;
+    width: 100%;
+    line-height: 0;
+  }
+
+  .vintage-racing-about .vra-video-wrap video {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ── Play button overlay ── */
+
+  .vintage-racing-about .vra-play-btn {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 64px;
+    height: 64px;
+    background: rgba(176, 26, 14, 0.85);
+    backdrop-filter: blur(8px);
+    border: 2px solid rgba(255, 255, 255, 0.60);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+
+  .vintage-racing-about .vra-play-btn.is-hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translate(-50%, -50%) scale(0.85);
+  }
+
+  .vintage-racing-about .vra-play-btn::after {
+    content: '';
+    display: block;
+    width: 0;
+    height: 0;
+    border-style: solid;
+    border-width: 10px 0 10px 18px;
+    border-color: transparent transparent transparent #FFFFFF;
+    margin-left: 3px;
+  }
+
+  /* ── Video caption bar ── */
+
+  .vintage-racing-about .vra-caption {
+    padding: 20px 24px;
+    background: rgba(255, 255, 255, 0.30);
+    border-top: 1px solid rgba(255, 255, 255, 0.50);
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .vintage-racing-about .vra-flag-icon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    background-image: repeating-conic-gradient(#000 0% 25%, #fff 0% 50%);
+    background-size: 6px 6px;
+    border-radius: 2px;
+    margin-top: 2px;
+  }
+
+  .vintage-racing-about .vra-caption-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .vintage-racing-about .vra-video-title {
+    font-family: 'Anton', Impact, sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #1a1008;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .vintage-racing-about .vra-video-subtitle {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-style: italic;
+    font-size: 12px;
+    color: #D4541A;
+    margin: 4px 0 0;
+    line-height: 1.4;
+  }
+
+  /* ── Mobile ── */
+
+  @media (max-width: 768px) {
+    .vintage-racing-about {
+      padding: 48px 0;
+    }
+
+    .vintage-racing-about .vra-columns {
+      grid-template-columns: 1fr;
+      gap: 32px;
+    }
+
+    .vintage-racing-about .vra-red-card {
+      padding: 36px 28px;
+    }
+
+    .vintage-racing-about .vra-stats {
+      flex-direction: column;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .vintage-racing-about .vra-stat + .vra-stat::before {
+      display: none;
+    }
+  }
+</style>
+
+<section class="vintage-racing-about" id="vintage-racing-about-{{ section.id }}">
+  <!-- Mirrored primary stripe cluster -->
+  <div class="stripe-container">
+    <div class="stripe stripe--yellow" style="bottom:0;height:7%;"></div>
+    <div class="stripe stripe--orange" style="bottom:0;height:7%;"></div>
+    <div class="stripe stripe--red" style="bottom:0;height:7%;"></div>
+  </div>
+
+  <!-- Subtle accent stripe cluster (top-left, 20% opacity) -->
+  <div class="stripe-container-accent">
+    <div class="stripe stripe--red"></div>
+    <div class="stripe stripe--orange"></div>
+    <div class="stripe stripe--yellow"></div>
+  </div>
+
+  <div class="vra-inner">
+    <!-- Section header -->
+    <div class="vra-header">
+      <p class="vra-overline">{{ section.settings.overline }}</p>
+      <h2 class="vra-heading">{{ section.settings.heading }}</h2>
+      <div class="vra-divider-center">
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+
+    <!-- Two-column layout -->
+    <div class="vra-columns">
+      <!-- Left column — Red glass card -->
+      <div class="vra-red-card" data-animate="left">
+        <span class="vra-label-tag">{{ section.settings.label_tag }}</span>
+        <h3 class="vra-card-heading">{{ section.settings.collection_heading }}</h3>
+        <div class="vra-divider-left">
+          <span></span>
+          <span></span>
+        </div>
+        <p class="vra-body">{{ section.settings.body_text }}</p>
+
+        <div class="vra-stats">
+          <div class="vra-stat">
+            <div class="vra-stat-number" data-count-target="{{ section.settings.stat_1_number }}">{{ section.settings.stat_1_number }}</div>
+            <div class="vra-stat-label">{{ section.settings.stat_1_label }}</div>
+          </div>
+          <div class="vra-stat">
+            <div class="vra-stat-number" data-count-target="{{ section.settings.stat_2_number }}">{{ section.settings.stat_2_number }}</div>
+            <div class="vra-stat-label">{{ section.settings.stat_2_label }}</div>
+          </div>
+          <div class="vra-stat">
+            <div class="vra-stat-number" data-count-target="{{ section.settings.stat_3_number }}">{{ section.settings.stat_3_number }}</div>
+            <div class="vra-stat-label">{{ section.settings.stat_3_label }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right column — Video card -->
+      <div class="vra-video-card" data-animate="right">
+        <div class="vra-video-wrap">
+          {%- if section.settings.video_url != blank -%}
+            <video
+              src="{{ section.settings.video_url }}"
+              autoplay
+              muted
+              loop
+              playsinline
+              controls
+              id="vra-video-{{ section.id }}"
+            ></video>
+          {%- else -%}
+            <div style="width:100%;aspect-ratio:16/9;background:#e8e0d4;display:flex;align-items:center;justify-content:center;color:#999;font-size:14px;">
+              Add a video URL in section settings
+            </div>
+          {%- endif -%}
+          <div class="vra-play-btn{% if section.settings.video_url != blank %} is-hidden{% endif %}" id="vra-play-{{ section.id }}"></div>
+        </div>
+        <div class="vra-caption">
+          <div class="vra-flag-icon"></div>
+          <div class="vra-caption-text">
+            <p class="vra-video-title">{{ section.settings.video_title }}</p>
+            <p class="vra-video-subtitle">{{ section.settings.video_subtitle }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var sectionEl = document.getElementById('vintage-racing-about-{{ section.id }}');
+    if (!sectionEl) return;
+
+    /* ── Play/pause overlay toggle ── */
+    var video = document.getElementById('vra-video-{{ section.id }}');
+    var playBtn = document.getElementById('vra-play-{{ section.id }}');
+
+    if (video && playBtn) {
+      function syncPlayBtn() {
+        if (video.paused) {
+          playBtn.classList.remove('is-hidden');
+        } else {
+          playBtn.classList.add('is-hidden');
+        }
+      }
+
+      video.addEventListener('play', syncPlayBtn);
+      video.addEventListener('pause', syncPlayBtn);
+      video.addEventListener('ended', syncPlayBtn);
+
+      playBtn.addEventListener('click', function () {
+        if (video.paused) {
+          video.play();
+        } else {
+          video.pause();
+        }
+      });
+
+      syncPlayBtn();
+    }
+
+    /* ── Entrance animations + stat counter ── */
+    var leftCard = sectionEl.querySelector('[data-animate="left"]');
+    var rightCard = sectionEl.querySelector('[data-animate="right"]');
+    var hasAnimated = false;
+
+    function countUp(el) {
+      var target = el.getAttribute('data-count-target');
+      var num = parseInt(target, 10);
+      if (isNaN(num) || target !== String(num)) return;
+
+      el.textContent = '0';
+      var duration = 1200;
+      var startTime = null;
+
+      function step(timestamp) {
+        if (!startTime) startTime = timestamp;
+        var progress = Math.min((timestamp - startTime) / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        el.textContent = Math.round(eased * num);
+        if (progress < 1) requestAnimationFrame(step);
+      }
+
+      requestAnimationFrame(step);
+    }
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && !hasAnimated) {
+          hasAnimated = true;
+
+          if (leftCard) leftCard.classList.add('is-visible');
+          if (rightCard) rightCard.classList.add('is-visible');
+
+          var statNumbers = sectionEl.querySelectorAll('.vra-stat-number[data-count-target]');
+          statNumbers.forEach(function (el) {
+            countUp(el);
+          });
+
+          observer.disconnect();
+        }
+      });
+    }, { threshold: 0.15 });
+
+    observer.observe(sectionEl);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Vintage Racing About",
+  "settings": [
+    {
+      "type": "text",
+      "id": "overline",
+      "label": "Overline",
+      "default": "Slow Ride"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Section Heading",
+      "default": "Behind The Build"
+    },
+    {
+      "type": "text",
+      "id": "label_tag",
+      "label": "Card Label Tag",
+      "default": "About The Collection"
+    },
+    {
+      "type": "text",
+      "id": "collection_heading",
+      "label": "Collection Heading",
+      "default": "Iron Man Collection"
+    },
+    {
+      "type": "textarea",
+      "id": "body_text",
+      "label": "Body Text",
+      "default": "Inspired by the legendary liveries of 1980s desert racing, the Iron Man Collection captures the raw beauty of machines built to conquer the Baja peninsula. Each piece in this limited run pays homage to the fearless drivers and hand-painted race trucks that defined an era of off-road motorsport."
+    },
+    {
+      "type": "text",
+      "id": "stat_1_number",
+      "label": "Stat 1 — Number",
+      "default": "4"
+    },
+    {
+      "type": "text",
+      "id": "stat_1_label",
+      "label": "Stat 1 — Label",
+      "default": "Pieces In Collection"
+    },
+    {
+      "type": "text",
+      "id": "stat_2_number",
+      "label": "Stat 2 — Number",
+      "default": "1980s"
+    },
+    {
+      "type": "text",
+      "id": "stat_2_label",
+      "label": "Stat 2 — Label",
+      "default": "Era Inspired"
+    },
+    {
+      "type": "text",
+      "id": "stat_3_number",
+      "label": "Stat 3 — Number",
+      "default": "Limited"
+    },
+    {
+      "type": "text",
+      "id": "stat_3_label",
+      "label": "Stat 3 — Label",
+      "default": "Run Only"
+    },
+    {
+      "type": "url",
+      "id": "video_url",
+      "label": "Video File URL (from Shopify Files)"
+    },
+    {
+      "type": "text",
+      "id": "video_title",
+      "label": "Video Title",
+      "default": "Collection Story"
+    },
+    {
+      "type": "text",
+      "id": "video_subtitle",
+      "label": "Video Subtitle",
+      "default": "Shot on location · Slow Ride Original"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Vintage Racing About"
+    }
+  ]
+}
+{% endschema %}
