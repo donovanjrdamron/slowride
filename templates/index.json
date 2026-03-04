@@ -2073,6 +2073,39 @@
         "padding-block-start": 0,
         "padding-block-end": 0
       }
+    },
+    "storytelling_dual_cards_JwQh6f": {
+      "type": "storytelling-dual-cards",
+      "name": "Storytelling two cards",
+      "settings": {
+        "card_gap": 0,
+        "card_min_height_mobile": 420,
+        "card_min_height_desktop": 680,
+        "card_padding_mobile": 24,
+        "card_padding_desktop": 40,
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "main_text_size_mobile": 54,
+        "main_text_size_desktop": 86,
+        "corner_text_size": 22,
+        "logo_width": 150,
+        "card_1_main_text": "<p>custom<br/>branding</p>",
+        "card_1_main_text_color": "#f05f2a",
+        "card_1_background_color": "#8d9a92",
+        "card_1_border_color": "#f05f2a",
+        "card_1_show_corner_text": true,
+        "card_1_corner_text": "logos\nbranding\nvisual\nidentity",
+        "card_1_corner_position": "top-right",
+        "card_1_corner_text_color": "#f05f2a",
+        "card_2_main_text": "<p>custom<br/>branding</p>",
+        "card_2_main_text_color": "#f05f2a",
+        "card_2_background_color": "#8d9a92",
+        "card_2_border_color": "#f05f2a",
+        "card_2_show_corner_text": true,
+        "card_2_corner_text": "logos\nbranding\nvisual\nidentity",
+        "card_2_corner_position": "top-right",
+        "card_2_corner_text_color": "#f05f2a"
+      }
     }
   },
   "order": [
@@ -2092,6 +2125,7 @@
     "section_DbAxyb",
     "media_with_content_Laq99a",
     "media_with_content_YbmnjH",
-    "media_with_content_hKcbaf"
+    "media_with_content_hKcbaf",
+    "storytelling_dual_cards_JwQh6f"
   ]
 }

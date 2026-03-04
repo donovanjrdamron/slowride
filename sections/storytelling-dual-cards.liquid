@@ -1,0 +1,465 @@
+{% liquid
+  assign widths = '100, 150, 200, 250, 300, 400, 500'
+%}
+
+<div
+  class="storytelling-dual-cards"
+  style="
+    --story-padding-top: {{ section.settings.padding_top }}px;
+    --story-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --story-card-gap: {{ section.settings.card_gap }}px;
+    --story-card-min-height-mobile: {{ section.settings.card_min_height_mobile }}px;
+    --story-card-min-height-desktop: {{ section.settings.card_min_height_desktop }}px;
+    --story-card-padding-mobile: {{ section.settings.card_padding_mobile }}px;
+    --story-card-padding-desktop: {{ section.settings.card_padding_desktop }}px;
+    --story-main-font-size-mobile: {{ section.settings.main_text_size_mobile }}px;
+    --story-main-font-size-desktop: {{ section.settings.main_text_size_desktop }}px;
+    --story-corner-font-size: {{ section.settings.corner_text_size }}px;
+    --story-logo-width: {{ section.settings.logo_width }}px;
+  "
+>
+  <article
+    class="storytelling-dual-cards__card storytelling-dual-cards__card--1"
+    style="
+      --story-card-border-color: {{ section.settings.card_1_border_color }};
+      --story-card-bg-color: {{ section.settings.card_1_background_color }};
+      --story-main-text-color: {{ section.settings.card_1_main_text_color }};
+      --story-corner-text-color: {{ section.settings.card_1_corner_text_color }};
+    "
+  >
+    {%- if section.settings.card_1_show_corner_text and section.settings.card_1_corner_text != blank -%}
+      <p class="storytelling-dual-cards__corner storytelling-dual-cards__corner--{{ section.settings.card_1_corner_position }}">
+        {{ section.settings.card_1_corner_text }}
+      </p>
+    {%- endif -%}
+
+    <div class="storytelling-dual-cards__content">
+      {%- if section.settings.card_1_logo != blank -%}
+        <div class="storytelling-dual-cards__logo-wrap">
+          {{
+            section.settings.card_1_logo
+            | image_url: width: 500
+            | image_tag:
+              widths: widths,
+              width: section.settings.card_1_logo.width,
+              height: section.settings.card_1_logo.height,
+              alt: section.settings.card_1_logo.alt,
+              class: 'storytelling-dual-cards__logo',
+              sizes: '(min-width: 750px) 25vw, 60vw'
+          }}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.card_1_main_text != blank -%}
+        <div class="storytelling-dual-cards__main-text rte">
+          {{ section.settings.card_1_main_text }}
+        </div>
+      {%- endif -%}
+    </div>
+  </article>
+
+  <article
+    class="storytelling-dual-cards__card storytelling-dual-cards__card--2"
+    style="
+      --story-card-border-color: {{ section.settings.card_2_border_color }};
+      --story-card-bg-color: {{ section.settings.card_2_background_color }};
+      --story-main-text-color: {{ section.settings.card_2_main_text_color }};
+      --story-corner-text-color: {{ section.settings.card_2_corner_text_color }};
+    "
+  >
+    {%- if section.settings.card_2_show_corner_text and section.settings.card_2_corner_text != blank -%}
+      <p class="storytelling-dual-cards__corner storytelling-dual-cards__corner--{{ section.settings.card_2_corner_position }}">
+        {{ section.settings.card_2_corner_text }}
+      </p>
+    {%- endif -%}
+
+    <div class="storytelling-dual-cards__content">
+      {%- if section.settings.card_2_logo != blank -%}
+        <div class="storytelling-dual-cards__logo-wrap">
+          {{
+            section.settings.card_2_logo
+            | image_url: width: 500
+            | image_tag:
+              widths: widths,
+              width: section.settings.card_2_logo.width,
+              height: section.settings.card_2_logo.height,
+              alt: section.settings.card_2_logo.alt,
+              class: 'storytelling-dual-cards__logo',
+              sizes: '(min-width: 750px) 25vw, 60vw'
+          }}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.card_2_main_text != blank -%}
+        <div class="storytelling-dual-cards__main-text rte">
+          {{ section.settings.card_2_main_text }}
+        </div>
+      {%- endif -%}
+    </div>
+  </article>
+</div>
+
+{% stylesheet %}
+  .storytelling-dual-cards {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--story-card-gap);
+    width: 100%;
+    padding-block: var(--story-padding-top) var(--story-padding-bottom);
+  }
+
+  .storytelling-dual-cards__card {
+    position: relative;
+    min-height: var(--story-card-min-height-mobile);
+    padding: var(--story-card-padding-mobile);
+    border: 2px solid var(--story-card-border-color);
+    background-color: var(--story-card-bg-color);
+    overflow: hidden;
+  }
+
+  .storytelling-dual-cards__content {
+    min-height: inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 22px;
+    text-align: center;
+  }
+
+  .storytelling-dual-cards__logo-wrap {
+    max-width: 100%;
+  }
+
+  .storytelling-dual-cards__logo {
+    width: min(var(--story-logo-width), 100%);
+    height: auto;
+    display: block;
+    margin-inline: auto;
+  }
+
+  .storytelling-dual-cards__main-text {
+    color: var(--story-main-text-color);
+    font-size: var(--story-main-font-size-mobile);
+    line-height: 0.95;
+    max-width: 14ch;
+    margin: 0;
+  }
+
+  .storytelling-dual-cards__main-text > * {
+    margin: 0;
+  }
+
+  .storytelling-dual-cards__corner {
+    position: absolute;
+    top: max(16px, calc(var(--story-card-padding-mobile) * 0.7));
+    color: var(--story-corner-text-color);
+    font-size: var(--story-corner-font-size);
+    line-height: 1.15;
+    margin: 0;
+    max-width: 42%;
+  }
+
+  .storytelling-dual-cards__corner--top-left {
+    left: max(16px, calc(var(--story-card-padding-mobile) * 0.7));
+    text-align: left;
+  }
+
+  .storytelling-dual-cards__corner--top-right {
+    right: max(16px, calc(var(--story-card-padding-mobile) * 0.7));
+    text-align: right;
+  }
+
+  @media screen and (min-width: 750px) {
+    .storytelling-dual-cards {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .storytelling-dual-cards__card {
+      min-height: var(--story-card-min-height-desktop);
+      padding: var(--story-card-padding-desktop);
+    }
+
+    .storytelling-dual-cards__main-text {
+      font-size: var(--story-main-font-size-desktop);
+      max-width: 13ch;
+    }
+
+    .storytelling-dual-cards__corner {
+      top: max(20px, calc(var(--story-card-padding-desktop) * 0.55));
+    }
+
+    .storytelling-dual-cards__corner--top-left {
+      left: max(20px, calc(var(--story-card-padding-desktop) * 0.55));
+    }
+
+    .storytelling-dual-cards__corner--top-right {
+      right: max(20px, calc(var(--story-card-padding-desktop) * 0.55));
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Storytelling two cards",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Gap between cards",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "card_min_height_mobile",
+      "label": "Card minimum height (mobile)",
+      "min": 260,
+      "max": 800,
+      "step": 10,
+      "unit": "px",
+      "default": 420
+    },
+    {
+      "type": "range",
+      "id": "card_min_height_desktop",
+      "label": "Card minimum height (desktop)",
+      "min": 360,
+      "max": 1200,
+      "step": 10,
+      "unit": "px",
+      "default": 680
+    },
+    {
+      "type": "range",
+      "id": "card_padding_mobile",
+      "label": "Card inner padding (mobile)",
+      "min": 12,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "card_padding_desktop",
+      "label": "Card inner padding (desktop)",
+      "min": 24,
+      "max": 140,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Section top spacing",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Section bottom spacing",
+      "min": 0,
+      "max": 140,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "main_text_size_mobile",
+      "label": "Main text size (mobile)",
+      "min": 28,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 54
+    },
+    {
+      "type": "range",
+      "id": "main_text_size_desktop",
+      "label": "Main text size (desktop)",
+      "min": 36,
+      "max": 180,
+      "step": 2,
+      "unit": "px",
+      "default": 86
+    },
+    {
+      "type": "range",
+      "id": "corner_text_size",
+      "label": "Corner text size",
+      "min": 12,
+      "max": 56,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Logo width",
+      "min": 60,
+      "max": 420,
+      "step": 5,
+      "unit": "px",
+      "default": 150
+    },
+    {
+      "type": "header",
+      "content": "Card 1"
+    },
+    {
+      "type": "richtext",
+      "id": "card_1_main_text",
+      "label": "Main center text",
+      "default": "<p>custom<br/>branding</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "card_1_logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "color",
+      "id": "card_1_main_text_color",
+      "label": "Main text color",
+      "default": "#f05f2a"
+    },
+    {
+      "type": "color",
+      "id": "card_1_background_color",
+      "label": "Background color",
+      "default": "#8d9a92"
+    },
+    {
+      "type": "color",
+      "id": "card_1_border_color",
+      "label": "Border color",
+      "default": "#f05f2a"
+    },
+    {
+      "type": "checkbox",
+      "id": "card_1_show_corner_text",
+      "label": "Show corner text",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "card_1_corner_text",
+      "label": "Corner text",
+      "default": "logos\nbranding\nvisual\nidentity"
+    },
+    {
+      "type": "select",
+      "id": "card_1_corner_position",
+      "label": "Corner text position",
+      "options": [
+        {
+          "value": "top-left",
+          "label": "Top left"
+        },
+        {
+          "value": "top-right",
+          "label": "Top right"
+        }
+      ],
+      "default": "top-right"
+    },
+    {
+      "type": "color",
+      "id": "card_1_corner_text_color",
+      "label": "Corner text color",
+      "default": "#f05f2a"
+    },
+    {
+      "type": "header",
+      "content": "Card 2"
+    },
+    {
+      "type": "richtext",
+      "id": "card_2_main_text",
+      "label": "Main center text",
+      "default": "<p>custom<br/>branding</p>"
+    },
+    {
+      "type": "image_picker",
+      "id": "card_2_logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "color",
+      "id": "card_2_main_text_color",
+      "label": "Main text color",
+      "default": "#f05f2a"
+    },
+    {
+      "type": "color",
+      "id": "card_2_background_color",
+      "label": "Background color",
+      "default": "#8d9a92"
+    },
+    {
+      "type": "color",
+      "id": "card_2_border_color",
+      "label": "Border color",
+      "default": "#f05f2a"
+    },
+    {
+      "type": "checkbox",
+      "id": "card_2_show_corner_text",
+      "label": "Show corner text",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "card_2_corner_text",
+      "label": "Corner text",
+      "default": "logos\nbranding\nvisual\nidentity"
+    },
+    {
+      "type": "select",
+      "id": "card_2_corner_position",
+      "label": "Corner text position",
+      "options": [
+        {
+          "value": "top-left",
+          "label": "Top left"
+        },
+        {
+          "value": "top-right",
+          "label": "Top right"
+        }
+      ],
+      "default": "top-right"
+    },
+    {
+      "type": "color",
+      "id": "card_2_corner_text_color",
+      "label": "Corner text color",
+      "default": "#f05f2a"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Storytelling two cards"
+    }
+  ]
+}
+{% endschema %}
