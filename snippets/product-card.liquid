@@ -152,4 +152,41 @@
       display: grid;
     }
   }
+
+  /* === Premium product grid redesign === */
+
+  /* 1. Remove borders from grid items */
+  .product-grid .product-grid__item {
+    border: none;
+  }
+
+  /* 2. Hide color swatches on product cards */
+  .product-grid product-swatches {
+    display: none;
+  }
+
+  /* 3. Subtle lift on hover */
+  .product-grid product-card-link {
+    display: block;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-radius: 2px;
+  }
+
+  .product-grid product-card-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.1);
+  }
+
+  /* 4. Strong, intentional product title typography */
+  .product-grid .product-card__content .title-text,
+  .product-grid .product-card__content h1,
+  .product-grid .product-card__content h2,
+  .product-grid .product-card__content h3,
+  .product-grid .product-card__content h4,
+  .product-grid .product-card__content h5,
+  .product-grid .product-card__content h6 {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
 {% endstylesheet %}

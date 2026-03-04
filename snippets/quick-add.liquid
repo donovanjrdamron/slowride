@@ -280,4 +280,50 @@
       position: absolute;
     }
   }
+
+  /* Product grid: sleek full-width Add to Cart bar overlaid at bottom of image */
+  @media screen and (width >= 750px) {
+    .product-grid .quick-add {
+      inset: auto 0 0 0;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+
+    .product-grid .card-gallery:hover .quick-add,
+    .product-grid .card-gallery:focus-within .quick-add {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .product-grid .quick-add__button {
+      display: flex !important;
+      width: 100%;
+      border-radius: 0;
+      padding: 14px 20px;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      font-size: 0.68rem;
+      background-color: rgba(0, 0, 0, 0.82);
+      color: #fff;
+      box-shadow: none;
+      backdrop-filter: blur(4px);
+    }
+
+    /* Always show the label text (not icon-only) in the bar */
+    .product-grid .quick-add__button .add-to-cart-text__content {
+      width: auto !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+
+    .product-grid .quick-add__button .add-to-cart-text {
+      margin-inline: 0 !important;
+      padding-inline: 0 !important;
+      gap: var(--gap-2xs) !important;
+    }
+  }
 {% endstylesheet %}

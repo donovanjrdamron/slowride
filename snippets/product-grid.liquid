@@ -155,6 +155,13 @@
 {% endunless %}
 
 {% stylesheet %}
+  /* Force 4 columns on desktop, 2 on mobile */
+  @media screen and (width >= 750px) {
+    .product-grid--grid {
+      grid-template-columns: repeat(4, 1fr) !important;
+    }
+  }
+
   .product-grid {
     --product-grid-gap: var(--product-grid-gap-mobile);
     isolation: isolate;

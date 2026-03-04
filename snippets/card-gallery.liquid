@@ -355,4 +355,14 @@
     padding: var(--padding-xs) !important;
     font-size: var(--font-size--xs);
   }
+
+  /* Premium image zoom on hover */
+  .product-grid .product-media__image {
+    transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    will-change: transform;
+  }
+
+  .product-grid .card-gallery:hover .product-media__image {
+    transform: scale(1.05);
+  }
 {% endstylesheet %}
