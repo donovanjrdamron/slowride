@@ -53,11 +53,12 @@
         <a
           class="shop-by-category__card"
           href="{{ block.settings.link }}"
+          data-slide-index="{{ forloop.index0 }}"
           {{ block.shopify_attributes }}
           aria-label="{{ title | default: 'Shop category' | escape }}"
         >
       {% else %}
-        <div class="shop-by-category__card" {{ block.shopify_attributes }}>
+        <div class="shop-by-category__card" data-slide-index="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
       {% endif %}
         <div class="shop-by-category__media">
           {% if block.settings.image != blank %}
@@ -96,6 +97,31 @@
       {% endif %}
     {% endfor %}
   </div>
+
+  {% if section.settings.show_mobile_dots or section.settings.show_mobile_swipe_hint %}
+    <div class="shop-by-category__mobile-controls">
+      {% if section.settings.show_mobile_swipe_hint and section.settings.mobile_swipe_hint_text != blank %}
+        <p class="shop-by-category__swipe-hint">{{ section.settings.mobile_swipe_hint_text }}</p>
+      {% endif %}
+
+      {% if section.settings.show_mobile_dots %}
+        <div
+          class="shop-by-category__dots"
+          aria-label="Shop by Category slider pagination"
+        >
+          {% for block in section.blocks %}
+            <button
+              type="button"
+              class="shop-by-category__dot{% if forloop.first %} is-active{% endif %}"
+              data-slide-dot="{{ forloop.index0 }}"
+              aria-label="Go to slide {{ forloop.index }}"
+              aria-current="{% if forloop.first %}true{% else %}false{% endif %}"
+            ></button>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
 </div>
 
 {% stylesheet %}
@@ -113,11 +139,12 @@
     display: grid;
     gap: 12px;
     grid-auto-flow: column;
-    grid-auto-columns: minmax(100%, 100%);
+    grid-auto-columns: minmax(90%, 90%);
     overflow-x: auto;
     overscroll-behavior-x: contain;
     scroll-snap-type: x mandatory;
     scroll-padding-inline: 0;
+    padding-inline-end: 10%;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
@@ -142,6 +169,45 @@
     opacity: 1;
   }
 
+  .shop-by-category__mobile-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .shop-by-category__swipe-hint {
+    margin: 0;
+    font-size: 0.75rem;
+    line-height: 1.2;
+    opacity: 0.7;
+    letter-spacing: 0.03em;
+  }
+
+  .shop-by-category__dots {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .shop-by-category__dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    border: 0;
+    border-radius: 999px;
+    padding: 0;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.25);
+    transition: transform 0.25s ease, background-color 0.25s ease;
+  }
+
+  .shop-by-category__dot.is-active {
+    width: 20px;
+    background: rgba(0, 0, 0, 0.72);
+  }
+
   @media screen and (width >= 750px) {
     .shop-by-category__grid {
       gap: 16px;
@@ -150,12 +216,17 @@
       grid-template-columns: repeat(4, minmax(0, 1fr));
       overflow: visible;
       scroll-snap-type: none;
+      padding-inline-end: 0;
       scrollbar-width: auto;
     }
 
     .shop-by-category__media {
       transform: none;
       opacity: 1;
+    }
+
+    .shop-by-category__mobile-controls {
+      display: none;
     }
   }
 
@@ -240,7 +311,7 @@
     opacity: 0.96;
   }
 
-    @media screen and (width >= 750px) {
+  @media screen and (width >= 750px) {
     .shop-by-category__eyebrow {
       font-size: var(--shop-by-category-eyebrow-size-desktop, 11px);
     }
@@ -274,6 +345,14 @@
       transform: translateY(0);
     }
   }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shop-by-category__media,
+    .shop-by-category__image,
+    .shop-by-category__dot {
+      transition: none;
+    }
+  }
 {% endstylesheet %}
 
 {% javascript %}
@@ -285,6 +364,7 @@
 
     sections.forEach((section) => {
       const cards = Array.from(section.querySelectorAll('.shop-by-category__card'));
+      const dots = Array.from(section.querySelectorAll('[data-slide-dot]'));
       if (!cards.length) return;
 
       if (reduceMotion || !('IntersectionObserver' in window)) {
@@ -321,10 +401,18 @@
 
       const mobileMedia = window.matchMedia('(max-width: 749px)');
       let animationFrameId = null;
+      const setActiveDot = (activeIndex) => {
+        dots.forEach((dot, index) => {
+          const isActive = index === activeIndex;
+          dot.classList.toggle('is-active', isActive);
+          dot.setAttribute('aria-current', isActive ? 'true' : 'false');
+        });
+      };
 
       const updateActiveCard = () => {
         if (!mobileMedia.matches) {
           cards.forEach((card) => card.classList.remove('is-swipe-active'));
+          setActiveDot(-1);
           return;
         }
 
@@ -344,7 +432,9 @@
           }
         });
 
+        const activeIndex = cards.indexOf(activeCard);
         cards.forEach((card) => card.classList.toggle('is-swipe-active', card === activeCard));
+        setActiveDot(activeIndex);
       };
 
       const requestActiveCardUpdate = () => {
@@ -357,6 +447,21 @@
 
       grid.addEventListener('scroll', requestActiveCardUpdate, { passive: true });
       window.addEventListener('resize', requestActiveCardUpdate);
+
+      dots.forEach((dot) => {
+        dot.addEventListener('click', () => {
+          const index = Number(dot.dataset.slideDot);
+          const targetCard = cards[index];
+          if (!targetCard) return;
+
+          targetCard.scrollIntoView({
+            behavior: reduceMotion ? 'auto' : 'smooth',
+            block: 'nearest',
+            inline: 'start'
+          });
+        });
+      });
+
       updateActiveCard();
     });
   })();
@@ -521,6 +626,28 @@
       "step": 1,
       "unit": "px",
       "default": 13
+    },
+    {
+      "type": "header",
+      "content": "Mobile slider"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mobile_dots",
+      "label": "Show mobile slider dots",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_mobile_swipe_hint",
+      "label": "Show mobile swipe hint",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "mobile_swipe_hint_text",
+      "label": "Mobile swipe hint text",
+      "default": "Swipe to explore"
     },
     {
       "type": "header",
