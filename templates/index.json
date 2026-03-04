@@ -1107,97 +1107,67 @@
         "padding-block-end": 0
       }
     },
-    "collection_list_xxBRje": {
-      "type": "collection-list",
+    "shop_by_category_LKfdU9": {
+      "type": "shop-by-category",
       "blocks": {
-        "static-collection-card": {
-          "type": "collection-card",
-          "static": true,
+        "category_card_jKcAtU": {
+          "type": "category_card",
           "settings": {
-            "collection": "{{ closest.collection }}",
-            "placement": "below_image",
-            "horizontal_alignment": "flex-start",
-            "vertical_alignment": "center",
-            "collection_card_gap": 8,
-            "inherit_color_scheme": true,
-            "color_scheme": "",
-            "border": "none",
-            "border_width": 1,
-            "border_opacity": 100,
-            "border_radius": 0
-          },
-          "blocks": {
-            "collection_title_rkYRPD": {
-              "type": "collection-title",
-              "settings": {
-                "collection": "{{ closest.collection }}",
-                "width": "100%",
-                "max_width": "normal",
-                "alignment": "center",
-                "type_preset": "h3",
-                "font": "var(--font-body--family)",
-                "font_size": "",
-                "line_height": "normal",
-                "letter_spacing": "normal",
-                "case": "none",
-                "wrap": "pretty",
-                "color": "var(--color-foreground)",
-                "background": false,
-                "background_color": "#063d49",
-                "corner_radius": 0,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
-            "collection-card-image": {
-              "type": "_collection-card-image",
-              "static": true,
-              "settings": {
-                "collection": "{{ closest.collection }}",
-                "image_ratio": "portrait",
-                "toggle_overlay": false,
-                "overlay_color": "#00000026",
-                "overlay_style": "solid",
-                "gradient_direction": "to top",
-                "border": "none",
-                "border_width": 1,
-                "border_opacity": 100,
-                "border_radius": 0
-              },
-              "blocks": {}
-            }
-          },
-          "block_order": [
-            "collection_title_rkYRPD"
-          ]
+            "image": "shopify://shop_images/strike-tee-8556778.jpg",
+            "eyebrow": "SLOWRIDE",
+            "title": "T-shirts",
+            "subtitle": "",
+            "link": "shopify://collections/t-shirts"
+          }
+        },
+        "category_card_PijRMf": {
+          "type": "category_card",
+          "settings": {
+            "image": "shopify://shop_images/DSC06553-22Medium_87fe90c1-4c38-44c6-874f-0b84448ed37a.jpg",
+            "eyebrow": "SLOWRIDE",
+            "title": "Hoodies",
+            "subtitle": "",
+            "link": "shopify://collections/hoodies"
+          }
+        },
+        "category_card_Bd7AtE": {
+          "type": "category_card",
+          "settings": {
+            "image": "shopify://shop_images/roadrunner-a-frame-hat-7276114.jpg",
+            "eyebrow": "SLOWRIDE",
+            "title": "Hats",
+            "subtitle": "",
+            "link": "shopify://collections/headwear-slowridehats"
+          }
+        },
+        "category_card_UPhyny": {
+          "type": "category_card",
+          "settings": {
+            "image": "shopify://shop_images/pants_cover.jpg",
+            "eyebrow": "SLOWRIDE",
+            "title": "Pants",
+            "subtitle": "",
+            "link": "shopify://collections/slow-ride-pants"
+          }
         }
       },
+      "block_order": [
+        "category_card_jKcAtU",
+        "category_card_PijRMf",
+        "category_card_Bd7AtE",
+        "category_card_UPhyny"
+      ],
+      "name": "Shop by Category",
       "settings": {
-        "collection_list": [
-          "t-shirts",
-          "headwear-slowridehats",
-          "hoodies",
-          "slow-ride-pants",
-          "accessories"
-        ],
-        "layout_type": "carousel",
-        "carousel_on_mobile": false,
-        "columns": 3,
-        "mobile_columns": "2",
-        "columns_gap": 8,
-        "bento_gap": 8,
-        "rows_gap": 8,
-        "max_collections": 4,
-        "icons_style": "arrow",
-        "icons_shape": "circle",
-        "section_width": "full-width",
-        "gap": 12,
-        "color_scheme": "",
-        "padding-block-start": 29,
-        "padding-block-end": 10
+        "show_heading": true,
+        "heading": "Shop by Category",
+        "heading_size": 22,
+        "image_ratio": "2 / 3",
+        "glass_tint": "light",
+        "glass_height": 68,
+        "section_width": "page-width",
+        "padding-block-start": 48,
+        "padding-block-end": 48
       }
     },
     "section_3YL8eb": {
@@ -2105,7 +2075,7 @@
     "section_c38kAR",
     "section_zGt6qe",
     "section_LeK8bn",
-    "collection_list_xxBRje",
+    "shop_by_category_LKfdU9",
     "section_3YL8eb",
     "ss_video_with_text_r4GbVA",
     "17498636136724926c",
