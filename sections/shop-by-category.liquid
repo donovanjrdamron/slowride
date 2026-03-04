@@ -26,8 +26,15 @@
     --shop-by-category-image-ratio: {{ image_ratio }};
     --shop-by-category-glass-background: {{ glass_background }};
     --shop-by-category-glass-border: {{ glass_border }};
-    --shop-by-category-heading-size: {{ section.settings.heading_size }}px;
+    --shop-by-category-heading-size-desktop: {{ section.settings.heading_size }}px;
+    --shop-by-category-heading-size-mobile: {{ section.settings.heading_size_mobile }}px;
     --shop-by-category-glass-height: {{ section.settings.glass_height }}px;
+    --shop-by-category-eyebrow-size-desktop: {{ section.settings.eyebrow_size_desktop }}px;
+    --shop-by-category-eyebrow-size-mobile: {{ section.settings.eyebrow_size_mobile }}px;
+    --shop-by-category-title-size-desktop: {{ section.settings.title_size_desktop }}px;
+    --shop-by-category-title-size-mobile: {{ section.settings.title_size_mobile }}px;
+    --shop-by-category-subtitle-size-desktop: {{ section.settings.subtitle_size_desktop }}px;
+    --shop-by-category-subtitle-size-mobile: {{ section.settings.subtitle_size_mobile }}px;
   "
 >
   {% if section.settings.show_heading and section.settings.heading != blank %}
@@ -94,21 +101,61 @@
 {% stylesheet %}
   .shop-by-category__heading {
     margin: 0 0 18px;
-    font-size: calc(var(--shop-by-category-heading-size, 36px) * 0.8);
+    font-size: var(--shop-by-category-heading-size-mobile, 30px);
     line-height: 1.1;
 
     @media screen and (width >= 750px) {
-      font-size: var(--shop-by-category-heading-size, 36px);
+      font-size: var(--shop-by-category-heading-size-desktop, 40px);
     }
   }
 
   .shop-by-category__grid {
     display: grid;
-    gap: 16px;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(100%, 100%);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
 
-    @media screen and (width >= 750px) {
+  .shop-by-category__grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .shop-by-category__card {
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+  }
+
+  .shop-by-category__media {
+    transition: transform 0.35s ease, opacity 0.35s ease;
+    transform: scale(0.985);
+    opacity: 0.9;
+  }
+
+  .shop-by-category__card.is-swipe-active .shop-by-category__media {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  @media screen and (width >= 750px) {
+    .shop-by-category__grid {
+      gap: 16px;
+      grid-auto-flow: row;
+      grid-auto-columns: unset;
       grid-template-columns: repeat(4, minmax(0, 1fr));
+      overflow: visible;
+      scroll-snap-type: none;
+      scrollbar-width: auto;
+    }
+
+    .shop-by-category__media {
+      transform: none;
+      opacity: 1;
     }
   }
 
@@ -172,7 +219,7 @@
   }
 
   .shop-by-category__eyebrow {
-    font-size: 0.6875rem;
+    font-size: var(--shop-by-category-eyebrow-size-mobile, 11px);
     line-height: 1.2;
     text-transform: uppercase;
     letter-spacing: 0.08em;
@@ -181,16 +228,30 @@
   }
 
   .shop-by-category__title {
-    font-size: clamp(1rem, 1.5vw, 1.25rem);
+    font-size: var(--shop-by-category-title-size-mobile, 18px);
     line-height: 1.15;
     font-weight: 700;
   }
 
   .shop-by-category__subtitle {
     margin-top: 6px;
-    font-size: 0.8125rem;
+    font-size: var(--shop-by-category-subtitle-size-mobile, 13px);
     line-height: 1.35;
     opacity: 0.96;
+  }
+
+    @media screen and (width >= 750px) {
+    .shop-by-category__eyebrow {
+      font-size: var(--shop-by-category-eyebrow-size-desktop, 11px);
+    }
+
+    .shop-by-category__title {
+      font-size: var(--shop-by-category-title-size-desktop, 20px);
+    }
+
+    .shop-by-category__subtitle {
+      font-size: var(--shop-by-category-subtitle-size-desktop, 13px);
+    }
   }
 
   .shop-by-category--reveal-ready .shop-by-category__card {
@@ -228,33 +289,75 @@
 
       if (reduceMotion || !('IntersectionObserver' in window)) {
         cards.forEach((card) => card.classList.add('is-visible'));
-        return;
+      } else {
+        section.classList.add('shop-by-category--reveal-ready');
+
+        const observer = new IntersectionObserver(
+          (entries, currentObserver) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+
+              const card = entry.target;
+              const delay = Number(card.dataset.revealIndex || 0) * 90;
+              card.style.setProperty('--shop-by-category-reveal-delay', `${delay}ms`);
+              card.classList.add('is-visible');
+              currentObserver.unobserve(card);
+            });
+          },
+          {
+            threshold: 0.2,
+            rootMargin: '0px 0px -10% 0px'
+          }
+        );
+
+        cards.forEach((card, index) => {
+          card.dataset.revealIndex = String(index);
+          observer.observe(card);
+        });
       }
 
-      section.classList.add('shop-by-category--reveal-ready');
+      const grid = section.querySelector('.shop-by-category__grid');
+      if (!grid) return;
 
-      const observer = new IntersectionObserver(
-        (entries, currentObserver) => {
-          entries.forEach((entry) => {
-            if (!entry.isIntersecting) return;
+      const mobileMedia = window.matchMedia('(max-width: 749px)');
+      let animationFrameId = null;
 
-            const card = entry.target;
-            const delay = Number(card.dataset.revealIndex || 0) * 90;
-            card.style.setProperty('--shop-by-category-reveal-delay', `${delay}ms`);
-            card.classList.add('is-visible');
-            currentObserver.unobserve(card);
-          });
-        },
-        {
-          threshold: 0.2,
-          rootMargin: '0px 0px -10% 0px'
+      const updateActiveCard = () => {
+        if (!mobileMedia.matches) {
+          cards.forEach((card) => card.classList.remove('is-swipe-active'));
+          return;
         }
-      );
 
-      cards.forEach((card, index) => {
-        card.dataset.revealIndex = String(index);
-        observer.observe(card);
-      });
+        const gridRect = grid.getBoundingClientRect();
+        const gridCenter = gridRect.left + gridRect.width / 2;
+        let activeCard = cards[0];
+        let shortestDistance = Number.POSITIVE_INFINITY;
+
+        cards.forEach((card) => {
+          const cardRect = card.getBoundingClientRect();
+          const cardCenter = cardRect.left + cardRect.width / 2;
+          const distance = Math.abs(cardCenter - gridCenter);
+
+          if (distance < shortestDistance) {
+            shortestDistance = distance;
+            activeCard = card;
+          }
+        });
+
+        cards.forEach((card) => card.classList.toggle('is-swipe-active', card === activeCard));
+      };
+
+      const requestActiveCardUpdate = () => {
+        if (animationFrameId) return;
+        animationFrameId = window.requestAnimationFrame(() => {
+          animationFrameId = null;
+          updateActiveCard();
+        });
+      };
+
+      grid.addEventListener('scroll', requestActiveCardUpdate, { passive: true });
+      window.addEventListener('resize', requestActiveCardUpdate);
+      updateActiveCard();
     });
   })();
 {% endjavascript %}
@@ -288,12 +391,22 @@
     {
       "type": "range",
       "id": "heading_size",
-      "label": "Heading size",
+      "label": "Heading size (desktop)",
       "min": 20,
       "max": 84,
       "step": 2,
       "unit": "px",
       "default": 40
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size (mobile)",
+      "min": 16,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 30
     },
     {
       "type": "header",
@@ -344,6 +457,70 @@
       "step": 4,
       "unit": "px",
       "default": 120
+    },
+    {
+      "type": "header",
+      "content": "Card text size"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size_desktop",
+      "label": "Eyebrow size (desktop)",
+      "min": 8,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size_mobile",
+      "label": "Eyebrow size (mobile)",
+      "min": 8,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "title_size_desktop",
+      "label": "Title size (desktop)",
+      "min": 12,
+      "max": 56,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "label": "Title size (mobile)",
+      "min": 12,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size_desktop",
+      "label": "Subtitle size (desktop)",
+      "min": 10,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size_mobile",
+      "label": "Subtitle size (mobile)",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 13
     },
     {
       "type": "header",
