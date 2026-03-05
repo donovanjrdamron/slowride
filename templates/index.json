@@ -2117,10 +2117,13 @@
         "card_padding_desktop": 40,
         "padding_top": 0,
         "padding_bottom": 0,
+        "card_corner_radius": 28,
+        "border_width": 2,
+        "border_inset_mobile": 12,
+        "border_inset_desktop": 18,
         "main_text_size_mobile": 54,
         "main_text_size_desktop": 86,
         "corner_text_size": 22,
-        "logo_width": 150,
         "card_1_main_text": "<p>custom<br/>branding</p>",
         "card_1_main_text_color": "#f05f2a",
         "card_1_background_color": "#8d9a92",
@@ -2129,6 +2132,7 @@
         "card_1_corner_text": "logos\nbranding\nvisual\nidentity",
         "card_1_corner_position": "top-right",
         "card_1_corner_text_color": "#f05f2a",
+        "card_1_button_label": "logo kit",
         "card_2_main_text": "<p>custom<br/>branding</p>",
         "card_2_main_text_color": "#f05f2a",
         "card_2_background_color": "#8d9a92",
@@ -2136,7 +2140,8 @@
         "card_2_show_corner_text": true,
         "card_2_corner_text": "logos\nbranding\nvisual\nidentity",
         "card_2_corner_position": "top-right",
-        "card_2_corner_text_color": "#f05f2a"
+        "card_2_corner_text_color": "#f05f2a",
+        "card_2_button_label": "logo kit"
       }
     }
   },
