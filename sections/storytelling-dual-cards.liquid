@@ -34,23 +34,27 @@
 
     <div class="storytelling-dual-cards__content">
       {%- if section.settings.card_1_main_text != blank -%}
-        <div class="storytelling-dual-cards__main-text rte">
-          {{ section.settings.card_1_main_text }}
+        <div class="storytelling-dual-cards__main-text-wrap">
+          <div class="storytelling-dual-cards__main-text rte">
+            {{ section.settings.card_1_main_text }}
+          </div>
         </div>
       {%- endif -%}
 
       {%- if section.settings.card_1_button_label != blank -%}
-        <a
-          class="storytelling-dual-cards__button"
-          {% if section.settings.card_1_button_link != blank %}
-            href="{{ section.settings.card_1_button_link }}"
-          {% else %}
-            role="link"
-            aria-disabled="true"
-          {% endif %}
-        >
-          {{ section.settings.card_1_button_label }}
-        </a>
+        <div class="storytelling-dual-cards__button-wrap">
+          <a
+            class="storytelling-dual-cards__button"
+            {% if section.settings.card_1_button_link != blank %}
+              href="{{ section.settings.card_1_button_link }}"
+            {% else %}
+              role="link"
+              aria-disabled="true"
+            {% endif %}
+          >
+            {{ section.settings.card_1_button_label }}
+          </a>
+        </div>
       {%- endif -%}
     </div>
   </article>
@@ -73,23 +77,27 @@
 
     <div class="storytelling-dual-cards__content">
       {%- if section.settings.card_2_main_text != blank -%}
-        <div class="storytelling-dual-cards__main-text rte">
-          {{ section.settings.card_2_main_text }}
+        <div class="storytelling-dual-cards__main-text-wrap">
+          <div class="storytelling-dual-cards__main-text rte">
+            {{ section.settings.card_2_main_text }}
+          </div>
         </div>
       {%- endif -%}
 
       {%- if section.settings.card_2_button_label != blank -%}
-        <a
-          class="storytelling-dual-cards__button"
-          {% if section.settings.card_2_button_link != blank %}
-            href="{{ section.settings.card_2_button_link }}"
-          {% else %}
-            role="link"
-            aria-disabled="true"
-          {% endif %}
-        >
-          {{ section.settings.card_2_button_label }}
-        </a>
+        <div class="storytelling-dual-cards__button-wrap">
+          <a
+            class="storytelling-dual-cards__button"
+            {% if section.settings.card_2_button_link != blank %}
+              href="{{ section.settings.card_2_button_link }}"
+            {% else %}
+              role="link"
+              aria-disabled="true"
+            {% endif %}
+          >
+            {{ section.settings.card_2_button_label }}
+          </a>
+        </div>
       {%- endif -%}
     </div>
   </article>
@@ -131,14 +139,18 @@
   .storytelling-dual-cards__content {
     position: absolute;
     inset: var(--story-card-padding-mobile);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 26px;
-    text-align: center;
     position: relative;
     z-index: 1;
+  }
+
+  .storytelling-dual-cards__main-text-wrap {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    pointer-events: none;
   }
 
   .storytelling-dual-cards__main-text {
@@ -172,6 +184,14 @@
   .storytelling-dual-cards__corner--top-right {
     right: max(16px, calc(var(--story-card-padding-mobile) * 0.7));
     text-align: right;
+  }
+
+  .storytelling-dual-cards__button-wrap {
+    position: absolute;
+    left: 50%;
+    bottom: clamp(12px, 4vw, 40px);
+    transform: translateX(-50%);
+    z-index: 2;
   }
 
   .storytelling-dual-cards__button {
