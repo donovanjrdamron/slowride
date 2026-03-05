@@ -1180,6 +1180,38 @@
         "padding-block-end": 48
       }
     },
+    "frosted_glass_split_jnR4he": {
+      "type": "frosted-glass-split",
+      "name": "Frosted glass split",
+      "settings": {
+        "background_image": "shopify://shop_images/srg-tee-8124898.jpg",
+        "background_overlay_opacity": 20,
+        "eyebrow": "Available Now",
+        "heading": "Iron Man Collection",
+        "body": "<p>Inspired by true vintage racing. See the story of the iron man collection and the designs we came up with based off an old magazine and Ivan Stuart's old VW Bus</p>",
+        "button_label": "Shop Now",
+        "button_link": "shopify://collections/iron-man",
+        "video": "shopify://files/videos/0227 (2)(1).mp4",
+        "external_video_url": "",
+        "section_height": 80,
+        "section_max_width": 1400,
+        "card_max_width": 1100,
+        "card_min_height": 460,
+        "desktop_split": 1,
+        "content_padding": 42,
+        "padding_top": 24,
+        "padding_bottom": 24,
+        "card_blur": 12,
+        "glass_opacity": 15,
+        "border_opacity": 30,
+        "shadow_opacity": 20,
+        "card_radius": 16,
+        "text_color": "#ffffff",
+        "button_background_color": "#ffffff",
+        "button_text_color": "#111111",
+        "button_border_color": "#ffffff"
+      }
+    },
     "section_3YL8eb": {
       "type": "section",
       "blocks": {
@@ -2119,6 +2151,7 @@
     "section_zGt6qe",
     "section_LeK8bn",
     "shop_by_category_LKfdU9",
+    "frosted_glass_split_jnR4he",
     "section_3YL8eb",
     "ss_video_with_text_r4GbVA",
     "17498636136724926c",
