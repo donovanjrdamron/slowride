@@ -439,7 +439,7 @@
         "subtitle_size_desktop": 13,
         "subtitle_size_mobile": 13,
         "show_mobile_dots": true,
-        "show_mobile_swipe_hint": true,
+        "show_mobile_swipe_hint": false,
         "mobile_swipe_hint_text": "",
         "section_width": "page-width",
         "padding-block-start": 48,
