@@ -100,8 +100,8 @@
 
   {% if section.settings.show_mobile_dots or section.settings.show_mobile_swipe_hint %}
     <div class="shop-by-category__mobile-controls">
-      {% if section.settings.show_mobile_swipe_hint and section.settings.mobile_swipe_hint_text != blank %}
-        <p class="shop-by-category__swipe-hint">{{ section.settings.mobile_swipe_hint_text }}</p>
+      {% if section.settings.show_mobile_swipe_hint %}
+        <p class="shop-by-category__swipe-hint">{{ section.settings.mobile_swipe_hint_text | default: 'Swipe to explore' }}</p>
       {% endif %}
 
       {% if section.settings.show_mobile_dots %}
@@ -181,8 +181,26 @@
     margin: 0;
     font-size: 0.75rem;
     line-height: 1.2;
-    opacity: 0.7;
+    color: #fff;
+    background: rgba(18, 37, 64, 0.88);
+    border-radius: 999px;
+    padding: 6px 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+    opacity: 1;
     letter-spacing: 0.03em;
+    animation: shop-by-category-swipe-hint 2.2s ease-in-out infinite;
+  }
+
+  .shop-by-category__swipe-hint::before {
+    content: '\2194';
+    margin-right: 6px;
+  }
+
+  .shop-by-category__swipe-hint.is-hidden {
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
   }
 
   .shop-by-category__dots {
@@ -346,11 +364,23 @@
     }
   }
 
+  @keyframes shop-by-category-swipe-hint {
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+    50% {
+      transform: translateX(4px);
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .shop-by-category__media,
     .shop-by-category__image,
-    .shop-by-category__dot {
+    .shop-by-category__dot,
+    .shop-by-category__swipe-hint {
       transition: none;
+      animation: none;
     }
   }
 {% endstylesheet %}
@@ -365,9 +395,11 @@
     sections.forEach((section) => {
       const cards = Array.from(section.querySelectorAll('.shop-by-category__card'));
       const dots = Array.from(section.querySelectorAll('[data-slide-dot]'));
+      const swipeHint = section.querySelector('.shop-by-category__swipe-hint');
+      const mobileMedia = window.matchMedia('(max-width: 749px)');
       if (!cards.length) return;
 
-      if (reduceMotion || !('IntersectionObserver' in window)) {
+      if (mobileMedia.matches || reduceMotion || !('IntersectionObserver' in window)) {
         cards.forEach((card) => card.classList.add('is-visible'));
       } else {
         section.classList.add('shop-by-category--reveal-ready');
@@ -399,7 +431,6 @@
       const grid = section.querySelector('.shop-by-category__grid');
       if (!grid) return;
 
-      const mobileMedia = window.matchMedia('(max-width: 749px)');
       let animationFrameId = null;
       const setActiveDot = (activeIndex) => {
         dots.forEach((dot, index) => {
@@ -445,7 +476,19 @@
         });
       };
 
+      const hideSwipeHint = () => {
+        if (!swipeHint) return;
+        swipeHint.classList.add('is-hidden');
+      };
+
       grid.addEventListener('scroll', requestActiveCardUpdate, { passive: true });
+      grid.addEventListener(
+        'scroll',
+        () => {
+          if (grid.scrollLeft > 8) hideSwipeHint();
+        },
+        { passive: true }
+      );
       window.addEventListener('resize', requestActiveCardUpdate);
 
       dots.forEach((dot) => {
@@ -459,6 +502,7 @@
             block: 'nearest',
             inline: 'start'
           });
+          hideSwipeHint();
         });
       });
 
