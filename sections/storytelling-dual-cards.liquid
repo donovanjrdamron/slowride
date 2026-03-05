@@ -108,7 +108,7 @@
     position: relative;
     aspect-ratio: 1 / 1;
     min-height: 0;
-    padding: var(--story-card-padding-mobile);
+    padding: 0;
     border-radius: var(--story-image-radius);
     background-color: var(--story-card-bg-color);
     background-image: var(--story-card-bg-image);
@@ -116,6 +116,7 @@
     background-repeat: no-repeat;
     background-position: center;
     overflow: hidden;
+    box-sizing: border-box;
   }
 
   .storytelling-dual-cards__card::after {
@@ -128,7 +129,8 @@
   }
 
   .storytelling-dual-cards__content {
-    min-height: inherit;
+    position: absolute;
+    inset: var(--story-card-padding-mobile);
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -196,11 +198,15 @@
     }
 
     .storytelling-dual-cards__card {
-      padding: var(--story-card-padding-desktop);
+      padding: 0;
     }
 
     .storytelling-dual-cards__card::after {
       inset: var(--story-border-inset-desktop);
+    }
+
+    .storytelling-dual-cards__content {
+      inset: var(--story-card-padding-desktop);
     }
 
     .storytelling-dual-cards__main-text {

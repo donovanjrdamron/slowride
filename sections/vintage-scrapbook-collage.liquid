@@ -1,0 +1,853 @@
+{% liquid
+  assign widths = '300, 450, 600, 750, 900, 1050, 1200, 1500, 1800, 2200, 2800, 3600'
+  assign shadow_opacity = section.settings.shadow_strength | divided_by: 100.0
+  assign rotation_scale = section.settings.rotation_scale | divided_by: 100.0
+%}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<section
+  class="section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} vintage-scrapbook spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  {%- if section.settings.heading != blank or section.settings.subheading != blank -%}
+    <header class="vintage-scrapbook__header">
+      {%- if section.settings.subheading != blank -%}
+        <p class="vintage-scrapbook__subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="vintage-scrapbook__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+    </header>
+  {%- endif -%}
+
+  <div
+    class="vintage-scrapbook__canvas"
+    style="
+      --scrapbook-max-width: {{ section.settings.canvas_max_width }}px;
+      --scrapbook-paper-tone: {{ section.settings.paper_tone }};
+      --scrapbook-shadow-opacity: {{ shadow_opacity }};
+    "
+  >
+    {%- if section.blocks.size > 0 -%}
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+          {%- when 'photo_card' -%}
+            {%- assign scaled_rotation = block.settings.rotation | times: rotation_scale -%}
+            <figure
+              class="
+                vintage-scrapbook__item
+                vintage-scrapbook__photo
+                vintage-scrapbook__slot--{{ block.settings.slot }}
+                vintage-scrapbook__size--{{ block.settings.size }}
+                vintage-scrapbook__frame--{{ block.settings.frame_style }}
+              "
+              style="--scrapbook-item-rotation: {{ scaled_rotation }}deg;"
+              {{ block.shopify_attributes }}
+            >
+              {%- if block.settings.image != blank -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 3200
+                  | image_tag:
+                    width: block.settings.image.width,
+                    widths: widths,
+                    height: block.settings.image.height,
+                    alt: block.settings.image.alt | default: block.settings.caption | escape,
+                    class: 'vintage-scrapbook__image',
+                    sizes: '(min-width: 1200px) 28vw, (min-width: 750px) 38vw, 92vw',
+                    loading: 'lazy'
+                }}
+              {%- else -%}
+                <div class="vintage-scrapbook__placeholder">
+                  {{ 'lifestyle-1' | placeholder_svg_tag: 'vintage-scrapbook__placeholder-svg' }}
+                </div>
+              {%- endif -%}
+              {%- if block.settings.caption != blank -%}
+                <figcaption class="vintage-scrapbook__label">{{ block.settings.caption }}</figcaption>
+              {%- endif -%}
+            </figure>
+
+          {%- when 'paper_note' -%}
+            {%- assign scaled_rotation = block.settings.rotation | times: rotation_scale -%}
+            <div
+              class="
+                vintage-scrapbook__item
+                vintage-scrapbook__note
+                vintage-scrapbook__slot--{{ block.settings.slot }}
+                vintage-scrapbook__note-font--{{ block.settings.font_style }}
+              "
+              style="
+                --scrapbook-item-rotation: {{ scaled_rotation }}deg;
+                --scrapbook-note-tone: {{ block.settings.note_color }};
+              "
+              {{ block.shopify_attributes }}
+            >
+              <p class="vintage-scrapbook__note-text">
+                {{ block.settings.text | default: 'Add handwritten snippets, dates, or little memories here.' }}
+              </p>
+            </div>
+
+          {%- when 'stamp' -%}
+            {%- assign scaled_rotation = block.settings.rotation | times: rotation_scale -%}
+            <div
+              class="
+                vintage-scrapbook__item
+                vintage-scrapbook__stamp
+                vintage-scrapbook__slot--{{ block.settings.slot }}
+                vintage-scrapbook__stamp-size--{{ block.settings.size }}
+              "
+              style="--scrapbook-item-rotation: {{ scaled_rotation }}deg;"
+              {{ block.shopify_attributes }}
+            >
+              {%- if block.settings.image != blank -%}
+                {{
+                  block.settings.image
+                  | image_url: width: 900
+                  | image_tag:
+                    width: block.settings.image.width,
+                    widths: '150, 300, 450, 600, 900',
+                    height: block.settings.image.height,
+                    alt: block.settings.image.alt | default: block.settings.fallback_text | escape,
+                    class: 'vintage-scrapbook__stamp-image',
+                    sizes: '(min-width: 1200px) 9vw, 18vw',
+                    loading: 'lazy'
+                }}
+              {%- else -%}
+                <span class="vintage-scrapbook__stamp-text">{{ block.settings.fallback_text | default: 'No. 08' }}</span>
+              {%- endif -%}
+            </div>
+        {%- endcase -%}
+      {%- endfor -%}
+    {%- else -%}
+      <div class="vintage-scrapbook__empty vintage-scrapbook__item vintage-scrapbook__slot--hero_photo">
+        <p>Add blocks to build your scrapbook collage.</p>
+      </div>
+      <div class="vintage-scrapbook__empty vintage-scrapbook__item vintage-scrapbook__slot--top_left_note">
+        <p>Try a paper note block here.</p>
+      </div>
+      <div class="vintage-scrapbook__empty vintage-scrapbook__item vintage-scrapbook__slot--lower_right_stamp">
+        <p>Add a stamp block.</p>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+{% stylesheet %}
+  .vintage-scrapbook__header {
+    text-align: center;
+    margin-block-end: clamp(24px, 3vw, 48px);
+  }
+
+  .vintage-scrapbook__subheading {
+    margin: 0;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    opacity: 0.75;
+  }
+
+  .vintage-scrapbook__heading {
+    margin: 10px 0 0;
+    font-size: clamp(1.6rem, 3vw, 2.8rem);
+    line-height: 1.1;
+  }
+
+  .vintage-scrapbook__canvas {
+    position: relative;
+    margin-inline: auto;
+    width: min(100%, var(--scrapbook-max-width));
+    min-height: clamp(540px, 74vw, 980px);
+    border: 1px solid rgba(from var(--color-foreground) r g b / 0.1);
+    background:
+      radial-gradient(circle at 20% 15%, rgba(255, 255, 255, 0.45), transparent 36%),
+      radial-gradient(circle at 80% 82%, rgba(0, 0, 0, 0.04), transparent 48%),
+      repeating-linear-gradient(
+        0deg,
+        rgba(from var(--color-foreground) r g b / 0.025) 0 1px,
+        transparent 1px 14px
+      ),
+      var(--scrapbook-paper-tone);
+    border-radius: 10px;
+    overflow: hidden;
+    padding: clamp(16px, 2vw, 28px);
+  }
+
+  .vintage-scrapbook__item {
+    position: absolute;
+    transform: rotate(var(--scrapbook-item-rotation, 0deg));
+    transform-origin: center;
+    transition: transform 180ms ease;
+  }
+
+  .vintage-scrapbook__item:hover {
+    transform: rotate(var(--scrapbook-item-rotation, 0deg)) translateY(-2px);
+  }
+
+  .vintage-scrapbook__photo {
+    margin: 0;
+    width: 34%;
+    max-width: 430px;
+    background: #f8f4e9;
+    padding: clamp(8px, 1.2vw, 12px);
+    box-shadow:
+      0 20px 48px rgba(0, 0, 0, calc(var(--scrapbook-shadow-opacity) * 0.7)),
+      0 2px 4px rgba(0, 0, 0, calc(var(--scrapbook-shadow-opacity) * 0.55));
+  }
+
+  .vintage-scrapbook__frame--polaroid {
+    padding-bottom: clamp(20px, 3.4vw, 38px);
+  }
+
+  .vintage-scrapbook__frame--postcard {
+    border: 1px solid rgba(0, 0, 0, 0.18);
+  }
+
+  .vintage-scrapbook__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+  }
+
+  .vintage-scrapbook__label {
+    margin-top: 8px;
+    margin-bottom: 0;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.75;
+  }
+
+  .vintage-scrapbook__placeholder {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    background: rgba(from var(--color-foreground) r g b / 0.05);
+  }
+
+  .vintage-scrapbook__placeholder-svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .vintage-scrapbook__note {
+    width: min(32%, 320px);
+    padding: clamp(12px, 1.7vw, 20px);
+    background: var(--scrapbook-note-tone, #f3ecd8);
+    border: 1px solid rgba(0, 0, 0, 0.09);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, calc(var(--scrapbook-shadow-opacity) * 0.45));
+  }
+
+  .vintage-scrapbook__note-text {
+    margin: 0;
+    font-size: clamp(0.86rem, 1vw, 1rem);
+    line-height: 1.45;
+  }
+
+  .vintage-scrapbook__note-font--script .vintage-scrapbook__note-text {
+    font-family: "Snell Roundhand", "Brush Script MT", cursive;
+    font-size: clamp(1rem, 1.2vw, 1.2rem);
+  }
+
+  .vintage-scrapbook__note-font--typewriter .vintage-scrapbook__note-text {
+    font-family: "Courier New", Courier, monospace;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.84rem;
+  }
+
+  .vintage-scrapbook__note-font--marker .vintage-scrapbook__note-text {
+    font-family: "Marker Felt", "Trebuchet MS", sans-serif;
+    font-size: clamp(0.95rem, 1.1vw, 1.1rem);
+  }
+
+  .vintage-scrapbook__stamp {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: clamp(64px, 10vw, 136px);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.85);
+    box-shadow: 0 10px 24px rgba(0, 0, 0, calc(var(--scrapbook-shadow-opacity) * 0.45));
+    overflow: hidden;
+  }
+
+  .vintage-scrapbook__stamp-image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .vintage-scrapbook__stamp-size--small {
+    width: clamp(56px, 8vw, 88px);
+  }
+
+  .vintage-scrapbook__stamp-size--large {
+    width: clamp(94px, 12vw, 152px);
+  }
+
+  .vintage-scrapbook__stamp-text {
+    font-size: clamp(0.67rem, 1vw, 0.8rem);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+    padding-inline: 8px;
+  }
+
+  .vintage-scrapbook__empty {
+    width: min(34%, 360px);
+    min-height: 130px;
+    background: rgba(from var(--color-foreground) r g b / 0.08);
+    border: 1px dashed rgba(from var(--color-foreground) r g b / 0.24);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 12px;
+    box-sizing: border-box;
+    opacity: 0.8;
+  }
+
+  .vintage-scrapbook__empty p {
+    margin: 0;
+    font-size: 0.8rem;
+    letter-spacing: 0.03em;
+  }
+
+  .vintage-scrapbook__slot--top_left_note {
+    top: 4%;
+    left: 4%;
+    z-index: 7;
+  }
+
+  .vintage-scrapbook__slot--hero_photo {
+    top: 18%;
+    left: 7%;
+    z-index: 5;
+  }
+
+  .vintage-scrapbook__slot--badge_patch {
+    top: 4%;
+    right: 7%;
+    z-index: 8;
+  }
+
+  .vintage-scrapbook__slot--right_label {
+    top: 28%;
+    right: 6%;
+    z-index: 7;
+  }
+
+  .vintage-scrapbook__slot--lower_left_photo {
+    bottom: 8%;
+    left: 8%;
+    z-index: 6;
+  }
+
+  .vintage-scrapbook__slot--center_strip {
+    bottom: 13%;
+    left: 35%;
+    z-index: 7;
+  }
+
+  .vintage-scrapbook__slot--lower_right_stamp {
+    bottom: 6%;
+    right: 6%;
+    z-index: 9;
+  }
+
+  .vintage-scrapbook__slot--middle_stamp {
+    top: 62%;
+    left: 54%;
+    z-index: 8;
+  }
+
+  .vintage-scrapbook__slot--center_note {
+    top: 46%;
+    left: 45%;
+    z-index: 8;
+  }
+
+  .vintage-scrapbook__size--small {
+    width: min(24%, 260px);
+  }
+
+  .vintage-scrapbook__size--medium {
+    width: min(32%, 380px);
+  }
+
+  .vintage-scrapbook__size--large {
+    width: min(42%, 500px);
+  }
+
+  @media screen and (width < 990px) {
+    .vintage-scrapbook__canvas {
+      min-height: 700px;
+    }
+
+    .vintage-scrapbook__size--large {
+      width: min(50%, 420px);
+    }
+
+    .vintage-scrapbook__size--medium {
+      width: min(42%, 340px);
+    }
+
+    .vintage-scrapbook__note {
+      width: min(42%, 300px);
+    }
+  }
+
+  @media screen and (width < 750px) {
+    .vintage-scrapbook__canvas {
+      min-height: 0;
+      display: grid;
+      gap: 14px;
+      padding: 14px;
+    }
+
+    .vintage-scrapbook__item {
+      position: static;
+      width: 100%;
+      max-width: none;
+      transform: none;
+    }
+
+    .vintage-scrapbook__item:hover {
+      transform: none;
+    }
+
+    .vintage-scrapbook__photo,
+    .vintage-scrapbook__note,
+    .vintage-scrapbook__empty {
+      width: 100%;
+      max-width: none;
+    }
+
+    .vintage-scrapbook__stamp {
+      justify-self: center;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Vintage scrapbook collage",
+  "tag": "section",
+  "class": "section-wrapper",
+  "settings": [
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Archive Collection"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Vintage Scrapbook"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "Page width"
+        },
+        {
+          "value": "full-width",
+          "label": "Full width"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "canvas_max_width",
+      "label": "Canvas max width",
+      "min": 900,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "default": 1320
+    },
+    {
+      "type": "color",
+      "id": "paper_tone",
+      "label": "Paper tone",
+      "default": "#ebe7dd"
+    },
+    {
+      "type": "range",
+      "id": "shadow_strength",
+      "label": "Shadow strength",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "rotation_scale",
+      "label": "Rotation intensity",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "photo_card",
+      "name": "Photo card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Label"
+        },
+        {
+          "type": "select",
+          "id": "slot",
+          "label": "Placement slot",
+          "options": [
+            {
+              "value": "hero_photo",
+              "label": "Hero photo"
+            },
+            {
+              "value": "lower_left_photo",
+              "label": "Lower left photo"
+            },
+            {
+              "value": "right_label",
+              "label": "Right label"
+            },
+            {
+              "value": "center_strip",
+              "label": "Center strip"
+            },
+            {
+              "value": "badge_patch",
+              "label": "Badge patch"
+            }
+          ],
+          "default": "hero_photo"
+        },
+        {
+          "type": "select",
+          "id": "size",
+          "label": "Size",
+          "options": [
+            {
+              "value": "small",
+              "label": "Small"
+            },
+            {
+              "value": "medium",
+              "label": "Medium"
+            },
+            {
+              "value": "large",
+              "label": "Large"
+            }
+          ],
+          "default": "medium"
+        },
+        {
+          "type": "select",
+          "id": "frame_style",
+          "label": "Frame style",
+          "options": [
+            {
+              "value": "paper",
+              "label": "Paper"
+            },
+            {
+              "value": "polaroid",
+              "label": "Polaroid"
+            },
+            {
+              "value": "postcard",
+              "label": "Postcard"
+            }
+          ],
+          "default": "paper"
+        },
+        {
+          "type": "range",
+          "id": "rotation",
+          "label": "Rotation",
+          "min": -25,
+          "max": 25,
+          "step": 1,
+          "unit": "deg",
+          "default": -4
+        }
+      ]
+    },
+    {
+      "type": "paper_note",
+      "name": "Paper note",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Located atop lookout mountain"
+        },
+        {
+          "type": "select",
+          "id": "slot",
+          "label": "Placement slot",
+          "options": [
+            {
+              "value": "top_left_note",
+              "label": "Top left note"
+            },
+            {
+              "value": "center_note",
+              "label": "Center note"
+            },
+            {
+              "value": "center_strip",
+              "label": "Center strip"
+            }
+          ],
+          "default": "top_left_note"
+        },
+        {
+          "type": "select",
+          "id": "font_style",
+          "label": "Font style",
+          "options": [
+            {
+              "value": "script",
+              "label": "Script"
+            },
+            {
+              "value": "typewriter",
+              "label": "Typewriter"
+            },
+            {
+              "value": "marker",
+              "label": "Marker"
+            }
+          ],
+          "default": "script"
+        },
+        {
+          "type": "color",
+          "id": "note_color",
+          "label": "Paper color",
+          "default": "#f3ecd8"
+        },
+        {
+          "type": "range",
+          "id": "rotation",
+          "label": "Rotation",
+          "min": -25,
+          "max": 25,
+          "step": 1,
+          "unit": "deg",
+          "default": -3
+        }
+      ]
+    },
+    {
+      "type": "stamp",
+      "name": "Stamp or seal",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "fallback_text",
+          "label": "Fallback text",
+          "default": "1D"
+        },
+        {
+          "type": "select",
+          "id": "slot",
+          "label": "Placement slot",
+          "options": [
+            {
+              "value": "lower_right_stamp",
+              "label": "Lower right stamp"
+            },
+            {
+              "value": "middle_stamp",
+              "label": "Middle stamp"
+            },
+            {
+              "value": "badge_patch",
+              "label": "Badge patch"
+            }
+          ],
+          "default": "lower_right_stamp"
+        },
+        {
+          "type": "select",
+          "id": "size",
+          "label": "Size",
+          "options": [
+            {
+              "value": "small",
+              "label": "Small"
+            },
+            {
+              "value": "medium",
+              "label": "Medium"
+            },
+            {
+              "value": "large",
+              "label": "Large"
+            }
+          ],
+          "default": "medium"
+        },
+        {
+          "type": "range",
+          "id": "rotation",
+          "label": "Rotation",
+          "min": -25,
+          "max": 25,
+          "step": 1,
+          "unit": "deg",
+          "default": 8
+        }
+      ]
+    }
+  ],
+  "max_blocks": 18,
+  "presets": [
+    {
+      "name": "Vintage scrapbook collage",
+      "category": "t:categories.image",
+      "blocks": [
+        {
+          "type": "paper_note",
+          "settings": {
+            "text": "A day in the valley",
+            "slot": "top_left_note",
+            "font_style": "script",
+            "rotation": -6
+          }
+        },
+        {
+          "type": "photo_card",
+          "settings": {
+            "caption": "Roadster",
+            "slot": "hero_photo",
+            "size": "large",
+            "frame_style": "paper",
+            "rotation": -2
+          }
+        },
+        {
+          "type": "photo_card",
+          "settings": {
+            "caption": "Nelly Farm",
+            "slot": "badge_patch",
+            "size": "medium",
+            "frame_style": "postcard",
+            "rotation": 2
+          }
+        },
+        {
+          "type": "photo_card",
+          "settings": {
+            "caption": "Sanforized",
+            "slot": "right_label",
+            "size": "small",
+            "frame_style": "paper",
+            "rotation": -4
+          }
+        },
+        {
+          "type": "photo_card",
+          "settings": {
+            "caption": "Summer field",
+            "slot": "lower_left_photo",
+            "size": "medium",
+            "frame_style": "polaroid",
+            "rotation": -1
+          }
+        },
+        {
+          "type": "photo_card",
+          "settings": {
+            "caption": "Silver tone",
+            "slot": "center_strip",
+            "size": "medium",
+            "frame_style": "postcard",
+            "rotation": 3
+          }
+        },
+        {
+          "type": "stamp",
+          "settings": {
+            "fallback_text": "1D",
+            "slot": "lower_right_stamp",
+            "size": "large",
+            "rotation": -10
+          }
+        },
+        {
+          "type": "stamp",
+          "settings": {
+            "fallback_text": "Seal",
+            "slot": "middle_stamp",
+            "size": "small",
+            "rotation": 6
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
