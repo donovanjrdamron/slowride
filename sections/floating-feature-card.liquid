@@ -1,0 +1,367 @@
+{% liquid
+  assign card_block = section.blocks.first
+
+  if section.settings.glass_tint == 'dark'
+    assign card_background = 'rgba(0, 0, 0, 0.25)'
+    assign card_border = 'rgba(255, 255, 255, 0.3)'
+    assign button_solid_text = '#111111'
+  else
+    assign card_background = 'rgba(255, 255, 255, 0.18)'
+    assign card_border = 'rgba(255, 255, 255, 0.3)'
+    assign button_solid_text = '#ffffff'
+  endif
+%}
+
+<section
+  id="FloatingFeatureCard-{{ section.id }}"
+  class="floating-feature-card floating-feature-card--{{ section.id }}"
+  style="
+    --ffc-section-background: {{ section.settings.background_color }};
+    --ffc-padding-top: {{ section.settings.padding_top }}px;
+    --ffc-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --ffc-card-background: {{ card_background }};
+    --ffc-card-border: {{ card_border }};
+    --ffc-button-solid-text: {{ button_solid_text }};
+  "
+>
+  <div class="floating-feature-card__inner">
+    <article class="floating-feature-card__card{% if section.settings.image_position == 'right' %} floating-feature-card__card--image-right{% endif %}">
+      <div class="floating-feature-card__media">
+        {% if card_block != blank and card_block.settings.image != blank %}
+          {{
+            card_block.settings.image
+            | image_url: width: 2200
+            | image_tag:
+              class: 'floating-feature-card__image',
+              loading: 'lazy',
+              widths: '720, 900, 1200, 1500, 1800, 2200',
+              sizes: '(min-width: 750px) 42vw, 100vw',
+              alt: card_block.settings.image.alt
+          }}
+        {% else %}
+          <div class="floating-feature-card__image-placeholder" aria-hidden="true">
+            {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+          </div>
+        {% endif %}
+      </div>
+
+      <div
+        class="floating-feature-card__content"
+        {% if card_block != blank %}
+          style="--ffc-text-color: {{ card_block.settings.text_color }};"
+        {% endif %}
+      >
+        {% if card_block != blank and card_block.settings.eyebrow != blank %}
+          <p class="floating-feature-card__eyebrow">{{ card_block.settings.eyebrow | escape }}</p>
+        {% endif %}
+
+        {% if card_block != blank and card_block.settings.heading != blank %}
+          <h2 class="floating-feature-card__heading">{{ card_block.settings.heading | escape }}</h2>
+        {% endif %}
+
+        {% if card_block != blank and card_block.settings.body != blank %}
+          <div class="floating-feature-card__body">{{ card_block.settings.body }}</div>
+        {% endif %}
+
+        {% if card_block != blank and card_block.settings.button_label != blank %}
+          <a
+            {% if card_block.settings.button_link == blank %}
+              role="link" aria-disabled="true"
+            {% else %}
+              href="{{ card_block.settings.button_link }}"
+            {% endif %}
+            class="floating-feature-card__button{% if card_block.settings.button_style == 'outlined' %} floating-feature-card__button--outlined{% else %} floating-feature-card__button--solid{% endif %}"
+          >
+            {{ card_block.settings.button_label | escape }}
+          </a>
+        {% endif %}
+      </div>
+    </article>
+  </div>
+</section>
+
+{% stylesheet %}
+  .floating-feature-card {
+    background: var(--ffc-section-background);
+    padding-top: var(--ffc-padding-top);
+    padding-bottom: var(--ffc-padding-bottom);
+  }
+
+  .floating-feature-card__inner {
+    width: 100%;
+    padding-inline: clamp(20px, 5vw, 72px);
+  }
+
+  .floating-feature-card__card {
+    width: min(85%, 1200px);
+    margin: 0 auto;
+    border-radius: 14px;
+    overflow: hidden;
+    display: grid;
+    grid-template-columns: 1fr;
+    background: var(--ffc-card-background);
+    border: 1px solid var(--ffc-card-border);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08);
+  }
+
+  .floating-feature-card__media {
+    height: 280px;
+    background: rgba(0, 0, 0, 0.08);
+  }
+
+  .floating-feature-card__image,
+  .floating-feature-card__image-placeholder,
+  .floating-feature-card__image-placeholder .placeholder-svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .floating-feature-card__image {
+    object-fit: cover;
+  }
+
+  .floating-feature-card__image-placeholder {
+    min-height: 100%;
+  }
+
+  .floating-feature-card__content {
+    --ffc-text-color: #111111;
+    color: var(--ffc-text-color);
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 14px;
+  }
+
+  .floating-feature-card__eyebrow {
+    margin: 0;
+    font-size: 0.78rem;
+    line-height: 1.2;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ffc-text-color);
+    opacity: 0.86;
+  }
+
+  .floating-feature-card__heading {
+    margin: 0;
+    font-size: clamp(1.8rem, 3.4vw, 3rem);
+    line-height: 1.1;
+    font-weight: 700;
+    color: var(--ffc-text-color);
+  }
+
+  .floating-feature-card__body {
+    color: var(--ffc-text-color);
+    max-width: 42ch;
+  }
+
+  .floating-feature-card__body p {
+    margin: 0;
+  }
+
+  .floating-feature-card__button {
+    margin-top: 10px;
+    width: fit-content;
+    min-height: 44px;
+    padding: 0.72rem 1.45rem;
+    border-radius: 999px;
+    border: 1px solid currentColor;
+    text-decoration: none;
+    font-weight: 600;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+  }
+
+  .floating-feature-card__button--solid {
+    background: currentColor;
+    color: var(--ffc-button-solid-text);
+  }
+
+  .floating-feature-card__button--outlined {
+    background: transparent;
+    color: var(--ffc-text-color);
+  }
+
+  .floating-feature-card__button:hover {
+    opacity: 0.92;
+    transform: translateY(-1px);
+  }
+
+  .floating-feature-card__button[aria-disabled='true'] {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  @media screen and (min-width: 750px) {
+    .floating-feature-card__card {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .floating-feature-card__media {
+      height: auto;
+      min-height: 100%;
+    }
+
+    .floating-feature-card__card--image-right .floating-feature-card__media {
+      order: 2;
+    }
+
+    .floating-feature-card__card--image-right .floating-feature-card__content {
+      order: 1;
+    }
+
+    .floating-feature-card__content {
+      padding: 32px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Floating Feature Card",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section layout"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "glass_tint",
+      "label": "Glass tint",
+      "default": "light",
+      "options": [
+        {
+          "value": "light",
+          "label": "Light"
+        },
+        {
+          "value": "dark",
+          "label": "Dark"
+        }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image position (desktop)",
+      "default": "left",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "unit": "px",
+      "default": 56
+    }
+  ],
+  "blocks": [
+    {
+      "type": "content",
+      "name": "Content",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow text",
+          "default": "Featured"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Floating Feature Card"
+        },
+        {
+          "type": "richtext",
+          "id": "body",
+          "label": "Body text",
+          "default": "<p>Create a polished feature highlight with a frosted-glass look, clear hierarchy, and a focused call to action.</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label",
+          "default": "Learn more"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        },
+        {
+          "type": "select",
+          "id": "button_style",
+          "label": "Button style",
+          "default": "solid",
+          "options": [
+            {
+              "value": "solid",
+              "label": "Solid"
+            },
+            {
+              "value": "outlined",
+              "label": "Outlined"
+            }
+          ]
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text color",
+          "default": "#111111"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Floating Feature Card",
+      "blocks": [
+        {
+          "type": "content"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
