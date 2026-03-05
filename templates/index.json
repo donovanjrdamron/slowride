@@ -178,7 +178,7 @@
             "product_list_text_qLCTNF": {
               "type": "_product-list-text",
               "settings": {
-                "text": "<h3>latest additions</h3>",
+                "text": "<h3>Latest Additions</h3>",
                 "width": "100%",
                 "max_width": "normal",
                 "alignment": "left",
