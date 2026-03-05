@@ -139,8 +139,7 @@
   .storytelling-dual-cards__content {
     position: absolute;
     inset: var(--story-card-padding-mobile);
-    position: relative;
-    z-index: 1;
+    z-index: 2;
   }
 
   .storytelling-dual-cards__main-text-wrap {
@@ -151,6 +150,7 @@
     justify-content: center;
     text-align: center;
     pointer-events: none;
+    z-index: 1;
   }
 
   .storytelling-dual-cards__main-text {
@@ -173,7 +173,7 @@
     line-height: 1.15;
     margin: 0;
     max-width: 42%;
-    z-index: 1;
+    z-index: 3;
   }
 
   .storytelling-dual-cards__corner--top-left {
@@ -191,7 +191,7 @@
     left: 50%;
     bottom: clamp(12px, 4vw, 40px);
     transform: translateX(-50%);
-    z-index: 2;
+    z-index: 3;
   }
 
   .storytelling-dual-cards__button {

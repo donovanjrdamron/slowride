@@ -32,7 +32,8 @@
       {%- for block in section.blocks -%}
         {%- case block.type -%}
           {%- when 'photo_card' -%}
-            {%- assign scaled_rotation = block.settings.rotation | times: rotation_scale -%}
+            {%- assign base_rotation = block.settings.rotation | minus: 25 -%}
+            {%- assign scaled_rotation = base_rotation | times: rotation_scale -%}
             <figure
               class="
                 vintage-scrapbook__item
@@ -68,7 +69,8 @@
             </figure>
 
           {%- when 'paper_note' -%}
-            {%- assign scaled_rotation = block.settings.rotation | times: rotation_scale -%}
+            {%- assign base_rotation = block.settings.rotation | minus: 25 -%}
+            {%- assign scaled_rotation = base_rotation | times: rotation_scale -%}
             <div
               class="
                 vintage-scrapbook__item
@@ -88,7 +90,8 @@
             </div>
 
           {%- when 'stamp' -%}
-            {%- assign scaled_rotation = block.settings.rotation | times: rotation_scale -%}
+            {%- assign base_rotation = block.settings.rotation | minus: 25 -%}
+            {%- assign scaled_rotation = base_rotation | times: rotation_scale -%}
             <div
               class="
                 vintage-scrapbook__item
@@ -437,6 +440,9 @@
   "name": "Vintage scrapbook collage",
   "tag": "section",
   "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header"]
+  },
   "settings": [
     {
       "type": "text",
@@ -619,11 +625,10 @@
           "type": "range",
           "id": "rotation",
           "label": "Rotation",
-          "min": -25,
-          "max": 25,
+          "min": 0,
+          "max": 50,
           "step": 1,
-          "unit": "deg",
-          "default": -4
+          "default": 21
         }
       ]
     },
@@ -687,11 +692,10 @@
           "type": "range",
           "id": "rotation",
           "label": "Rotation",
-          "min": -25,
-          "max": 25,
+          "min": 0,
+          "max": 50,
           "step": 1,
-          "unit": "deg",
-          "default": -3
+          "default": 22
         }
       ]
     },
@@ -754,11 +758,10 @@
           "type": "range",
           "id": "rotation",
           "label": "Rotation",
-          "min": -25,
-          "max": 25,
+          "min": 0,
+          "max": 50,
           "step": 1,
-          "unit": "deg",
-          "default": 8
+          "default": 33
         }
       ]
     }
@@ -775,7 +778,7 @@
             "text": "A day in the valley",
             "slot": "top_left_note",
             "font_style": "script",
-            "rotation": -6
+            "rotation": 19
           }
         },
         {
@@ -785,7 +788,7 @@
             "slot": "hero_photo",
             "size": "large",
             "frame_style": "paper",
-            "rotation": -2
+            "rotation": 23
           }
         },
         {
@@ -795,7 +798,7 @@
             "slot": "badge_patch",
             "size": "medium",
             "frame_style": "postcard",
-            "rotation": 2
+            "rotation": 27
           }
         },
         {
@@ -805,7 +808,7 @@
             "slot": "right_label",
             "size": "small",
             "frame_style": "paper",
-            "rotation": -4
+            "rotation": 21
           }
         },
         {
@@ -815,7 +818,7 @@
             "slot": "lower_left_photo",
             "size": "medium",
             "frame_style": "polaroid",
-            "rotation": -1
+            "rotation": 24
           }
         },
         {
@@ -825,7 +828,7 @@
             "slot": "center_strip",
             "size": "medium",
             "frame_style": "postcard",
-            "rotation": 3
+            "rotation": 28
           }
         },
         {
@@ -834,7 +837,7 @@
             "fallback_text": "1D",
             "slot": "lower_right_stamp",
             "size": "large",
-            "rotation": -10
+            "rotation": 15
           }
         },
         {
@@ -843,7 +846,7 @@
             "fallback_text": "Seal",
             "slot": "middle_stamp",
             "size": "small",
-            "rotation": 6
+            "rotation": 31
           }
         }
       ]
