@@ -477,6 +477,76 @@
         "button_text_color": "#111111",
         "button_border_color": "#ffffff"
       }
+    },
+    "floating_feature_card_KN6yCC": {
+      "type": "floating-feature-card",
+      "blocks": {
+        "content_hxWp6P": {
+          "type": "content",
+          "settings": {
+            "image": "shopify://shop_images/Rage22_1107_00070.jpg",
+            "eyebrow": "Featured",
+            "heading": "The Last Lap",
+            "body": "<h5>This is SlowRide's final call for previous season's gear. The styles available in the <strong>Last Lap </strong>will never be seen again, due to our small-batch runs. </h5><h5>This is your chance to get them at the best prices ever seen from SlowRide.</h5>",
+            "button_label": "Shop Last Lap",
+            "button_link": "shopify://collections/slowridesaleproducts",
+            "button_style": "outlined",
+            "text_color": "#263d60"
+          }
+        }
+      },
+      "block_order": [
+        "content_hxWp6P"
+      ],
+      "name": "Floating Feature Card",
+      "settings": {
+        "background_color": "#ffffff",
+        "glass_tint": "light",
+        "image_position": "right",
+        "padding_top": 56,
+        "padding_bottom": 56
+      }
+    },
+    "storytelling_dual_cards_dH849T": {
+      "type": "storytelling-dual-cards",
+      "name": "Storytelling two cards",
+      "settings": {
+        "card_gap": 0,
+        "card_padding_mobile": 24,
+        "card_padding_desktop": 40,
+        "padding_top": 0,
+        "padding_bottom": 0,
+        "image_corner_radius": 0,
+        "frame_corner_radius": 24,
+        "border_width": 2,
+        "border_inset_mobile": 12,
+        "border_inset_desktop": 18,
+        "main_text_size_mobile": 54,
+        "main_text_size_desktop": 86,
+        "corner_text_size": 12,
+        "card_1_main_text": "<p>Lookbook</p>",
+        "card_1_background_image": "shopify://shop_images/DSC00472_21dc91f8-74c1-414a-bf3d-8178bffc5abf.jpg",
+        "card_1_main_text_color": "#ffffff",
+        "card_1_background_color": "#8d9a92",
+        "card_1_border_color": "#ffffff",
+        "card_1_show_corner_text": false,
+        "card_1_corner_text": "",
+        "card_1_corner_position": "top-right",
+        "card_1_corner_text_color": "#ffffff",
+        "card_1_button_label": "View",
+        "card_1_button_link": "",
+        "card_2_main_text": "<p>Brand Story</p>",
+        "card_2_background_image": "shopify://shop_images/IMG_6167.jpg",
+        "card_2_main_text_color": "#ffffff",
+        "card_2_background_color": "#8d9a92",
+        "card_2_border_color": "#ffffff",
+        "card_2_show_corner_text": false,
+        "card_2_corner_text": "logosbrandingvisualidentity",
+        "card_2_corner_position": "top-right",
+        "card_2_corner_text_color": "#f05f2a",
+        "card_2_button_label": "View",
+        "card_2_button_link": "shopify://pages/brand-story"
+      }
     }
   },
   "order": [
@@ -484,6 +554,8 @@
     "blocks_TdBL6y",
     "product_list_qU3bEB",
     "shop_by_category_LKfdU9",
-    "frosted_glass_split_jnR4he"
+    "frosted_glass_split_jnR4he",
+    "floating_feature_card_KN6yCC",
+    "storytelling_dual_cards_dH849T"
   ]
 }
