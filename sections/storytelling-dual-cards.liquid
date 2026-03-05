@@ -4,15 +4,14 @@
     --story-padding-top: {{ section.settings.padding_top }}px;
     --story-padding-bottom: {{ section.settings.padding_bottom }}px;
     --story-card-gap: {{ section.settings.card_gap }}px;
-    --story-card-min-height-mobile: {{ section.settings.card_min_height_mobile }}px;
-    --story-card-min-height-desktop: {{ section.settings.card_min_height_desktop }}px;
     --story-card-padding-mobile: {{ section.settings.card_padding_mobile }}px;
     --story-card-padding-desktop: {{ section.settings.card_padding_desktop }}px;
     --story-main-font-size-mobile: {{ section.settings.main_text_size_mobile }}px;
     --story-main-font-size-desktop: {{ section.settings.main_text_size_desktop }}px;
     --story-corner-font-size: {{ section.settings.corner_text_size }}px;
     --story-border-width: {{ section.settings.border_width }}px;
-    --story-card-radius: {{ section.settings.card_corner_radius }}px;
+    --story-image-radius: {{ section.settings.image_corner_radius }}px;
+    --story-frame-radius: {{ section.settings.frame_corner_radius }}px;
     --story-border-inset-mobile: {{ section.settings.border_inset_mobile }}px;
     --story-border-inset-desktop: {{ section.settings.border_inset_desktop }}px;
   "
@@ -107,9 +106,10 @@
 
   .storytelling-dual-cards__card {
     position: relative;
-    min-height: var(--story-card-min-height-mobile);
+    aspect-ratio: 1 / 1;
+    min-height: 0;
     padding: var(--story-card-padding-mobile);
-    border-radius: var(--story-card-radius);
+    border-radius: var(--story-image-radius);
     background-color: var(--story-card-bg-color);
     background-image: var(--story-card-bg-image);
     background-size: cover;
@@ -123,7 +123,7 @@
     position: absolute;
     inset: var(--story-border-inset-mobile);
     border: var(--story-border-width) solid var(--story-card-border-color);
-    border-radius: max(0px, calc(var(--story-card-radius) - var(--story-border-inset-mobile)));
+    border-radius: var(--story-frame-radius);
     pointer-events: none;
   }
 
@@ -196,13 +196,11 @@
     }
 
     .storytelling-dual-cards__card {
-      min-height: var(--story-card-min-height-desktop);
       padding: var(--story-card-padding-desktop);
     }
 
     .storytelling-dual-cards__card::after {
       inset: var(--story-border-inset-desktop);
-      border-radius: max(0px, calc(var(--story-card-radius) - var(--story-border-inset-desktop)));
     }
 
     .storytelling-dual-cards__main-text {
@@ -241,26 +239,6 @@
       "step": 2,
       "unit": "px",
       "default": 0
-    },
-    {
-      "type": "range",
-      "id": "card_min_height_mobile",
-      "label": "Card minimum height (mobile)",
-      "min": 260,
-      "max": 800,
-      "step": 10,
-      "unit": "px",
-      "default": 420
-    },
-    {
-      "type": "range",
-      "id": "card_min_height_desktop",
-      "label": "Card minimum height (desktop)",
-      "min": 360,
-      "max": 1200,
-      "step": 10,
-      "unit": "px",
-      "default": 680
     },
     {
       "type": "range",
@@ -308,13 +286,23 @@
     },
     {
       "type": "range",
-      "id": "card_corner_radius",
-      "label": "Card corner radius",
+      "id": "image_corner_radius",
+      "label": "Image corner radius",
       "min": 0,
       "max": 80,
       "step": 2,
       "unit": "px",
       "default": 28
+    },
+    {
+      "type": "range",
+      "id": "frame_corner_radius",
+      "label": "Frame corner radius",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 24
     },
     {
       "type": "range",
