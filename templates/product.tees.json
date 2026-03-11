@@ -17,10 +17,10 @@
           "static": true,
           "settings": {
             "product": "{{ closest.product }}",
-            "media_presentation": "carousel",
+            "media_presentation": "grid",
             "media_columns": "two",
-            "image_gap": 4,
-            "large_first_image": false,
+            "image_gap": 0,
+            "large_first_image": true,
             "icons_style": "arrow",
             "slideshow_controls_style": "thumbnails",
             "slideshow_mobile_controls_style": "hint",
@@ -35,7 +35,7 @@
             "hide_variants": false,
             "padding-block-start": 11,
             "padding-block-end": 0,
-            "padding-inline-start": 17,
+            "padding-inline-start": 0,
             "padding-inline-end": 17
           },
           "blocks": {}
