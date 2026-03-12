@@ -1,0 +1,131 @@
+{% comment %} Judge.me rating bar section {% endcomment %}
+
+<div class="sr-rating-bar">
+  <div class="sr-rating-stars">
+    {% for i in (1..5) %}
+      <svg class="sr-star" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <polygon
+          points="10,1 12.9,7 19.5,7.6 14.5,12 16.2,18.5 10,15 3.8,18.5 5.5,12 0.5,7.6 7.1,7"
+          fill="{{ section.settings.star_color }}"
+        />
+      </svg>
+    {% endfor %}
+  </div>
+
+  <div class="sr-rating-text">
+    <span class="sr-rating-score">{{ section.settings.rating_score }}</span>
+    <span class="sr-rating-label">{{ section.settings.rating_label }}</span>
+    <span class="sr-rating-count">
+      {% if settings.enable_judgeme %}
+        {% render 'judgeme_widgets', widget_type: 'judgeme_review_widget', concise_widget: true, product: product %}
+      {% else %}
+        {% comment %} Judge.me snippet/settings missing; manual hookup may be needed. {% endcomment %}
+      {% endif %}
+    </span>
+  </div>
+</div>
+
+{% style %}
+  .sr-rating-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+  }
+
+  .sr-rating-stars {
+    display: flex;
+    gap: 2px;
+  }
+
+  .sr-star {
+    width: {{ section.settings.star_size }}px;
+    height: {{ section.settings.star_size }}px;
+  }
+
+  .sr-rating-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: {{ section.settings.font_size }}px;
+    color: {{ section.settings.text_color }};
+    font-weight: 500;
+  }
+
+  .sr-rating-score {
+    font-weight: 700;
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Rating Bar",
+  "settings": [
+    {
+      "type": "range",
+      "id": "star_size",
+      "label": "Star Size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star Color",
+      "default": "#f59e0b"
+    },
+    {
+      "type": "text",
+      "id": "rating_score",
+      "label": "Rating Score",
+      "default": "4.9"
+    },
+    {
+      "type": "text",
+      "id": "rating_label",
+      "label": "Rating Label",
+      "default": "out of 5 —"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font Size",
+      "min": 11,
+      "max": 18,
+      "step": 1,
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 8
+    }
+  ],
+  "presets": [
+    {
+      "name": "Rating Bar"
+    }
+  ]
+}
+{% endschema %}

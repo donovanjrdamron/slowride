@@ -52,7 +52,7 @@
 
         {%- if variant_style == 'swatch' or block.settings.variant_style == 'buttons' -%}
           <fieldset
-            class="variant-option variant-option--buttons{% if variant_style == 'swatch' %} variant-option--swatches{% else %} variant-option--{{ settings.variant_button_width }}{% endif %}"
+            class="variant-option variant-option--buttons{% if product_option.name | downcase == 'size' %} variant-option--size{% endif %}{% if variant_style == 'swatch' %} variant-option--swatches{% else %} variant-option--{{ settings.variant_button_width }}{% endif %}"
             {{ option_id_attribute }}
           >
             <legend>
@@ -278,6 +278,19 @@
     }
   }
 
+  .variant-option--size .variant-option__button-label {
+    min-width: 0;
+    width: auto;
+    min-height: auto;
+    flex: 0 0 auto;
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+
   .variant-option__button-label__text {
     text-align: left;
     text-wrap: auto;
@@ -491,5 +504,41 @@
   .variant-picker .variant-option__button-label--has-swatch:hover {
     outline-width: 2px;
     outline-offset: 3px;
+  }
+
+  /* Compact PDP image swatches for option 1 (typically Color) */
+  .variant-picker .variant-picker__form > fieldset.variant-option--swatches:has(input[data-input-id^='1-']) .variant-option__button-label--has-swatch {
+    width: 64px;
+    height: 64px;
+    padding: 2px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    overflow: hidden;
+    outline: none;
+    outline-offset: 0;
+    min-height: 64px;
+    min-width: 64px;
+    background: transparent;
+  }
+
+  .variant-picker .variant-picker__form > fieldset.variant-option--swatches:has(input[data-input-id^='1-']) .variant-option__button-label--has-swatch .swatch {
+    width: 100%;
+    height: 100%;
+    border-radius: 6px;
+    border: none;
+    background-size: cover;
+    background-position: center;
+  }
+
+  /* Selected state */
+  .variant-picker .variant-picker__form > fieldset.variant-option--swatches:has(input[data-input-id^='1-']) .variant-option__button-label--has-swatch:has(input:checked) {
+    border-color: #1a1a2e;
+    outline: none;
+  }
+
+  /* Hover state */
+  .variant-picker .variant-picker__form > fieldset.variant-option--swatches:has(input[data-input-id^='1-']) .variant-option__button-label--has-swatch:hover {
+    border-color: #aaa;
+    outline: none;
   }
 {% endstylesheet %}

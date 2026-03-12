@@ -589,6 +589,10 @@
         "padding-block-end": 18
       }
     },
+    "product_rating_bar": {
+      "type": "product-rating-bar",
+      "settings": {}
+    },
     "1765340203e84ebd29": {
       "type": "_blocks",
       "blocks": {
@@ -1298,6 +1302,7 @@
   },
   "order": [
     "main",
+    "product_rating_bar",
     "1765340203e84ebd29",
     "product_recommendations_qggXJq",
     "175056140363acbe39",
