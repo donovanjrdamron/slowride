@@ -325,13 +325,27 @@
     font-size: 12px;
     border-radius: min(var(--options-border-radius), 4px);
     border-width: max(1px, var(--options-border-width));
-    border-color: var(--color-variant-border);
+    border-color: #263d60;
+    color: #263d60;
     letter-spacing: 0.05em;
     font-weight: 500;
   }
 
   .variant-option--size .variant-option__button-label:last-of-type {
     margin-inline-end: 0;
+  }
+
+  .variant-option--size .variant-option__button-label:hover {
+    border-color: #263d60;
+    color: #263d60;
+    background-color: var(--color-variant-background);
+  }
+
+  .variant-option--size .variant-option__button-label:has(:checked),
+  .variant-option--size .variant-option__button-label:has(:checked):hover {
+    background-color: #263d60;
+    border-color: #263d60;
+    color: #fff;
   }
 
   .variant-option__button-label:has(:focus-visible) {
