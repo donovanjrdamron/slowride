@@ -1,0 +1,185 @@
+{% liquid
+  assign product_resource = block.settings.product
+  if request.visual_preview_mode and product_resource == blank
+    assign product_resource = collections.all.products.first
+  endif
+
+  assign review_count = blank
+  assign judgeme_badge = product_resource.metafields.judgeme.badge
+
+  if judgeme_badge != blank and judgeme_badge contains 'data-number-of-reviews="'
+    assign review_count = judgeme_badge | split: 'data-number-of-reviews="' | last | split: '"' | first
+  endif
+
+  if review_count == blank
+    assign review_count = product_resource.metafields.reviews.rating_count.value | default: product_resource.metafields.reviews.rating_count
+  endif
+%}
+
+<div
+  class="sr-rating-bar spacing-style"
+  style="
+    {% render 'spacing-style', settings: block.settings %}
+    --sr-star-size: {{ block.settings.star_size }}px;
+    --sr-star-color: {{ block.settings.star_color }};
+    --sr-text-size: {{ block.settings.font_size }}px;
+    --sr-text-color: {{ block.settings.text_color }};
+  "
+  {{ block.shopify_attributes }}
+>
+  <div class="sr-rating-stars" aria-label="Rated five out of five stars">
+    {% for i in (1..5) %}
+      <svg class="sr-star" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <polygon points="10,1 12.9,7 19.5,7.6 14.5,12 16.2,18.5 10,15 3.8,18.5 5.5,12 0.5,7.6 7.1,7" />
+      </svg>
+    {% endfor %}
+  </div>
+
+  <div class="sr-rating-text">
+    <span class="sr-rating-score">{{ block.settings.rating_score }}</span>
+    <span class="sr-rating-label">{{ block.settings.rating_label }}</span>
+    <span class="sr-rating-count">based on {{ review_count | default: 0 }} reviews.</span>
+  </div>
+</div>
+
+{% stylesheet %}
+  .sr-rating-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .sr-rating-stars {
+    display: flex;
+    gap: 2px;
+  }
+
+  .sr-star {
+    width: var(--sr-star-size);
+    height: var(--sr-star-size);
+    fill: var(--sr-star-color);
+  }
+
+  .sr-rating-text {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--sr-text-size);
+    color: var(--sr-text-color);
+    font-weight: 500;
+    flex-wrap: wrap;
+  }
+
+  .sr-rating-score {
+    font-weight: 700;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Rating Bar",
+  "tag": null,
+  "settings": [
+    {
+      "type": "product",
+      "id": "product",
+      "label": "Product"
+    },
+    {
+      "type": "range",
+      "id": "star_size",
+      "label": "Star Size",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star Color",
+      "default": "#f59e0b"
+    },
+    {
+      "type": "text",
+      "id": "rating_score",
+      "label": "Rating Score",
+      "default": "4.9"
+    },
+    {
+      "type": "text",
+      "id": "rating_label",
+      "label": "Rating Label",
+      "default": "/ 5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font Size",
+      "min": 11,
+      "max": 18,
+      "step": 1,
+      "default": 13
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "Left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "Right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Rating Bar",
+      "category": "Product",
+      "settings": {
+        "product": "{{ closest.product }}"
+      }
+    }
+  ]
+}
+{% endschema %}
