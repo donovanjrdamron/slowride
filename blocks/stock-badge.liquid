@@ -1,10 +1,10 @@
 {%- liquid
-  assign product_resource = block.settings.product
+  assign product_resource = closest.product
+  if product_resource == blank
+    assign product_resource = product
+  endif
   if request.visual_preview_mode and product_resource == blank
     assign product_resource = collections.all.products.first
-  endif
-  if product_resource == blank
-    assign product_resource = closest.product
   endif
 
   assign variant = product_resource.selected_or_first_available_variant
@@ -70,11 +70,6 @@
   "tag": null,
   "settings": [
     {
-      "type": "product",
-      "id": "product",
-      "label": "t:settings.product"
-    },
-    {
       "type": "text",
       "id": "text",
       "label": "Text",
@@ -136,7 +131,6 @@
       "name": "Stock badge",
       "category": "Product",
       "settings": {
-        "product": "{{ closest.product }}",
         "text": "In Stock - Processes immediately"
       }
     }

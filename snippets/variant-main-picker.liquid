@@ -33,7 +33,7 @@
       {%- for product_option in product_resource.options_with_values -%}
         {%- liquid
           assign swatch_count = product_option.values | map: 'swatch' | compact | size
-          assign option_name_downcase = product_option.name | downcase
+          assign option_name_downcase = product_option.name | strip | downcase
           assign variant_style = block.settings.variant_style
 
           if swatch_count > 0 and block.settings.show_swatches
@@ -53,7 +53,7 @@
 
         {%- if variant_style == 'swatch' or block.settings.variant_style == 'buttons' -%}
           <fieldset
-            class="variant-option variant-option--buttons{% if option_name_downcase == 'size' %} variant-option--size{% endif %}{% if option_name_downcase == 'color' or option_name_downcase == 'colour' %} variant-option--color{% endif %}{% if variant_style == 'swatch' %} variant-option--swatches{% else %} variant-option--{{ settings.variant_button_width }}{% endif %}"
+            class="variant-option variant-option--buttons{% if option_name_downcase contains 'size' %} variant-option--size{% endif %}{% if option_name_downcase contains 'color' or option_name_downcase contains 'colour' %} variant-option--color{% endif %}{% if variant_style == 'swatch' %} variant-option--swatches{% else %} variant-option--{{ settings.variant_button_width }}{% endif %}"
             data-index="option{{ product_option.position }}"
             {{ option_id_attribute }}
           >
@@ -554,6 +554,7 @@
   }
 
   /* Keep consistent space between Size and Color from first paint */
+  .variant-picker .variant-picker__form > fieldset[data-index='option1'] + fieldset[data-index='option2'],
   .variant-picker .variant-picker__form > fieldset.variant-option--size + fieldset.variant-option--color {
     margin-block-start: 6px;
   }

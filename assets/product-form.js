@@ -118,18 +118,93 @@ class ProductFormComponent extends Component {
   /** @type {number | undefined} */
   #timeout;
 
+  /** @type {IntersectionObserver | undefined} */
+  #stickyObserver;
+
+  /** @type {MediaQueryList | undefined} */
+  #stickyMediaQuery;
+
+  /** @type {Element | null} */
+  #stickySourceElement = null;
+
+  /** @type {boolean} */
+  #stickySourceVisible = true;
+
   connectedCallback() {
     super.connectedCallback();
 
     const { signal } = this.#abortController;
     const target = this.closest('.shopify-section, dialog, product-card');
     target?.addEventListener(ThemeEvents.variantUpdate, this.#onVariantUpdate, { signal });
+
+    if (this.dataset.stickyAtc === 'true') {
+      this.#setupStickyAtc();
+    }
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
 
     this.#abortController.abort();
+    this.#teardownStickyAtc();
+  }
+
+  #setupStickyAtc() {
+    const sourceSelector = this.dataset.stickySourceSelector;
+    if (!sourceSelector) return;
+
+    this.#stickyMediaQuery = window.matchMedia('(max-width: 749px)');
+    this.#stickyMediaQuery.addEventListener('change', this.#onStickyMediaQueryChange);
+
+    this.#stickySourceElement = document.querySelector(sourceSelector);
+    if (!this.#stickySourceElement) return;
+
+    this.#stickyObserver = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        this.#stickySourceVisible = entry?.isIntersecting ?? true;
+        this.#updateStickyVisibility();
+      },
+      { threshold: 0.1 }
+    );
+
+    this.#stickyObserver.observe(this.#stickySourceElement);
+    this.#stickySourceVisible = this.#isElementVisible(this.#stickySourceElement);
+    this.#updateStickyVisibility();
+  }
+
+  #teardownStickyAtc() {
+    this.#stickyObserver?.disconnect();
+    this.#stickyObserver = undefined;
+
+    this.#stickyMediaQuery?.removeEventListener('change', this.#onStickyMediaQueryChange);
+    this.#stickyMediaQuery = undefined;
+    this.#stickySourceElement = null;
+    this.classList.remove('is-visible');
+  }
+
+  #onStickyMediaQueryChange = () => {
+    this.#updateStickyVisibility();
+  };
+
+  /**
+   * @param {Element} element
+   * @returns {boolean}
+   */
+  #isElementVisible(element) {
+    const rect = element.getBoundingClientRect();
+    return rect.bottom > 0 && rect.top < window.innerHeight;
+  }
+
+  #updateStickyVisibility() {
+    if (this.dataset.stickyAtc !== 'true') return;
+
+    const isMobile = this.#stickyMediaQuery?.matches ?? false;
+    const addToCartButton = this.refs.addToCartButtonContainer?.refs.addToCartButton;
+    const isButtonDisabled =
+      addToCartButton?.getAttribute('disabled') === 'true' || addToCartButton?.hasAttribute('disabled');
+
+    this.classList.toggle('is-visible', isMobile && !this.#stickySourceVisible && !isButtonDisabled);
   }
 
   /**
@@ -278,9 +353,15 @@ class ProductFormComponent extends Component {
     }
 
     const { variantId, addToCartButtonContainer } = this.refs;
+    const productFormRole = this.dataset.productFormRole;
+    const roleScopedSelector = productFormRole
+      ? `product-form-component[data-product-form-role="${productFormRole}"]`
+      : 'product-form-component';
 
     const currentAddToCartButton = addToCartButtonContainer?.refs.addToCartButton;
-    const newAddToCartButton = event.detail.data.html.querySelector('[ref="addToCartButton"]');
+    const newAddToCartButton =
+      event.detail.data.html.querySelector(`${roleScopedSelector} [ref="addToCartButton"]`) ??
+      event.detail.data.html.querySelector('[ref="addToCartButton"]');
 
     if (!currentAddToCartButton) return;
 
@@ -298,6 +379,18 @@ class ProductFormComponent extends Component {
       morph(currentAddToCartButton, newAddToCartButton);
     }
 
+    // Update sticky ATC price when variants change.
+    const currentStickyPrice = this.querySelector('[data-sticky-atc-price]');
+    if (currentStickyPrice) {
+      const newStickyPrice =
+        event.detail.data.html.querySelector(`${roleScopedSelector} [data-sticky-atc-price]`) ??
+        event.detail.data.html.querySelector('[data-sticky-atc-price]');
+
+      if (newStickyPrice) {
+        morph(currentStickyPrice, newStickyPrice);
+      }
+    }
+
     // Update the variant ID
     variantId.value = event.detail.resource.id ?? '';
 
@@ -307,6 +400,8 @@ class ProductFormComponent extends Component {
       productVariantMedia &&
         addToCartButtonContainer?.setAttribute('data-product-variant-media', productVariantMedia + '&width=100');
     }
+
+    this.#updateStickyVisibility();
   };
 }
 
