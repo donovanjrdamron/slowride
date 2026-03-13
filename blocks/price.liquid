@@ -69,8 +69,8 @@
   {% endif %}
 
   {%- if selected_variant != blank and block.settings.show_installments -%}
-    <div class="installments">
-      {%- assign product_form_installment_id = 'product-form-installment-' | append: block.id -%}
+    {%- assign product_form_installment_id = 'product-form-installment-' | append: block.id -%}
+    {%- capture installments_markup -%}
       {%- form 'product', product_resource, id: product_form_installment_id, class: 'payment-terms' -%}
         <input
           type="hidden"
@@ -79,7 +79,12 @@
         >
         {{ form | payment_terms }}
       {%- endform -%}
-    </div>
+    {%- endcapture -%}
+    {%- if installments_markup | strip != blank -%}
+      <div class="installments">
+        {{ installments_markup }}
+      </div>
+    {%- endif -%}
   {%- endif -%}
 </product-price>
 
@@ -93,9 +98,6 @@
     padding-top: 0.5em;
   }
 
-  .installments:not(:has(.shopify-payment-terms)) {
-    display: none;
-  }
 {% endstylesheet %}
 
 {% schema %}

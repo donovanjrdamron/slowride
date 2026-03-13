@@ -136,6 +136,7 @@
     margin-top: var(--stock-status-spacing-top, 4px);
     margin-bottom: var(--stock-status-spacing-bottom, 0);
     font-size: var(--stock-status-text-size, var(--font-size--sm));
+    color: var(--stock-status-text-color, currentColor);
     line-height: 1.2;
   }
 
@@ -146,7 +147,7 @@
     border-radius: 50%;
     background: var(--stock-status-dot-color, #2da54e);
     box-shadow: 0 0 0 0 color-mix(in srgb, var(--stock-status-dot-color, #2da54e) 45%, transparent);
-    animation: stock-status-pulse 1.8s ease-out infinite;
+    animation: stock-status-pulse var(--stock-status-pulse-speed, 1.8s) ease-out infinite;
   }
 
   @keyframes stock-status-pulse {

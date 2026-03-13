@@ -12,15 +12,20 @@
   assign class = 'add-to-cart-button ' | append: block.settings.style_class
   assign id = 'BuyButtons-ProductSubmitButton-' | append: block.id
   assign resolved_add_to_cart_text = add_to_cart_text
+  assign resolved_stock_status_text = block.settings.stock_status_text
 
   if can_add_to_cart and block.settings.add_to_cart_text != blank
     assign resolved_add_to_cart_text = block.settings.add_to_cart_text
+  endif
+
+  if resolved_stock_status_text == blank
+    assign resolved_stock_status_text = 'In stock, process immediately'
   endif
 %}
 
 <span
   {{ block.shopify_attributes }}
-  style="--add-to-cart-font-case: {{ settings.button_text_case }}; --stock-status-text-size: {{ stock_status_text_size }}px; --stock-status-spacing-top: {{ stock_status_spacing_top }}px; --stock-status-spacing-bottom: {{ stock_status_spacing_bottom }}px; --stock-status-dot-size: {{ stock_status_dot_size }}px; --stock-status-dot-color: {{ stock_status_dot_color }}; --atc-border-radius: {{ block.settings.button_corner_radius }}px; --atc-background: {{ block.settings.button_background_color }}; --atc-background-hover: {{ block.settings.button_background_color_hover }}; --atc-text-color: {{ block.settings.button_text_color }}; --atc-text-color-hover: {{ block.settings.button_text_color_hover }}; --atc-border-color: {{ block.settings.button_border_color }}; --atc-border-color-hover: {{ block.settings.button_border_color_hover }}; --atc-border-width: {{ block.settings.button_border_width }}px; --atc-label-size: {{ block.settings.button_text_size }}px;"
+  style="--add-to-cart-font-case: {{ settings.button_text_case }}; --stock-status-text-size: {{ block.settings.stock_status_text_size }}px; --stock-status-spacing-top: {{ block.settings.stock_status_spacing_top }}px; --stock-status-spacing-bottom: {{ block.settings.stock_status_spacing_bottom }}px; --stock-status-dot-size: {{ block.settings.stock_status_dot_size }}px; --stock-status-dot-color: {{ block.settings.stock_status_dot_color }}; --stock-status-text-color: {{ block.settings.stock_status_text_color }}; --stock-status-pulse-speed: {{ block.settings.stock_status_pulse_speed }}s; --atc-border-radius: {{ block.settings.button_corner_radius }}px; --atc-background: {{ block.settings.button_background_color }}; --atc-background-hover: {{ block.settings.button_background_color_hover }}; --atc-text-color: {{ block.settings.button_text_color }}; --atc-text-color-hover: {{ block.settings.button_text_color_hover }}; --atc-border-color: {{ block.settings.button_border_color }}; --atc-border-color-hover: {{ block.settings.button_border_color_hover }}; --atc-border-width: {{ block.settings.button_border_width }}px; --atc-label-size: {{ block.settings.button_text_size }}px;"
 >
   {% render 'add-to-cart-button',
     id: id,
@@ -28,8 +33,8 @@
     can_add_to_cart: can_add_to_cart,
     product: block.settings.product,
     add_to_cart_text: resolved_add_to_cart_text,
-    show_stock_status: show_stock_status,
-    stock_status_text: stock_status_text,
+    show_stock_status: block.settings.show_stock_status,
+    stock_status_text: resolved_stock_status_text,
     enable_custom_button_styles: block.settings.enable_custom_button_styles
   %}
 </span>
@@ -65,6 +70,92 @@
       "id": "add_to_cart_text",
       "label": "Add to cart text",
       "default": "Add to cart"
+    },
+    {
+      "type": "header",
+      "content": "In-stock message"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stock_status",
+      "label": "Show in-stock message",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "stock_status_text",
+      "label": "In-stock message text",
+      "default": "In stock, process immediately",
+      "visible_if": "{{ block.settings.show_stock_status }}"
+    },
+    {
+      "type": "range",
+      "id": "stock_status_text_size",
+      "label": "In-stock text size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 13,
+      "visible_if": "{{ block.settings.show_stock_status }}"
+    },
+    {
+      "type": "color",
+      "id": "stock_status_text_color",
+      "label": "In-stock text color",
+      "default": "#1f3b63",
+      "visible_if": "{{ block.settings.show_stock_status }}"
+    },
+    {
+      "type": "color",
+      "id": "stock_status_dot_color",
+      "label": "Pulsing dot color",
+      "default": "#2da54e",
+      "visible_if": "{{ block.settings.show_stock_status }}"
+    },
+    {
+      "type": "range",
+      "id": "stock_status_dot_size",
+      "label": "Pulsing dot size",
+      "min": 6,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 10,
+      "visible_if": "{{ block.settings.show_stock_status }}"
+    },
+    {
+      "type": "range",
+      "id": "stock_status_pulse_speed",
+      "label": "Pulse speed",
+      "min": 1,
+      "max": 4,
+      "step": 0.1,
+      "unit": "s",
+      "default": 1.8,
+      "visible_if": "{{ block.settings.show_stock_status }}"
+    },
+    {
+      "type": "range",
+      "id": "stock_status_spacing_top",
+      "label": "In-stock top spacing",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 4,
+      "visible_if": "{{ block.settings.show_stock_status }}"
+    },
+    {
+      "type": "range",
+      "id": "stock_status_spacing_bottom",
+      "label": "In-stock bottom spacing",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.show_stock_status }}"
     },
     {
       "type": "checkbox",
