@@ -55,7 +55,17 @@
   <div class="sr-rating-text">
     <span class="sr-rating-score">{{ block.settings.rating_score }}</span>
     <span class="sr-rating-label">{{ block.settings.rating_label }}</span>
-    <span class="sr-rating-count">based on {{ review_count_number }} reviews.</span>
+    <span class="sr-rating-count">
+      based on
+      {% if block.settings.reviews_link != blank %}
+        <a href="{{ block.settings.reviews_link }}" class="sr-rating-reviews-link">
+          {{- review_count_number }} reviews
+        </a>
+      {% else %}
+        <span class="sr-rating-reviews-link">{{ review_count_number }} reviews</span>
+      {% endif %}
+      .
+    </span>
   </div>
 </div>
 
@@ -89,6 +99,12 @@
 
   .sr-rating-score {
     font-weight: 700;
+  }
+
+  .sr-rating-reviews-link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 {% endstylesheet %}
 
@@ -128,6 +144,11 @@
       "id": "rating_label",
       "label": "Rating Label",
       "default": "/ 5"
+    },
+    {
+      "type": "url",
+      "id": "reviews_link",
+      "label": "Reviews Link"
     },
     {
       "type": "color",
