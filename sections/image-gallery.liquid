@@ -43,7 +43,7 @@
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding: 0 24px 4px;
+  padding: 0 24px 4px {{ section.settings.track_padding_left }}px;
   cursor: grab;
   user-select: none;
 }
@@ -52,7 +52,7 @@
 .sr-gallery-track::-webkit-scrollbar { display: none; }
 
 .sr-gallery-card {
-  flex: 0 0 calc({{ section.settings.cards_per_row | times: 1.0 | divided_by: 100 | times: 100 }}% - {{ section.settings.card_gap }}px);
+  flex: 0 0 calc((100% - ({{ section.settings.card_gap }}px * 3)) / 4);
   scroll-snap-align: start;
   aspect-ratio: 1 / 1;
   border-radius: {{ section.settings.card_radius }}px;
@@ -104,20 +104,22 @@ document.querySelectorAll('.sr-gallery-track').forEach(track => {
   const dotsContainer = track.nextElementSibling;
   if (!cards.length || !dotsContainer) return;
 
-  const perPage = window.innerWidth <= 600 ? 1 : 3;
+  const gap = parseFloat(window.getComputedStyle(track).gap) || 0;
+  const perPage = window.innerWidth <= 600 ? 1 : 4;
   const totalDots = Math.ceil(cards.length / perPage);
+  const pageWidth = perPage * (cards[0].offsetWidth + gap);
 
   for (let i = 0; i < totalDots; i++) {
     const d = document.createElement('button');
     d.className = 'sr-gallery-dot' + (i === 0 ? ' active' : '');
     d.addEventListener('click', () => {
-      track.scrollTo({ left: i * perPage * (cards[0].offsetWidth + 14), behavior: 'smooth' });
+      track.scrollTo({ left: i * pageWidth, behavior: 'smooth' });
     });
     dotsContainer.appendChild(d);
   }
 
   track.addEventListener('scroll', () => {
-    const page = Math.round(track.scrollLeft / (perPage * (cards[0].offsetWidth + 14)));
+    const page = Math.round(track.scrollLeft / pageWidth);
     dotsContainer.querySelectorAll('.sr-gallery-dot').forEach((d, i) => {
       d.classList.toggle('active', i === page);
     });
@@ -202,6 +204,15 @@ document.querySelectorAll('.sr-gallery-track').forEach(track => {
       "max": 32,
       "step": 2,
       "default": 14
+    },
+    {
+      "type": "range",
+      "id": "track_padding_left",
+      "label": "Left Edge Padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 24
     },
     {
       "type": "range",
