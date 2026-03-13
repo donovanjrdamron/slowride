@@ -47,10 +47,26 @@
       <div class="slow-ride-guarantee__features" role="list">
         {% for block in section.blocks %}
           {% liquid
-            assign has_icon = block.settings.icon != blank
-            assign has_title = block.settings.title != blank
-            assign has_description = block.settings.description != blank
-            assign show_item = has_icon or has_title or has_description
+            assign has_icon = false
+            assign has_title = false
+            assign has_description = false
+            assign show_item = false
+
+            if block.settings.icon != blank
+              assign has_icon = true
+            endif
+
+            if block.settings.title != blank
+              assign has_title = true
+            endif
+
+            if block.settings.description != blank
+              assign has_description = true
+            endif
+
+            if has_icon or has_title or has_description
+              assign show_item = true
+            endif
           %}
 
           {% if show_item %}

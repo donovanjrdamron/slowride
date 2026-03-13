@@ -73,14 +73,15 @@
             type: 'add-to-cart',
             id: 'add-to-cart',
             can_add_to_cart: can_add_to_cart,
-            add_to_cart_text: add_to_cart_text
+            add_to_cart_text: add_to_cart_text,
+            show_stock_status: block.settings.show_stock_status,
+            stock_status_text: block.settings.stock_status_text,
+            stock_status_dot_color: block.settings.stock_status_dot_color,
+            stock_status_dot_size: block.settings.stock_status_dot_size,
+            stock_status_text_size: block.settings.stock_status_text_size,
+            stock_status_spacing_top: block.settings.stock_status_spacing_top,
+            stock_status_spacing_bottom: block.settings.stock_status_spacing_bottom
           %}
-          {% if block.settings.show_stock_status and can_add_to_cart %}
-            <p class="product-form-stock-status">
-              <span class="product-form-stock-status__dot"></span>
-              <span>{{ block.settings.stock_status_text }}</span>
-            </p>
-          {% endif %}
           <span
             class="product-form-text__error hidden"
             ref="addToCartTextError"
@@ -310,41 +311,6 @@
   .quantity-selector,
   .add-to-cart-button {
     height: var(--height-buy-buttons);
-  }
-
-  .product-form-stock-status {
-    width: 100%;
-    display: inline-flex;
-    align-items: center;
-    gap: var(--gap-xs);
-    margin: var(--stock-status-spacing-top, 0) 0 var(--stock-status-spacing-bottom, 0);
-    font-size: var(--stock-status-text-size, var(--font-size--sm));
-    line-height: 1.25;
-  }
-
-  .product-form-stock-status__dot {
-    width: var(--stock-status-dot-size, 10px);
-    height: var(--stock-status-dot-size, 10px);
-    min-width: var(--stock-status-dot-size, 10px);
-    border-radius: 50%;
-    background: var(--stock-status-dot-color, #2da54e);
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--stock-status-dot-color, #2da54e) 45%, transparent);
-    animation: stock-status-pulse 1.8s ease-out infinite;
-  }
-
-  @keyframes stock-status-pulse {
-    0% {
-      transform: scale(0.95);
-      box-shadow: 0 0 0 0 color-mix(in srgb, var(--stock-status-dot-color, #2da54e) 45%, transparent);
-    }
-    70% {
-      transform: scale(1);
-      box-shadow: 0 0 0 9px color-mix(in srgb, var(--stock-status-dot-color, #2da54e) 0%, transparent);
-    }
-    100% {
-      transform: scale(0.95);
-      box-shadow: 0 0 0 0 color-mix(in srgb, var(--stock-status-dot-color, #2da54e) 0%, transparent);
-    }
   }
 
   .product-sticky-atc {

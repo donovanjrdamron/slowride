@@ -15,14 +15,16 @@
 
 <span
   {{ block.shopify_attributes }}
-  style="--add-to-cart-font-case: {{ settings.button_text_case }};"
+  style="--add-to-cart-font-case: {{ settings.button_text_case }}; --stock-status-text-size: {{ stock_status_text_size }}px; --stock-status-spacing-top: {{ stock_status_spacing_top }}px; --stock-status-spacing-bottom: {{ stock_status_spacing_bottom }}px; --stock-status-dot-size: {{ stock_status_dot_size }}px; --stock-status-dot-color: {{ stock_status_dot_color }};"
 >
   {% render 'add-to-cart-button',
     id: id,
     class: class,
     can_add_to_cart: can_add_to_cart,
     product: block.settings.product,
-    add_to_cart_text: add_to_cart_text
+    add_to_cart_text: add_to_cart_text,
+    show_stock_status: show_stock_status,
+    stock_status_text: stock_status_text
   %}
 </span>
 
