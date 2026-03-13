@@ -15,6 +15,9 @@
   assign product_variant_media = product.selected_or_first_available_variant.featured_media.preview_image | image_url: width: 100
   assign button_class = 'button ' | append: class
   assign show_inline_stock_status = false
+  if enable_custom_button_styles
+    assign button_class = button_class | append: ' add-to-cart-button--customizable'
+  endif
   if show_stock_status and can_add_to_cart
     assign show_inline_stock_status = true
     assign button_class = button_class | append: ' add-to-cart-button--with-stock-status'
@@ -99,6 +102,30 @@
     height: auto;
     min-height: var(--height-buy-buttons);
     padding-block: var(--padding-sm);
+  }
+
+  .add-to-cart-button--customizable {
+    border-radius: var(--atc-border-radius);
+    background: var(--atc-background);
+    color: var(--atc-text-color);
+    border-color: var(--atc-border-color);
+    border-width: var(--atc-border-width);
+    border-style: solid;
+  }
+
+  .add-to-cart-button--customizable .add-to-cart-text__content {
+    font-size: var(--atc-label-size);
+  }
+
+  .add-to-cart-button--customizable .add-to-cart-stock-status {
+    font-size: max(10px, calc(var(--atc-label-size) - 3px));
+  }
+
+  .add-to-cart-button--customizable:hover:not(:disabled),
+  .add-to-cart-button--customizable:focus-visible:not(:disabled) {
+    background: var(--atc-background-hover);
+    color: var(--atc-text-color-hover);
+    border-color: var(--atc-border-color-hover);
   }
 
   .add-to-cart-stock-status {

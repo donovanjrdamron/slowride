@@ -1,0 +1,212 @@
+<div
+  class="sr-bullets-wrapper"
+  {{ block.shopify_attributes }}
+  style="padding: {{ block.settings.padding_top }}px 0 {{ block.settings.padding_bottom }}px;"
+>
+  {% if block.settings.row_1_text != blank %}
+    <div
+      class="sr-bullet-row"
+      style="gap: {{ block.settings.icon_gap }}px; padding: {{ block.settings.row_padding }}px 0; border-color: {{ block.settings.divider_color }};"
+    >
+      <div
+        class="sr-bullet-icon"
+        style="width: {{ block.settings.icon_size }}px; height: {{ block.settings.icon_size }}px; color: {{ block.settings.icon_color }};"
+      >
+        {% render 'sr-bullet-icon', icon: block.settings.row_1_icon %}
+      </div>
+      <span class="sr-bullet-text" style="font-size: {{ block.settings.font_size }}px; color: {{ block.settings.text_color }};">
+        {{ block.settings.row_1_text }}
+      </span>
+    </div>
+  {% endif %}
+
+  {% if block.settings.row_2_text != blank %}
+    <div
+      class="sr-bullet-row"
+      style="gap: {{ block.settings.icon_gap }}px; padding: {{ block.settings.row_padding }}px 0; border-color: {{ block.settings.divider_color }};"
+    >
+      <div
+        class="sr-bullet-icon"
+        style="width: {{ block.settings.icon_size }}px; height: {{ block.settings.icon_size }}px; color: {{ block.settings.icon_color }};"
+      >
+        {% render 'sr-bullet-icon', icon: block.settings.row_2_icon %}
+      </div>
+      <span class="sr-bullet-text" style="font-size: {{ block.settings.font_size }}px; color: {{ block.settings.text_color }};">
+        {{ block.settings.row_2_text }}
+      </span>
+    </div>
+  {% endif %}
+
+  {% if block.settings.row_3_text != blank %}
+    <div
+      class="sr-bullet-row"
+      style="gap: {{ block.settings.icon_gap }}px; padding: {{ block.settings.row_padding }}px 0; border-color: {{ block.settings.divider_color }};"
+    >
+      <div
+        class="sr-bullet-icon"
+        style="width: {{ block.settings.icon_size }}px; height: {{ block.settings.icon_size }}px; color: {{ block.settings.icon_color }};"
+      >
+        {% render 'sr-bullet-icon', icon: block.settings.row_3_icon %}
+      </div>
+      <span class="sr-bullet-text" style="font-size: {{ block.settings.font_size }}px; color: {{ block.settings.text_color }};">
+        {{ block.settings.row_3_text }}
+      </span>
+    </div>
+  {% endif %}
+</div>
+
+{% schema %}
+{
+  "name": "Feature Bullets",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Row 1"
+    },
+    {
+      "type": "select",
+      "id": "row_1_icon",
+      "label": "Row 1 Icon",
+      "options": [
+        { "value": "lightning", "label": "Lightning" },
+        { "value": "crosshair", "label": "Crosshair" },
+        { "value": "flag", "label": "Checkered Flag" },
+        { "value": "shield", "label": "Shield" },
+        { "value": "star", "label": "Star" },
+        { "value": "tag", "label": "Tag" }
+      ],
+      "default": "lightning"
+    },
+    {
+      "type": "text",
+      "id": "row_1_text",
+      "label": "Row 1 Text",
+      "default": "Built in the High Desert. Made to last."
+    },
+    {
+      "type": "header",
+      "content": "Row 2"
+    },
+    {
+      "type": "select",
+      "id": "row_2_icon",
+      "label": "Row 2 Icon",
+      "options": [
+        { "value": "lightning", "label": "Lightning" },
+        { "value": "crosshair", "label": "Crosshair" },
+        { "value": "flag", "label": "Checkered Flag" },
+        { "value": "shield", "label": "Shield" },
+        { "value": "star", "label": "Star" },
+        { "value": "tag", "label": "Tag" }
+      ],
+      "default": "crosshair"
+    },
+    {
+      "type": "text",
+      "id": "row_2_text",
+      "label": "Row 2 Text",
+      "default": "Genuine goods since 2007. Garage-built, not corporate-backed."
+    },
+    {
+      "type": "header",
+      "content": "Row 3"
+    },
+    {
+      "type": "select",
+      "id": "row_3_icon",
+      "label": "Row 3 Icon",
+      "options": [
+        { "value": "lightning", "label": "Lightning" },
+        { "value": "crosshair", "label": "Crosshair" },
+        { "value": "flag", "label": "Checkered Flag" },
+        { "value": "shield", "label": "Shield" },
+        { "value": "star", "label": "Star" },
+        { "value": "tag", "label": "Tag" }
+      ],
+      "default": "flag"
+    },
+    {
+      "type": "text",
+      "id": "row_3_text",
+      "label": "Row 3 Text",
+      "default": "Free shipping on orders over $75."
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon Color",
+      "default": "#1c1a17"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1c1a17"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider Color",
+      "default": "#e8e4de"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon Size",
+      "min": 14,
+      "max": 32,
+      "step": 2,
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font Size",
+      "min": 11,
+      "max": 18,
+      "step": 1,
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "icon_gap",
+      "label": "Icon Gap",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "row_padding",
+      "label": "Row Padding",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Section Padding Top",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Section Padding Bottom",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 8
+    }
+  ]
+}
+{% endschema %}

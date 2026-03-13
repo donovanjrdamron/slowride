@@ -11,20 +11,26 @@
 {% liquid
   assign class = 'add-to-cart-button ' | append: block.settings.style_class
   assign id = 'BuyButtons-ProductSubmitButton-' | append: block.id
+  assign resolved_add_to_cart_text = add_to_cart_text
+
+  if can_add_to_cart and block.settings.add_to_cart_text != blank
+    assign resolved_add_to_cart_text = block.settings.add_to_cart_text
+  endif
 %}
 
 <span
   {{ block.shopify_attributes }}
-  style="--add-to-cart-font-case: {{ settings.button_text_case }}; --stock-status-text-size: {{ stock_status_text_size }}px; --stock-status-spacing-top: {{ stock_status_spacing_top }}px; --stock-status-spacing-bottom: {{ stock_status_spacing_bottom }}px; --stock-status-dot-size: {{ stock_status_dot_size }}px; --stock-status-dot-color: {{ stock_status_dot_color }};"
+  style="--add-to-cart-font-case: {{ settings.button_text_case }}; --stock-status-text-size: {{ stock_status_text_size }}px; --stock-status-spacing-top: {{ stock_status_spacing_top }}px; --stock-status-spacing-bottom: {{ stock_status_spacing_bottom }}px; --stock-status-dot-size: {{ stock_status_dot_size }}px; --stock-status-dot-color: {{ stock_status_dot_color }}; --atc-border-radius: {{ block.settings.button_corner_radius }}px; --atc-background: {{ block.settings.button_background_color }}; --atc-background-hover: {{ block.settings.button_background_color_hover }}; --atc-text-color: {{ block.settings.button_text_color }}; --atc-text-color-hover: {{ block.settings.button_text_color_hover }}; --atc-border-color: {{ block.settings.button_border_color }}; --atc-border-color-hover: {{ block.settings.button_border_color_hover }}; --atc-border-width: {{ block.settings.button_border_width }}px; --atc-label-size: {{ block.settings.button_text_size }}px;"
 >
   {% render 'add-to-cart-button',
     id: id,
     class: class,
     can_add_to_cart: can_add_to_cart,
     product: block.settings.product,
-    add_to_cart_text: add_to_cart_text,
+    add_to_cart_text: resolved_add_to_cart_text,
     show_stock_status: show_stock_status,
-    stock_status_text: stock_status_text
+    stock_status_text: stock_status_text,
+    enable_custom_button_styles: block.settings.enable_custom_button_styles
   %}
 </span>
 
@@ -53,6 +59,93 @@
         }
       ],
       "default": "button-secondary"
+    },
+    {
+      "type": "text",
+      "id": "add_to_cart_text",
+      "label": "Add to cart text",
+      "default": "Add to cart"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_custom_button_styles",
+      "label": "Enable custom button styling",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "button_corner_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 8,
+      "visible_if": "{{ block.settings.enable_custom_button_styles }}"
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ block.settings.enable_custom_button_styles }}"
+    },
+    {
+      "type": "range",
+      "id": "button_text_size",
+      "label": "Button text size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ block.settings.enable_custom_button_styles }}"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Background color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.enable_custom_button_styles }}"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color_hover",
+      "label": "Background color (hover)",
+      "default": "#000000",
+      "visible_if": "{{ block.settings.enable_custom_button_styles }}"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Text color",
+      "default": "#ffffff",
+      "visible_if": "{{ block.settings.enable_custom_button_styles }}"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color_hover",
+      "label": "Text color (hover)",
+      "default": "#ffffff",
+      "visible_if": "{{ block.settings.enable_custom_button_styles }}"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Border color",
+      "default": "#222222",
+      "visible_if": "{{ block.settings.enable_custom_button_styles }}"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color_hover",
+      "label": "Border color (hover)",
+      "default": "#000000",
+      "visible_if": "{{ block.settings.enable_custom_button_styles }}"
     }
   ]
 }

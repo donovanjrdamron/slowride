@@ -1,6 +1,7 @@
 {% liquid
   assign image_position = section.settings.image_position | default: 'left'
   assign columns_desktop = section.settings.feature_columns_desktop | default: 2
+  assign columns_mobile = section.settings.feature_columns_mobile | default: 2
 %}
 
 <section
@@ -12,9 +13,14 @@
     --srg-padding-top: {{ section.settings.padding_top }}px;
     --srg-padding-bottom: {{ section.settings.padding_bottom }}px;
     --srg-feature-columns: {{ columns_desktop }};
+    --srg-feature-columns-mobile: {{ columns_mobile }};
     --srg-background: {{ section.settings.background_color }};
   "
 >
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:FILL@0;wght@500;GRAD@0;opsz@24"
+  >
   <div class="slow-ride-guarantee__inner">
     <div class="slow-ride-guarantee__media">
       {% if section.settings.image != blank %}
@@ -48,12 +54,17 @@
         {% for block in section.blocks %}
           {% liquid
             assign has_icon = false
+            assign has_google_icon = false
             assign has_title = false
             assign has_description = false
             assign show_item = false
 
             if block.settings.icon != blank
               assign has_icon = true
+            endif
+
+            if block.settings.google_icon_name != blank
+              assign has_google_icon = true
             endif
 
             if block.settings.title != blank
@@ -64,7 +75,7 @@
               assign has_description = true
             endif
 
-            if has_icon or has_title or has_description
+            if has_icon or has_google_icon or has_title or has_description
               assign show_item = true
             endif
           %}
@@ -83,6 +94,10 @@
                       sizes: '24px',
                       alt: block.settings.icon.alt | default: block.settings.title
                   }}
+                {% elsif has_google_icon %}
+                  <span class="slow-ride-guarantee__feature-icon-google material-symbols-outlined" aria-hidden="true">
+                    {{- block.settings.google_icon_name | strip | escape -}}
+                  </span>
                 {% else %}
                   <span class="slow-ride-guarantee__feature-icon-dot" aria-hidden="true"></span>
                 {% endif %}
@@ -170,7 +185,7 @@
   .slow-ride-guarantee__features {
     display: grid;
     gap: 18px 22px;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(var(--srg-feature-columns-mobile), minmax(0, 1fr));
   }
 
   .slow-ride-guarantee__feature {
@@ -191,6 +206,16 @@
     height: 24px;
     object-fit: contain;
     display: block;
+  }
+
+  .slow-ride-guarantee__feature-icon-google {
+    font-size: 24px;
+    line-height: 1;
+    font-variation-settings:
+      'FILL' 0,
+      'wght' 500,
+      'GRAD' 0,
+      'opsz' 24;
   }
 
   .slow-ride-guarantee__feature-icon-dot {
@@ -288,6 +313,15 @@
     },
     {
       "type": "range",
+      "id": "feature_columns_mobile",
+      "label": "Feature columns (mobile)",
+      "min": 1,
+      "max": 2,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
       "id": "section_max_width",
       "label": "Section max width",
       "min": 900,
@@ -342,6 +376,13 @@
           "type": "image_picker",
           "id": "icon",
           "label": "Icon image"
+        },
+        {
+          "type": "text",
+          "id": "google_icon_name",
+          "label": "Google icon name",
+          "info": "Material Symbols name, for example: diamond, workspace_premium, verified.",
+          "default": "diamond"
         },
         {
           "type": "text",
