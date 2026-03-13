@@ -25,7 +25,7 @@
 
 <span
   {{ block.shopify_attributes }}
-  style="--add-to-cart-font-case: {{ settings.button_text_case }}; --stock-status-text-size: {{ block.settings.stock_status_text_size }}px; --stock-status-spacing-top: {{ block.settings.stock_status_spacing_top }}px; --stock-status-spacing-bottom: {{ block.settings.stock_status_spacing_bottom }}px; --stock-status-dot-size: {{ block.settings.stock_status_dot_size }}px; --stock-status-dot-color: {{ block.settings.stock_status_dot_color }}; --stock-status-text-color: {{ block.settings.stock_status_text_color }}; --stock-status-pulse-speed: {{ block.settings.stock_status_pulse_speed }}s; --atc-border-radius: {{ block.settings.button_corner_radius }}px; --atc-background: {{ block.settings.button_background_color }}; --atc-background-hover: {{ block.settings.button_background_color_hover }}; --atc-text-color: {{ block.settings.button_text_color }}; --atc-text-color-hover: {{ block.settings.button_text_color_hover }}; --atc-border-color: {{ block.settings.button_border_color }}; --atc-border-color-hover: {{ block.settings.button_border_color_hover }}; --atc-border-width: {{ block.settings.button_border_width }}px; --atc-label-size: {{ block.settings.button_text_size }}px;"
+  style="--add-to-cart-font-case: {{ settings.button_text_case }}; --stock-status-text-size: {{ block.settings.stock_status_text_size }}px; --stock-status-spacing-top: {{ block.settings.stock_status_spacing_top }}px; --stock-status-spacing-bottom: {{ block.settings.stock_status_spacing_bottom }}px; --stock-status-dot-size: {{ block.settings.stock_status_dot_size }}px; --stock-status-dot-color: {{ block.settings.stock_status_dot_color }}; --stock-status-text-color: {{ block.settings.stock_status_text_color }}; --stock-status-pulse-speed: {{ block.settings.stock_status_pulse_speed }}s; --stock-status-content-padding-top: {{ block.settings.stock_status_content_padding_top }}px; --stock-status-content-padding-bottom: {{ block.settings.stock_status_content_padding_bottom }}px; --atc-border-radius: {{ block.settings.button_corner_radius }}px; --atc-background: {{ block.settings.button_background_color }}; --atc-background-hover: {{ block.settings.button_background_color_hover }}; --atc-text-color: {{ block.settings.button_text_color }}; --atc-text-color-hover: {{ block.settings.button_text_color_hover }}; --atc-border-color: {{ block.settings.button_border_color }}; --atc-border-color-hover: {{ block.settings.button_border_color_hover }}; --atc-border-width: {{ block.settings.button_border_width }}px; --atc-label-size: {{ block.settings.button_text_size }}px;"
 >
   {% render 'add-to-cart-button',
     id: id,
@@ -155,6 +155,28 @@
       "step": 1,
       "unit": "px",
       "default": 0,
+      "visible_if": "{{ block.settings.show_stock_status }}"
+    },
+    {
+      "type": "range",
+      "id": "stock_status_content_padding_top",
+      "label": "Top padding above Add to cart text",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 6,
+      "visible_if": "{{ block.settings.show_stock_status }}"
+    },
+    {
+      "type": "range",
+      "id": "stock_status_content_padding_bottom",
+      "label": "Bottom padding below in-stock text",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 6,
       "visible_if": "{{ block.settings.show_stock_status }}"
     },
     {
