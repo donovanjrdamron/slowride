@@ -25,6 +25,8 @@
       --sr-accordion-border-color: {{ block.settings.divider_color }};
       --sr-accordion-panel-radius: {{ block.settings.panel_radius }}px;
       --sr-accordion-panel-spacing: {{ block.settings.panel_spacing }}px;
+      --sr-accordion-padding-top: {{ block.settings.padding_top }}px;
+      --sr-accordion-padding-bottom: {{ block.settings.padding_bottom }}px;
       --sr-accordion-glass-padding: {{ block.settings.glass_padding }}px;
       --sr-accordion-glass-blur: {{ block.settings.glass_blur }}px;
       --sr-accordion-glass-saturation: {{ block.settings.glass_saturation }}%;
@@ -89,9 +91,10 @@
 
 {% stylesheet %}
   .sr-accordion-wrapper {
-    border-top: 1px solid var(--sr-accordion-border-color, #e5e5e5);
     border-bottom: 1px solid var(--sr-accordion-border-color, #e5e5e5);
     margin: -1px 0;
+    padding-top: var(--sr-accordion-padding-top, 0);
+    padding-bottom: var(--sr-accordion-padding-bottom, 0);
   }
 
   .sr-accordion-trigger {
@@ -102,7 +105,6 @@
     padding: 16px 0;
     background: none;
     border: none;
-    border-top: 1px solid var(--sr-accordion-border-color, #e5e5e5);
     cursor: pointer;
     font-size: var(--sr-accordion-trigger-font-size, 15px);
     font-weight: var(--sr-accordion-trigger-font-weight, 600);
@@ -116,6 +118,10 @@
     height: 18px;
     flex-shrink: 0;
     transition: transform 0.3s ease;
+  }
+
+  .sr-accordion-trigger:not(:first-of-type) {
+    border-top: 1px solid var(--sr-accordion-border-color, #e5e5e5);
   }
 
   .sr-accordion-trigger[aria-expanded='true'] .sr-accordion-icon {
@@ -279,6 +285,26 @@
     {
       "type": "header",
       "content": "Panel style"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding",
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "range",
