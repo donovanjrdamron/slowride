@@ -153,14 +153,7 @@
                 "product": "{{ closest.product }}",
                 "stacking": true,
                 "show_pickup_availability": false,
-                "show_stock_status": true,
-                "stock_status_text": "In stock, processes immediately",
-                "stock_status_dot_color": "#2da54e",
-                "stock_status_dot_size": 9,
-                "stock_status_text_size": 12,
                 "buttons_gap": 10,
-                "stock_status_spacing_top": 14,
-                "stock_status_spacing_bottom": 0,
                 "padding-block-start": 0,
                 "padding-block-end": 0,
                 "padding-inline-start": 0,
@@ -183,8 +176,17 @@
                     "product": "{{ closest.product }}",
                     "style_class": "button-secondary",
                     "add_to_cart_text": "Add to cart",
+                    "show_stock_status": true,
+                    "stock_status_text": "In stock, process immediately",
+                    "stock_status_text_size": 10,
+                    "stock_status_text_color": "#ffffff",
+                    "stock_status_dot_color": "#2da54e",
+                    "stock_status_dot_size": 10,
+                    "stock_status_pulse_speed": 1.8,
+                    "stock_status_spacing_top": 2,
+                    "stock_status_spacing_bottom": 0,
                     "enable_custom_button_styles": true,
-                    "button_corner_radius": 20,
+                    "button_corner_radius": 12,
                     "button_border_width": 0,
                     "button_text_size": 18,
                     "button_background_color": "#263d60",
@@ -198,7 +200,6 @@
                 },
                 "accelerated-checkout": {
                   "type": "accelerated-checkout",
-                  "disabled": true,
                   "static": true,
                   "settings": {
                     "product": "{{ closest.product }}"
@@ -207,6 +208,42 @@
                 }
               },
               "block_order": []
+            },
+            "stock_badge_k6QrLW": {
+              "type": "stock-badge",
+              "name": "Stock badge",
+              "disabled": true,
+              "settings": {
+                "text": "In Stock - Processes immediately",
+                "enable_pulse": true,
+                "padding-block-start": 0,
+                "padding-block-end": 0,
+                "padding-inline-start": 50,
+                "padding-inline-end": 0
+              },
+              "blocks": {}
+            },
+            "feature_bullets_XEjXfb": {
+              "type": "feature-bullets",
+              "name": "Feature Bullets",
+              "settings": {
+                "row_1_icon": "lightning",
+                "row_1_text": "Built in the High Desert. Made to last.",
+                "row_2_icon": "lightning",
+                "row_2_text": "Genuine goods since 2007. Garage-built, not corporate-backed.",
+                "row_3_icon": "lightning",
+                "row_3_text": "Free shipping on orders over $75.",
+                "icon_color": "#1c1a17",
+                "text_color": "#1c1a17",
+                "divider_color": "#ffffff",
+                "icon_size": 22,
+                "font_size": 14,
+                "icon_gap": 16,
+                "row_padding": 14,
+                "padding_top": 8,
+                "padding_bottom": 8
+              },
+              "blocks": {}
             },
             "accordion_r9hRkw": {
               "type": "accordion",
@@ -227,7 +264,7 @@
                 "trigger_font_weight": 600,
                 "trigger_text_color": "#263d60",
                 "divider_color": "#d1d0cf",
-                "padding_top": 30,
+                "padding_top": 15,
                 "padding_bottom": 0,
                 "panel_radius": 5,
                 "panel_spacing": 16,
@@ -458,6 +495,8 @@
             "variant_picker_kYm7CR",
             "product_rating_bar_b2Q4rn",
             "buy_buttons_eYQEYi",
+            "stock_badge_k6QrLW",
+            "feature_bullets_XEjXfb",
             "accordion_r9hRkw",
             "ai_gen_block_e3ef74f_LAKbYi",
             "aftersell_by_rokt_pdp_upsells_bFWMgj",
