@@ -746,29 +746,29 @@
         "feature_item_BdRdkU": {
           "type": "feature_item",
           "settings": {
-            "title": "Signature quality detail",
-            "description": "Describe this guarantee point for customers."
+            "title": "Quality that holds up",
+            "description": "Custom blanks that actually last, not the thin stuff that fades after three washes."
           }
         },
         "feature_item_6Vtnnw": {
           "type": "feature_item",
           "settings": {
-            "title": "Signature quality detail",
-            "description": "Describe this guarantee point for customers."
+            "title": "Designed out of the garage",
+            "description": "Every graphic comes from our world. Vintage racing, desert culture, garage life — all of it is real to us."
           }
         },
         "feature_item_JqbRJ8": {
           "type": "feature_item",
           "settings": {
-            "title": "Signature quality detail",
-            "description": "Describe this guarantee point for customers."
+            "title": "Small batch, on purpose",
+            "description": "We don't mass produce. When something's gone, it's usually gone."
           }
         },
         "feature_item_FMpY7L": {
           "type": "feature_item",
           "settings": {
-            "title": "Signature quality detail",
-            "description": "Describe this guarantee point for customers."
+            "title": "Ships the next day",
+            "description": "All of our products are carried on hand in Southern California and shipped the next business day."
           }
         }
       },
@@ -780,8 +780,8 @@
       ],
       "name": "Slow Ride Guarantee",
       "settings": {
-        "heading": "Perfect Fit, Guaranteed",
-        "subheading": "<p>Highlight the quality promises your customers can count on.</p>",
+        "heading": "The Slow Ride Garauntee",
+        "subheading": "",
         "image": "shopify://shop_images/GarageMobileBanner.jpg",
         "image_alt": "",
         "image_position": "left",
