@@ -154,7 +154,7 @@
                 "stacking": true,
                 "show_pickup_availability": false,
                 "padding-block-start": 0,
-                "padding-block-end": 27,
+                "padding-block-end": 0,
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
               },
@@ -188,20 +188,6 @@
               },
               "block_order": []
             },
-            "stock_badge_dLPkhA": {
-              "type": "stock-badge",
-              "name": "Stock badge",
-              "settings": {
-                "product": "",
-                "text": "In Stock - Processes immediately",
-                "enable_pulse": true,
-                "padding-block-start": 0,
-                "padding-block-end": 0,
-                "padding-inline-start": 0,
-                "padding-inline-end": 0
-              },
-              "blocks": {}
-            },
             "accordion_r9hRkw": {
               "type": "accordion",
               "name": "Accordion",
@@ -223,7 +209,7 @@
                 "divider_color": "#d1d0cf",
                 "padding_top": 0,
                 "padding_bottom": 0,
-                "panel_radius": 8,
+                "panel_radius": 5,
                 "panel_spacing": 16,
                 "content_font_size": 14,
                 "content_line_height": 1.6,
@@ -452,7 +438,6 @@
             "variant_picker_kYm7CR",
             "product_rating_bar_b2Q4rn",
             "buy_buttons_eYQEYi",
-            "stock_badge_dLPkhA",
             "accordion_r9hRkw",
             "ai_gen_block_e3ef74f_LAKbYi",
             "aftersell_by_rokt_pdp_upsells_bFWMgj",
