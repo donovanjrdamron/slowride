@@ -542,17 +542,19 @@
   }
 
   .variant-picker .variant-option__button-label--has-swatch:has(:checked) {
-    outline-width: 0;
-    outline-offset: 0;
+    outline: none !important;
+    outline-width: 0 !important;
+    outline-offset: 0 !important;
   }
 
   .variant-picker .variant-option__button-label--has-swatch:hover {
-    outline-width: 0;
-    outline-offset: 0;
+    outline: none !important;
+    outline-width: 0 !important;
+    outline-offset: 0 !important;
   }
 
   /* Keep consistent space between Size and Color from first paint */
-  .variant-picker .variant-picker__form > fieldset.variant-option--size + fieldset.variant-option--swatches.variant-option--color {
+  .variant-picker .variant-picker__form > fieldset.variant-option--size + fieldset.variant-option--color {
     margin-block-start: 6px;
   }
 
@@ -616,5 +618,9 @@
     outline-width: 0 !important;
     outline-offset: 0 !important;
     box-shadow: none !important;
+  }
+
+  .variant-picker .variant-picker__form > fieldset.variant-option--swatches.variant-option--color .variant-option__button-label--has-swatch input:focus-visible + .swatch {
+    border-color: #1a1a2e;
   }
 {% endstylesheet %}
