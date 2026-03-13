@@ -43,7 +43,7 @@
   scroll-snap-type: x mandatory;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
-  padding: 0 24px 4px {{ section.settings.track_padding_left }}px;
+  padding: 0 24px 4px;
   cursor: grab;
   user-select: none;
 }
@@ -52,13 +52,20 @@
 .sr-gallery-track::-webkit-scrollbar { display: none; }
 
 .sr-gallery-card {
-  flex: 0 0 calc((100% - ({{ section.settings.card_gap }}px * 3)) / 4);
+  flex: 0 0 calc(
+    (100% - ({{ section.settings.card_gap }}px * {{ section.settings.desktop_cards_per_view | minus: 1 }}))
+    / {{ section.settings.desktop_cards_per_view }}
+  );
   scroll-snap-align: start;
   aspect-ratio: 1 / 1;
   border-radius: {{ section.settings.card_radius }}px;
   overflow: hidden;
-  min-width: 160px;
+  min-width: {{ section.settings.card_min_width }}px;
   transition: transform 0.2s ease;
+}
+
+.sr-gallery-card:first-child {
+  margin-left: {{ section.settings.track_padding_left }}px;
 }
 
 .sr-gallery-card:hover { transform: translateY(-3px); }
@@ -94,7 +101,7 @@
 }
 
 @media (max-width: 600px) {
-  .sr-gallery-card { flex: 0 0 78%; }
+  .sr-gallery-card { flex: 0 0 {{ section.settings.mobile_card_width }}%; }
 }
 {% endstyle %}
 
@@ -105,7 +112,9 @@ document.querySelectorAll('.sr-gallery-track').forEach(track => {
   if (!cards.length || !dotsContainer) return;
 
   const gap = parseFloat(window.getComputedStyle(track).gap) || 0;
-  const perPage = window.innerWidth <= 600 ? 1 : 4;
+  const leftInset = parseFloat(window.getComputedStyle(cards[0]).marginLeft) || 0;
+  const desktopPerPage = {{ section.settings.desktop_cards_per_view }};
+  const perPage = window.innerWidth <= 600 ? 1 : desktopPerPage;
   const totalDots = Math.ceil(cards.length / perPage);
   const pageWidth = perPage * (cards[0].offsetWidth + gap);
 
@@ -113,13 +122,14 @@ document.querySelectorAll('.sr-gallery-track').forEach(track => {
     const d = document.createElement('button');
     d.className = 'sr-gallery-dot' + (i === 0 ? ' active' : '');
     d.addEventListener('click', () => {
-      track.scrollTo({ left: i * pageWidth, behavior: 'smooth' });
+      const left = i === 0 ? 0 : leftInset + (i * pageWidth);
+      track.scrollTo({ left, behavior: 'smooth' });
     });
     dotsContainer.appendChild(d);
   }
 
   track.addEventListener('scroll', () => {
-    const page = Math.round(track.scrollLeft / pageWidth);
+    const page = Math.max(0, Math.round((track.scrollLeft - leftInset) / pageWidth));
     dotsContainer.querySelectorAll('.sr-gallery-dot').forEach((d, i) => {
       d.classList.toggle('active', i === page);
     });
@@ -204,6 +214,33 @@ document.querySelectorAll('.sr-gallery-track').forEach(track => {
       "max": 32,
       "step": 2,
       "default": 14
+    },
+    {
+      "type": "range",
+      "id": "desktop_cards_per_view",
+      "label": "Desktop Cards Per View",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "mobile_card_width",
+      "label": "Mobile Card Width (%)",
+      "min": 50,
+      "max": 100,
+      "step": 2,
+      "default": 78
+    },
+    {
+      "type": "range",
+      "id": "card_min_width",
+      "label": "Minimum Card Width",
+      "min": 120,
+      "max": 360,
+      "step": 10,
+      "default": 160
     },
     {
       "type": "range",
