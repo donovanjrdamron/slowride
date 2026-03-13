@@ -701,45 +701,45 @@
         "padding-block-end": 48
       }
     },
-    "slow_ride_guarantee_Y8KamC": {
+    "slow_ride_guarantee_bQtRkD": {
       "type": "slow-ride-guarantee",
       "blocks": {
-        "feature_item_fe4zgV": {
+        "feature_item_BdRdkU": {
           "type": "feature_item",
           "settings": {
             "title": "Signature quality detail",
             "description": "Describe this guarantee point for customers."
           }
         },
-        "feature_item_cQGqVR": {
+        "feature_item_6Vtnnw": {
           "type": "feature_item",
           "settings": {
             "title": "Signature quality detail",
             "description": "Describe this guarantee point for customers."
           }
         },
-        "feature_item_M77Nh3": {
+        "feature_item_JqbRJ8": {
           "type": "feature_item",
           "settings": {
             "title": "Signature quality detail",
             "description": "Describe this guarantee point for customers."
           }
         },
-        "feature_item_G4gtyB": {
+        "feature_item_FMpY7L": {
           "type": "feature_item",
           "settings": {
             "title": "Signature quality detail",
             "description": "Describe this guarantee point for customers."
           }
         },
-        "feature_item_NQTM9W": {
+        "feature_item_TMnh38": {
           "type": "feature_item",
           "settings": {
             "title": "Signature quality detail",
             "description": "Describe this guarantee point for customers."
           }
         },
-        "feature_item_gwHF3M": {
+        "feature_item_LLwy4a": {
           "type": "feature_item",
           "settings": {
             "title": "Signature quality detail",
@@ -748,25 +748,25 @@
         }
       },
       "block_order": [
-        "feature_item_fe4zgV",
-        "feature_item_cQGqVR",
-        "feature_item_M77Nh3",
-        "feature_item_G4gtyB",
-        "feature_item_NQTM9W",
-        "feature_item_gwHF3M"
+        "feature_item_BdRdkU",
+        "feature_item_6Vtnnw",
+        "feature_item_JqbRJ8",
+        "feature_item_FMpY7L",
+        "feature_item_TMnh38",
+        "feature_item_LLwy4a"
       ],
-      "disabled": true,
       "name": "Slow Ride Guarantee",
       "settings": {
         "heading": "Perfect Fit, Guaranteed",
         "subheading": "<p>Highlight the quality promises your customers can count on.</p>",
+        "image": "shopify://shop_images/GarageMobileBanner.jpg",
         "image_alt": "",
         "image_position": "left",
         "feature_columns_desktop": 2,
         "section_max_width": 1300,
         "content_gap": 34,
-        "background_color": "#f7f7f7",
-        "padding_top": 40,
+        "background_color": "#ffffff",
+        "padding_top": 0,
         "padding_bottom": 40
       }
     }
@@ -775,6 +775,6 @@
     "main",
     "frosted_glass_split_MWpbTP",
     "product_recommendations_ay93Dn",
-    "slow_ride_guarantee_Y8KamC"
+    "slow_ride_guarantee_bQtRkD"
   ]
 }
