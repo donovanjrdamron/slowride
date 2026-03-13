@@ -1,31 +1,96 @@
-<div class="sr-accordion-wrapper">
-  <button class="sr-accordion-trigger" aria-expanded="false" {{ block.shopify_attributes }}>
-    <span>{{ block.settings.title }}</span>
-    <svg class="sr-accordion-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-      <polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </button>
+{% liquid
+  assign has_items = false
+  for i in (1..5)
+    assign title_key = 'item_' | append: i | append: '_title'
+    assign content_key = 'item_' | append: i | append: '_content'
+    assign item_title = block.settings[title_key]
+    assign item_content = block.settings[content_key]
+    unless item_title == blank or item_content == blank
+      assign has_items = true
+      break
+    endunless
+  endfor
+%}
 
-  <div class="sr-accordion-body" hidden>
-    <div
-      class="sr-accordion-inner"
-      {% if block.settings.bg_image != blank %}
-        style="background-image: url('{{ block.settings.bg_image | image_url: width: 1200 }}');"
-      {% endif %}
-    >
-      <div class="sr-accordion-glass">
-        <div class="sr-accordion-content">
-          {{ block.settings.content }}
+{% if has_items %}
+  <div
+    class="sr-accordion-wrapper"
+    style="
+      --sr-accordion-trigger-font-size: {{ block.settings.trigger_font_size }}px;
+      --sr-accordion-trigger-font-weight: {{ block.settings.trigger_font_weight }};
+      --sr-accordion-trigger-color: {{ block.settings.trigger_text_color }};
+      --sr-accordion-content-font-size: {{ block.settings.content_font_size }}px;
+      --sr-accordion-content-line-height: {{ block.settings.content_line_height }};
+      --sr-accordion-content-color: {{ block.settings.content_text_color }};
+      --sr-accordion-border-color: {{ block.settings.divider_color }};
+      --sr-accordion-panel-radius: {{ block.settings.panel_radius }}px;
+      --sr-accordion-panel-spacing: {{ block.settings.panel_spacing }}px;
+      --sr-accordion-glass-padding: {{ block.settings.glass_padding }}px;
+      --sr-accordion-glass-blur: {{ block.settings.glass_blur }}px;
+      --sr-accordion-glass-saturation: {{ block.settings.glass_saturation }}%;
+      --sr-accordion-glass-brightness: {{ block.settings.glass_brightness }}%;
+      --sr-accordion-glass-border-width: {{ block.settings.glass_border_width }}px;
+      --sr-accordion-glass-border-opacity: {{ block.settings.glass_border_opacity | divided_by: 100.0 }};
+    "
+    {{ block.shopify_attributes }}
+  >
+    {% for i in (1..5) %}
+    {% liquid
+      assign title_key = 'item_' | append: i | append: '_title'
+      assign content_key = 'item_' | append: i | append: '_content'
+      assign item_title = block.settings[title_key]
+      assign item_content = block.settings[content_key]
+    %}
+    {% unless item_title == blank or item_content == blank %}
+      {% assign accordion_id = block.id | append: '-' | append: i %}
+      <button
+        class="sr-accordion-trigger"
+        type="button"
+        aria-expanded="false"
+        aria-controls="sr-accordion-body-{{ accordion_id }}"
+        id="sr-accordion-trigger-{{ accordion_id }}"
+      >
+        <span>{{ item_title }}</span>
+        <svg class="sr-accordion-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+          <polyline points="6 9 12 15 18 9" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <div
+        class="sr-accordion-body"
+        id="sr-accordion-body-{{ accordion_id }}"
+        role="region"
+        aria-labelledby="sr-accordion-trigger-{{ accordion_id }}"
+        hidden
+      >
+        <div
+          class="sr-accordion-inner"
+          {% if block.settings.bg_image != blank %}
+            style="background-image: url('{{ block.settings.bg_image | image_url: width: 1200 }}');"
+          {% endif %}
+        >
+          <div
+            class="sr-accordion-glass"
+            style="
+              background-color: {{ block.settings.glass_overlay_color | color_modify: 'alpha', block.settings.glass_overlay_opacity | divided_by: 100.0 }};
+              border-color: {{ block.settings.glass_border_color | color_modify: 'alpha', block.settings.glass_border_opacity | divided_by: 100.0 }};
+            "
+          >
+            <div class="sr-accordion-content">
+              {{ item_content }}
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    {% endunless %}
+    {% endfor %}
   </div>
-</div>
+{% endif %}
 
 {% stylesheet %}
   .sr-accordion-wrapper {
-    border-top: 1px solid #e5e5e5;
-    border-bottom: 1px solid #e5e5e5;
+    border-top: 1px solid var(--sr-accordion-border-color, #e5e5e5);
+    border-bottom: 1px solid var(--sr-accordion-border-color, #e5e5e5);
     margin: -1px 0;
   }
 
@@ -37,10 +102,11 @@
     padding: 16px 0;
     background: none;
     border: none;
+    border-top: 1px solid var(--sr-accordion-border-color, #e5e5e5);
     cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
-    color: #1a1a1a;
+    font-size: var(--sr-accordion-trigger-font-size, 15px);
+    font-weight: var(--sr-accordion-trigger-font-weight, 600);
+    color: var(--sr-accordion-trigger-color, #1a1a1a);
     text-align: left;
     letter-spacing: 0.03em;
   }
@@ -64,35 +130,42 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    border-radius: 8px;
+    border-radius: var(--sr-accordion-panel-radius, 8px);
     overflow: hidden;
-    margin-bottom: 16px;
+    margin-bottom: var(--sr-accordion-panel-spacing, 16px);
   }
 
   .sr-accordion-glass {
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    background-color: rgba(255, 255, 255, 0.6);
-    padding: 24px;
+    backdrop-filter: blur(var(--sr-accordion-glass-blur, 12px)) saturate(var(--sr-accordion-glass-saturation, 100%))
+      brightness(var(--sr-accordion-glass-brightness, 100%));
+    -webkit-backdrop-filter: blur(var(--sr-accordion-glass-blur, 12px)) saturate(var(--sr-accordion-glass-saturation, 100%))
+      brightness(var(--sr-accordion-glass-brightness, 100%));
+    border: var(--sr-accordion-glass-border-width, 1px) solid transparent;
+    padding: var(--sr-accordion-glass-padding, 24px);
   }
 
   .sr-accordion-content {
-    font-size: 14px;
-    color: #1a1a1a;
-    line-height: 1.6;
+    font-size: var(--sr-accordion-content-font-size, 14px);
+    color: var(--sr-accordion-content-color, #1a1a1a);
+    line-height: var(--sr-accordion-content-line-height, 1.6);
   }
 {% endstylesheet %}
 
 <script>
-  document.querySelectorAll('.sr-accordion-trigger').forEach((trigger) => {
-    trigger.addEventListener('click', () => {
-      const body = trigger.nextElementSibling;
-      const expanded = trigger.getAttribute('aria-expanded') === 'true';
-      trigger.setAttribute('aria-expanded', !expanded);
+  document.querySelectorAll('.sr-accordion-wrapper').forEach((wrapper) => {
+    if (wrapper.dataset.srAccordionBound === 'true') return;
+    wrapper.dataset.srAccordionBound = 'true';
 
-      if (body) {
-        body.hidden = expanded;
-      }
+    wrapper.querySelectorAll('.sr-accordion-trigger').forEach((trigger) => {
+      trigger.addEventListener('click', () => {
+        const body = trigger.nextElementSibling;
+        const expanded = trigger.getAttribute('aria-expanded') === 'true';
+        trigger.setAttribute('aria-expanded', (!expanded).toString());
+
+        if (body) {
+          body.hidden = expanded;
+        }
+      });
     });
   });
 </script>
@@ -104,21 +177,239 @@
   "class": "accordion",
   "settings": [
     {
+      "type": "header",
+      "content": "Accordion items"
+    },
+    {
       "type": "text",
-      "id": "title",
-      "label": "Title",
+      "id": "item_1_title",
+      "label": "Item 1 title",
       "default": "Fit & Sizing"
     },
     {
       "type": "richtext",
-      "id": "content",
-      "label": "Content",
+      "id": "item_1_content",
+      "label": "Item 1 content",
       "default": "<p>True to size. We recommend sizing up if you're between sizes.</p>"
+    },
+    {
+      "type": "text",
+      "id": "item_2_title",
+      "label": "Item 2 title",
+      "default": "Shipping"
+    },
+    {
+      "type": "richtext",
+      "id": "item_2_content",
+      "label": "Item 2 content",
+      "default": "<p>Orders ship in 1-2 business days. Delivery times vary by location.</p>"
+    },
+    {
+      "type": "text",
+      "id": "item_3_title",
+      "label": "Item 3 title",
+      "default": "Returns"
+    },
+    {
+      "type": "richtext",
+      "id": "item_3_content",
+      "label": "Item 3 content",
+      "default": "<p>Free returns within 30 days. Item must be unworn with tags attached.</p>"
+    },
+    {
+      "type": "text",
+      "id": "item_4_title",
+      "label": "Item 4 title"
+    },
+    {
+      "type": "richtext",
+      "id": "item_4_content",
+      "label": "Item 4 content"
+    },
+    {
+      "type": "text",
+      "id": "item_5_title",
+      "label": "Item 5 title"
+    },
+    {
+      "type": "richtext",
+      "id": "item_5_content",
+      "label": "Item 5 content"
     },
     {
       "type": "image_picker",
       "id": "bg_image",
       "label": "Background Image"
+    },
+    {
+      "type": "header",
+      "content": "Trigger style"
+    },
+    {
+      "type": "range",
+      "id": "trigger_font_size",
+      "label": "Trigger font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "trigger_font_weight",
+      "label": "Trigger font weight",
+      "min": 400,
+      "max": 800,
+      "step": 100,
+      "default": 600
+    },
+    {
+      "type": "color",
+      "id": "trigger_text_color",
+      "label": "Trigger text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "header",
+      "content": "Panel style"
+    },
+    {
+      "type": "range",
+      "id": "panel_radius",
+      "label": "Panel corner radius",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "panel_spacing",
+      "label": "Panel bottom spacing",
+      "min": 0,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "content_font_size",
+      "label": "Content font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "content_line_height",
+      "label": "Content line height",
+      "min": 1.1,
+      "max": 2.2,
+      "step": 0.1,
+      "default": 1.6
+    },
+    {
+      "type": "color",
+      "id": "content_text_color",
+      "label": "Content text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Glass effect"
+    },
+    {
+      "type": "range",
+      "id": "glass_blur",
+      "label": "Glass blur",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "glass_saturation",
+      "label": "Glass saturation",
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "glass_brightness",
+      "label": "Glass brightness",
+      "min": 50,
+      "max": 150,
+      "step": 5,
+      "unit": "%",
+      "default": 100
+    },
+    {
+      "type": "color",
+      "id": "glass_overlay_color",
+      "label": "Glass overlay color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "glass_overlay_opacity",
+      "label": "Glass overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 45
+    },
+    {
+      "type": "range",
+      "id": "glass_padding",
+      "label": "Glass inner padding",
+      "min": 8,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "glass_border_color",
+      "label": "Glass border color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "glass_border_width",
+      "label": "Glass border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "glass_border_opacity",
+      "label": "Glass border opacity",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "%",
+      "default": 35
     }
   ],
   "presets": [

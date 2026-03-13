@@ -1,11 +1,17 @@
-<div
-  class="sr-stock-badge spacing-style{% unless block.settings.enable_pulse %} sr-stock-badge--no-pulse{% endunless %}"
-  style="{% render 'spacing-style', settings: block.settings %}"
-  {{ block.shopify_attributes }}
->
-  <span class="sr-stock-dot"></span>
-  <span class="sr-stock-text">{{ block.settings.text }}</span>
-</div>
+{%- liquid
+  assign variant = block.settings.product.selected_or_first_available_variant
+-%}
+
+{% if variant and variant.available %}
+  <div
+    class="sr-stock-badge spacing-style{% unless block.settings.enable_pulse %} sr-stock-badge--no-pulse{% endunless %}"
+    style="{% render 'spacing-style', settings: block.settings %}"
+    {{ block.shopify_attributes }}
+  >
+    <span class="sr-stock-dot"></span>
+    <span class="sr-stock-text">{{ block.settings.text }}</span>
+  </div>
+{% endif %}
 
 {% stylesheet %}
   .sr-stock-badge {

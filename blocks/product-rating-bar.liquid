@@ -4,15 +4,32 @@
     assign product_resource = collections.all.products.first
   endif
 
-  assign review_count = blank
-  assign judgeme_badge = product_resource.metafields.judgeme.badge
+  assign review_count = shop.metafields.judgeme.all_reviews_count.value | default: shop.metafields.judgeme.all_reviews_count
 
-  if judgeme_badge != blank and judgeme_badge contains 'data-number-of-reviews="'
-    assign review_count = judgeme_badge | split: 'data-number-of-reviews="' | last | split: '"' | first
+  if review_count == blank
+    assign review_count = shop.metafields.judgeme.all_reviews_rating_count.value | default: shop.metafields.judgeme.all_reviews_rating_count
+  endif
+
+  if review_count == blank
+    assign review_count = shop.metafields.judgeme.reviews_count.value | default: shop.metafields.judgeme.reviews_count
+  endif
+
+  if review_count == blank
+    assign judgeme_badge = product_resource.metafields.judgeme.badge
+    if judgeme_badge != blank and judgeme_badge contains 'data-number-of-reviews="'
+      assign review_count = judgeme_badge | split: 'data-number-of-reviews="' | last | split: '"' | first
+    endif
   endif
 
   if review_count == blank
     assign review_count = product_resource.metafields.reviews.rating_count.value | default: product_resource.metafields.reviews.rating_count
+  endif
+
+  assign normalized_review_count = review_count | replace: ',', '' | strip
+  assign review_count_number = normalized_review_count | plus: 0
+
+  if review_count_number == 0 and normalized_review_count != '0'
+    assign review_count_number = 0
   endif
 %}
 
@@ -38,7 +55,7 @@
   <div class="sr-rating-text">
     <span class="sr-rating-score">{{ block.settings.rating_score }}</span>
     <span class="sr-rating-label">{{ block.settings.rating_label }}</span>
-    <span class="sr-rating-count">based on {{ review_count | default: 0 }} reviews.</span>
+    <span class="sr-rating-count">based on {{ review_count_number }} reviews.</span>
   </div>
 </div>
 
