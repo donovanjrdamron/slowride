@@ -348,6 +348,10 @@
     color: #fff;
   }
 
+  .variant-option--size .variant-option__button-label:has([data-option-available='false']) {
+    --variant-picker-stroke-color: #000;
+  }
+
   .variant-option__button-label:has(:focus-visible) {
     --variant-picker-stroke-color: var(--color-foreground);
 
@@ -546,8 +550,8 @@
   .variant-picker .variant-picker__form > fieldset.variant-option--swatches:has(input[data-input-id^='1-']) .variant-option__button-label--has-swatch {
     width: 64px;
     height: 64px;
-    padding: 2px;
-    border: 2px solid transparent;
+    padding: 0;
+    border: none;
     border-radius: 8px;
     overflow: hidden;
     outline: none;
@@ -555,23 +559,25 @@
     min-height: 64px;
     min-width: 64px;
     background: transparent;
+    box-shadow: none;
   }
 
   .variant-picker .variant-picker__form > fieldset.variant-option--swatches:has(input[data-input-id^='1-']) .variant-option__button-label--has-swatch .swatch {
     width: 100%;
     height: 100%;
-    border-radius: 6px;
-    border: 1px solid #d9d9df;
+    border-radius: 8px;
+    border: 2px solid #d9d9df;
+    box-sizing: border-box;
     background-size: cover;
     background-position: center;
   }
 
   /* Selected state */
   .variant-picker .variant-picker__form > fieldset.variant-option--swatches:has(input[data-input-id^='1-']) .variant-option__button-label--has-swatch:has(input:checked) {
-    border-color: transparent;
-    outline: none;
-    outline-offset: 0;
-    box-shadow: none;
+    border-color: transparent !important;
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
   }
 
   .variant-picker .variant-picker__form > fieldset.variant-option--swatches:has(input[data-input-id^='1-']) .variant-option__button-label--has-swatch:has(input:checked) .swatch {
@@ -580,8 +586,10 @@
 
   /* Hover state */
   .variant-picker .variant-picker__form > fieldset.variant-option--swatches:has(input[data-input-id^='1-']) .variant-option__button-label--has-swatch:hover {
-    border-color: transparent;
-    outline: none;
+    border-color: transparent !important;
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
   }
 
   .variant-picker .variant-picker__form > fieldset.variant-option--swatches:has(input[data-input-id^='1-']) .variant-option__button-label--has-swatch:hover .swatch {
@@ -589,9 +597,9 @@
   }
 
   .variant-picker .variant-picker__form > fieldset.variant-option--swatches:has(input[data-input-id^='1-']) .variant-option__button-label--has-swatch:has(:focus-visible) {
-    border-color: var(--color-foreground);
-    outline: none;
-    outline-offset: 0;
-    box-shadow: none;
+    border-color: transparent !important;
+    outline: none !important;
+    outline-offset: 0 !important;
+    box-shadow: none !important;
   }
 {% endstylesheet %}
