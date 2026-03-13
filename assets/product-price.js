@@ -33,11 +33,23 @@ class ProductPrice extends HTMLElement {
 
     const newPrice = event.detail.data.html.querySelector('product-price [ref="priceContainer"]');
     const currentPrice = this.querySelector('[ref="priceContainer"]');
+    const newInstallments = event.detail.data.html.querySelector('product-price [ref="installmentsContainer"]');
+    const currentInstallments = this.querySelector('[ref="installmentsContainer"]');
 
     if (!newPrice || !currentPrice) return;
 
     if (currentPrice.innerHTML !== newPrice.innerHTML) {
       currentPrice.replaceWith(newPrice);
+    }
+
+    // Keep Shopify payment terms in sync with variant changes.
+    if (newInstallments && currentInstallments && currentInstallments.innerHTML !== newInstallments.innerHTML) {
+      currentInstallments.replaceWith(newInstallments);
+    } else if (newInstallments && !currentInstallments) {
+      const latestPriceContainer = this.querySelector('[ref="priceContainer"]');
+      latestPriceContainer?.insertAdjacentElement('afterend', newInstallments);
+    } else if (!newInstallments && currentInstallments) {
+      currentInstallments.remove();
     }
   };
 }

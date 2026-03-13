@@ -81,7 +81,10 @@
       {%- endform -%}
     {%- endcapture -%}
     {%- if installments_markup | strip != blank -%}
-      <div class="installments">
+      <div
+        class="installments"
+        ref="installmentsContainer"
+      >
         {{ installments_markup }}
       </div>
     {%- endif -%}
