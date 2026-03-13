@@ -138,10 +138,10 @@
                 "star_color": "#a72828",
                 "rating_score": "4.9",
                 "rating_label": "/ 5",
-                "reviews_link": "",
+                "reviews_link": "shopify://pages/reviews",
                 "text_color": "#1a1a1a",
                 "font_size": 14,
-                "padding-block-start": 20,
+                "padding-block-start": 32,
                 "padding-block-end": 20,
                 "padding-inline-start": 0,
                 "padding-inline-end": 0
