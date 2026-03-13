@@ -138,6 +138,7 @@
                 "star_color": "#a72828",
                 "rating_score": "4.9",
                 "rating_label": "/ 5",
+                "reviews_link": "",
                 "text_color": "#1a1a1a",
                 "font_size": 14,
                 "padding-block-start": 20,
@@ -523,7 +524,27 @@
     "image_gallery_tR6aQn": {
       "type": "image-gallery",
       "name": "Image Gallery",
-      "settings": {}
+      "settings": {
+        "heading": "Enjoy Getting There.",
+        "heading_align": "left",
+        "heading_color": "#263d60",
+        "heading_size": 66,
+        "heading_gap": 24,
+        "background_color": "#ffffff",
+        "card_gap": 14,
+        "card_radius": 6,
+        "section_padding_top": 12,
+        "section_padding_bottom": 40,
+        "dot_color": "#263d60",
+        "image_1": "shopify://shop_images/jerm_photoshoot-11.jpg",
+        "image_2": "shopify://shop_images/dsc00307.jpg",
+        "image_3": "shopify://shop_images/DSC08610-9.jpg",
+        "image_4": "shopify://shop_images/DSC05926.jpg",
+        "image_5": "shopify://shop_images/DSC00246.jpg",
+        "image_6": "shopify://shop_images/DSC00401.jpg",
+        "image_7": "shopify://shop_images/DSC00218.jpg",
+        "image_8": "shopify://shop_images/DSC08442.jpg"
+      }
     },
     "frosted_glass_split_MWpbTP": {
       "type": "frosted-glass-split",
