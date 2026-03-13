@@ -66,7 +66,7 @@
         >
         <div
           class="product-form-buttons spacing-style{% if block.settings.stacking %} product-form-buttons--stacked{% endif %}"
-          style="{% render 'spacing-style', settings: block.settings %}"
+          style="{% render 'spacing-style', settings: block.settings %}; --product-form-buttons-gap: {{ block.settings.buttons_gap }}px; --stock-status-text-size: {{ block.settings.stock_status_text_size }}px; --stock-status-spacing-top: {{ block.settings.stock_status_spacing_top }}px; --stock-status-spacing-bottom: {{ block.settings.stock_status_spacing_bottom }}px; --stock-status-dot-size: {{ block.settings.stock_status_dot_size }}px; --stock-status-dot-color: {{ block.settings.stock_status_dot_color }};"
         >
           {% content_for 'block', type: 'quantity', id: 'quantity' %}
           {% content_for 'block',
@@ -75,6 +75,12 @@
             can_add_to_cart: can_add_to_cart,
             add_to_cart_text: add_to_cart_text
           %}
+          {% if block.settings.show_stock_status and can_add_to_cart %}
+            <p class="product-form-stock-status">
+              <span class="product-form-stock-status__dot"></span>
+              <span>{{ block.settings.stock_status_text }}</span>
+            </p>
+          {% endif %}
           <span
             class="product-form-text__error hidden"
             ref="addToCartTextError"
@@ -116,18 +122,22 @@
           ref="variantId"
           value="{{ product.selected_or_first_available_variant.id }}"
         >
+        {% liquid
+          assign sticky_add_to_cart_text = add_to_cart_text
+          if can_add_to_cart
+            capture sticky_add_to_cart_text
+              echo add_to_cart_text
+              echo ' '
+              echo product.selected_or_first_available_variant.price | money
+            endcapture
+          endif
+        %}
         <div class="product-sticky-atc__inner">
-          <p
-            class="product-sticky-atc__price"
-            data-sticky-atc-price
-          >
-            {{ product.selected_or_first_available_variant.price | money }}
-          </p>
           {% render 'add-to-cart-button',
             class: 'add-to-cart-button button-secondary product-sticky-atc__button',
             can_add_to_cart: can_add_to_cart,
             product: block.settings.product,
-            add_to_cart_text: add_to_cart_text
+            add_to_cart_text: sticky_add_to_cart_text
           %}
         </div>
       {%- endform -%}
@@ -258,10 +268,10 @@
   .product-form-buttons {
     display: flex;
     flex-wrap: wrap;
-    gap: calc(var(--gap-sm) / 2);
+    gap: var(--product-form-buttons-gap, calc(var(--gap-sm) / 2));
 
     @media screen and (width >= 750px) {
-      gap: var(--gap-sm);
+      gap: var(--product-form-buttons-gap, var(--gap-sm));
     }
   }
 
@@ -302,6 +312,41 @@
     height: var(--height-buy-buttons);
   }
 
+  .product-form-stock-status {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--gap-xs);
+    margin: var(--stock-status-spacing-top, 0) 0 var(--stock-status-spacing-bottom, 0);
+    font-size: var(--stock-status-text-size, var(--font-size--sm));
+    line-height: 1.25;
+  }
+
+  .product-form-stock-status__dot {
+    width: var(--stock-status-dot-size, 10px);
+    height: var(--stock-status-dot-size, 10px);
+    min-width: var(--stock-status-dot-size, 10px);
+    border-radius: 50%;
+    background: var(--stock-status-dot-color, #2da54e);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--stock-status-dot-color, #2da54e) 45%, transparent);
+    animation: stock-status-pulse 1.8s ease-out infinite;
+  }
+
+  @keyframes stock-status-pulse {
+    0% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--stock-status-dot-color, #2da54e) 45%, transparent);
+    }
+    70% {
+      transform: scale(1);
+      box-shadow: 0 0 0 9px color-mix(in srgb, var(--stock-status-dot-color, #2da54e) 0%, transparent);
+    }
+    100% {
+      transform: scale(0.95);
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--stock-status-dot-color, #2da54e) 0%, transparent);
+    }
+  }
+
   .product-sticky-atc {
     position: fixed;
     inset-block-end: 0;
@@ -329,26 +374,30 @@
   }
 
   .product-sticky-atc__inner {
-    display: grid;
-    gap: var(--gap-sm);
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-    align-items: center;
+    display: flex;
+    justify-content: center;
     max-width: var(--page-width);
     margin-inline: auto;
   }
 
-  .product-sticky-atc__price {
-    margin: 0;
-    font-size: var(--font-size--md);
-    font-weight: 600;
+  .product-sticky-atc__button {
+    width: fit-content;
+    min-width: 220px;
+    max-width: 100%;
+    padding-inline: var(--padding-2xl);
   }
 
-  .product-sticky-atc__button {
-    min-width: 0;
+  .product-sticky-atc .add-to-cart-text {
+    white-space: nowrap;
   }
 
   .product-sticky-atc .add-to-cart-button {
     height: var(--height-buy-buttons);
+    width: auto;
+  }
+
+  .product-sticky-atc .add-to-cart-icon {
+    display: none;
   }
 
   .product__pickup-availabilities {
@@ -479,6 +528,10 @@
 
   @media screen and (width < 750px) {
     .buy-buttons-block {
+      padding-bottom: 0;
+    }
+
+    .group-block-content > :last-child .buy-buttons-block {
       padding-bottom: calc(var(--height-buy-buttons) + var(--padding-3xl) + env(safe-area-inset-bottom, 0px));
     }
   }
@@ -505,6 +558,82 @@
       "id": "show_pickup_availability",
       "label": "t:settings.show_pickup_availability",
       "default": true
+    },
+    {
+      "type": "header",
+      "content": "Stock status message"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stock_status",
+      "label": "Show stock status under add to cart",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "stock_status_text",
+      "label": "Stock status text",
+      "default": "In stock, process immediately"
+    },
+    {
+      "type": "color",
+      "id": "stock_status_dot_color",
+      "label": "Pulsing dot color",
+      "default": "#2da54e"
+    },
+    {
+      "type": "range",
+      "id": "stock_status_dot_size",
+      "label": "Pulsing dot size",
+      "min": 6,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "stock_status_text_size",
+      "label": "Stock status text size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "header",
+      "content": "Button and message spacing"
+    },
+    {
+      "type": "range",
+      "id": "buttons_gap",
+      "label": "Gap between button elements",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "stock_status_spacing_top",
+      "label": "Stock status top spacing",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "stock_status_spacing_bottom",
+      "label": "Stock status bottom spacing",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 0
     },
     {
       "type": "header",
