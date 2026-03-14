@@ -178,7 +178,7 @@
                     "style_class": "button-secondary",
                     "add_to_cart_text": "Add to cart",
                     "show_stock_status": true,
-                    "stock_status_text": "In stock, process immediately",
+                    "stock_status_text": "In stock, processes immediately",
                     "stock_status_text_size": 10,
                     "stock_status_text_color": "#ffffff",
                     "stock_status_dot_color": "#ffffff",
