@@ -18,7 +18,7 @@
           "type": "_announcement",
           "name": "t:names.announcement",
           "settings": {
-            "text": "Buy 3 Shirts Only $74.99 <a href=\"/pages/t-shirt-bundle\" title=\"T-shirt bundle\">Shop Now</a>",
+            "text": "Sale Ending Soon! Shop <a href=\"/collections/slowridesaleproducts\" title=\"Slow Ride Products on Sale.\">Last Lap</a>",
             "link": "shopify://pages/t-shirt-bundle",
             "show_scribble": false,
             "separator_icon": "dot",
