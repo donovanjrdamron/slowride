@@ -111,11 +111,13 @@
   }
 
   .lookbook-gallery__figure {
+    position: relative;
     margin: 0;
     border-radius: var(--gallery-radius, 16px);
     overflow: hidden;
     border: var(--gallery-border-width, 3px) solid var(--gallery-border-color, #ffffff);
     background: rgba(from var(--color-foreground) r g b / 0.04);
+    box-sizing: border-box;
   }
 
   /* Desktop pattern (repeats every 6 photos):
@@ -146,6 +148,8 @@
   }
 
   .lookbook-gallery__image {
+    position: absolute;
+    inset: 0;
     display: block;
     width: 100%;
     height: 100%;
@@ -153,6 +157,8 @@
   }
 
   .lookbook-gallery__placeholder-svg {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
