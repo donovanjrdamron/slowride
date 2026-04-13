@@ -19,97 +19,67 @@
   {%- endif -%}
 
   <div class="lookbook-gallery__photos">
-    {%- for block in section.blocks -%}
-      {%- if block.type == 'photo' -%}
-        <figure
-          class="lookbook-gallery__figure lookbook-gallery__figure--{{ block.settings.width }}"
-          {{ block.shopify_attributes }}
-        >
-          {%- if block.settings.image != blank -%}
-            {%- liquid
-              case block.settings.width
-                when 'full'
-                  assign img_sizes = '(min-width: 750px) 100vw, 100vw'
-                when 'large'
-                  assign img_sizes = '(min-width: 750px) 85vw, 100vw'
-                when 'medium'
-                  assign img_sizes = '(min-width: 750px) 65vw, 100vw'
-                when 'small'
-                  assign img_sizes = '(min-width: 750px) 45vw, 100vw'
-              endcase
-            -%}
+    {%- assign photos = article.metafields.custom.photos.value -%}
+    {%- if photos != blank -%}
+      {%- for photo in photos -%}
+        {%- assign pos = forloop.index0 | modulo: 3 -%}
+        {%- if pos == 0 -%}
+          <figure class="lookbook-gallery__figure lookbook-gallery__figure--full">
             {{
-              block.settings.image
+              photo
               | image_url: width: 3840
               | image_tag:
-                width: block.settings.image.width,
+                width: photo.width,
                 widths: widths,
-                height: block.settings.image.height,
-                alt: block.settings.image.alt | default: article.title,
+                height: photo.height,
+                alt: photo.alt | default: article.title,
                 class: 'lookbook-gallery__image',
-                sizes: img_sizes,
+                sizes: '(min-width: 750px) 100vw, 100vw',
                 loading: 'lazy'
             }}
-          {%- else -%}
-            <div class="lookbook-gallery__placeholder">
-              {{ 'lifestyle-1' | placeholder_svg_tag: 'lookbook-gallery__placeholder-svg' }}
-            </div>
-          {%- endif -%}
-
-          {%- if block.settings.caption != blank -%}
-            <figcaption class="lookbook-gallery__caption">{{ block.settings.caption }}</figcaption>
-          {%- endif -%}
-        </figure>
-      {%- endif -%}
-
-      {%- if block.type == 'pair' -%}
-        <div
-          class="lookbook-gallery__pair"
-          {{ block.shopify_attributes }}
-        >
-          <figure class="lookbook-gallery__pair-item">
-            {%- if block.settings.image_left != blank -%}
+          </figure>
+        {%- elsif pos == 1 -%}
+          <div class="lookbook-gallery__pair">
+            <figure class="lookbook-gallery__pair-item">
               {{
-                block.settings.image_left
+                photo
                 | image_url: width: 2000
                 | image_tag:
-                  width: block.settings.image_left.width,
+                  width: photo.width,
                   widths: widths,
-                  height: block.settings.image_left.height,
-                  alt: block.settings.image_left.alt | default: article.title,
+                  height: photo.height,
+                  alt: photo.alt | default: article.title,
                   class: 'lookbook-gallery__image',
                   sizes: '(min-width: 750px) 50vw, 100vw',
                   loading: 'lazy'
               }}
-            {%- else -%}
-              <div class="lookbook-gallery__placeholder">
-                {{ 'lifestyle-1' | placeholder_svg_tag: 'lookbook-gallery__placeholder-svg' }}
-              </div>
-            {%- endif -%}
-          </figure>
-          <figure class="lookbook-gallery__pair-item">
-            {%- if block.settings.image_right != blank -%}
+            </figure>
+        {%- else -%}
+            <figure class="lookbook-gallery__pair-item">
               {{
-                block.settings.image_right
+                photo
                 | image_url: width: 2000
                 | image_tag:
-                  width: block.settings.image_right.width,
+                  width: photo.width,
                   widths: widths,
-                  height: block.settings.image_right.height,
-                  alt: block.settings.image_right.alt | default: article.title,
+                  height: photo.height,
+                  alt: photo.alt | default: article.title,
                   class: 'lookbook-gallery__image',
                   sizes: '(min-width: 750px) 50vw, 100vw',
                   loading: 'lazy'
               }}
-            {%- else -%}
-              <div class="lookbook-gallery__placeholder">
-                {{ 'lifestyle-2' | placeholder_svg_tag: 'lookbook-gallery__placeholder-svg' }}
-              </div>
-            {%- endif -%}
-          </figure>
-        </div>
-      {%- endif -%}
-    {%- endfor -%}
+            </figure>
+          </div>
+        {%- endif -%}
+        {%- if forloop.last and pos == 1 -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- else -%}
+      <div class="lookbook-gallery__placeholder">
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'lookbook-gallery__placeholder-svg' }}
+      </div>
+    {%- endif -%}
   </div>
 
   {%- if section.settings.show_back_link -%}
@@ -261,7 +231,6 @@
   "disabled_on": {
     "groups": ["header"]
   },
-  "max_blocks": 30,
   "settings": [
     {
       "type": "header",
@@ -320,91 +289,10 @@
       "default": 48
     }
   ],
-  "blocks": [
-    {
-      "type": "photo",
-      "name": "Photo",
-      "settings": [
-        {
-          "type": "image_picker",
-          "id": "image",
-          "label": "Image"
-        },
-        {
-          "type": "select",
-          "id": "width",
-          "label": "Width",
-          "options": [
-            {
-              "value": "full",
-              "label": "Full width"
-            },
-            {
-              "value": "large",
-              "label": "Large (85%)"
-            },
-            {
-              "value": "medium",
-              "label": "Medium (65%)"
-            },
-            {
-              "value": "small",
-              "label": "Small (45%)"
-            }
-          ],
-          "default": "full"
-        },
-        {
-          "type": "text",
-          "id": "caption",
-          "label": "Caption"
-        }
-      ]
-    },
-    {
-      "type": "pair",
-      "name": "Photo pair",
-      "settings": [
-        {
-          "type": "image_picker",
-          "id": "image_left",
-          "label": "Left image"
-        },
-        {
-          "type": "image_picker",
-          "id": "image_right",
-          "label": "Right image"
-        }
-      ]
-    }
-  ],
   "presets": [
     {
       "name": "Lookbook gallery",
-      "category": "t:categories.storytelling",
-      "blocks": [
-        {
-          "type": "photo",
-          "settings": {
-            "width": "full"
-          }
-        },
-        {
-          "type": "pair"
-        },
-        {
-          "type": "photo",
-          "settings": {
-            "width": "large"
-          }
-        },
-        {
-          "type": "photo",
-          "settings": {
-            "width": "full"
-          }
-        }
-      ]
+      "category": "t:categories.storytelling"
     }
   ]
 }
