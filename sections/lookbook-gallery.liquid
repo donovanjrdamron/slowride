@@ -34,7 +34,10 @@
     {%- if photos != blank -%}
       {%- for photo in photos -%}
         {%- liquid
-          assign ratio = photo.width | times: 1.0 | divided_by: photo.height
+          assign ratio = 0.75
+          if photo.width > 0 and photo.height > 0
+            assign ratio = photo.width | times: 1.0 | divided_by: photo.height
+          endif
           assign is_wide = false
           if ratio > 1.6
             assign is_wide = true
@@ -44,19 +47,27 @@
           else
             assign img_sizes = '(min-width: 750px) 50vw, 100vw'
           endif
+          assign loading_attr = 'lazy'
+          assign fetch_priority = 'auto'
+          if forloop.first
+            assign loading_attr = 'eager'
+            assign fetch_priority = 'high'
+          endif
         -%}
-        <figure class="lookbook-gallery__figure{% if is_wide %} lookbook-gallery__figure--wide{% endif %}">
+        <figure
+          class="lookbook-gallery__figure{% if is_wide %} lookbook-gallery__figure--wide{% endif %}"
+          style="aspect-ratio: {{ photo.width }} / {{ photo.height }};"
+        >
           {{
             photo
             | image_url: width: 3840
             | image_tag:
-              width: photo.width,
               widths: widths,
-              height: photo.height,
               alt: photo.alt | default: article.title,
               class: 'lookbook-gallery__image',
               sizes: img_sizes,
-              loading: 'lazy'
+              loading: loading_attr,
+              fetchpriority: fetch_priority
           }}
         </figure>
       {%- endfor -%}
@@ -76,59 +87,6 @@
 
 <script type="application/ld+json">
   {{ article | structured_data }}
-</script>
-
-<script>
-(function () {
-  var ROW_SIZE = 10;
-
-  function layout(gallery) {
-    var gap = parseFloat(getComputedStyle(gallery).rowGap) || 12;
-    gallery.querySelectorAll('.lookbook-gallery__figure').forEach(function (fig) {
-      fig.style.gridRowEnd = '';
-      var h = fig.getBoundingClientRect().height;
-      if (h === 0) return;
-      var span = Math.ceil((h + gap) / (ROW_SIZE + gap));
-      fig.style.gridRowEnd = 'span ' + span;
-    });
-  }
-
-  function init() {
-    var gallery = document.querySelector('.lookbook-gallery__photos');
-    if (!gallery) return;
-
-    var imgs = gallery.querySelectorAll('.lookbook-gallery__image');
-    var total = imgs.length;
-    if (total === 0) return;
-
-    var loaded = 0;
-    function onLoad() {
-      loaded++;
-      if (loaded >= total) layout(gallery);
-    }
-
-    imgs.forEach(function (img) {
-      if (img.complete && img.naturalHeight > 0) {
-        onLoad();
-      } else {
-        img.addEventListener('load', onLoad);
-        img.addEventListener('error', onLoad);
-      }
-    });
-
-    var resizeTimer;
-    window.addEventListener('resize', function () {
-      clearTimeout(resizeTimer);
-      resizeTimer = setTimeout(function () { layout(gallery); }, 100);
-    });
-  }
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
-})();
 </script>
 
 {% stylesheet %}
@@ -158,9 +116,7 @@
   .lookbook-gallery__photos {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-auto-rows: 10px;
     gap: var(--gallery-gap, 12px);
-    align-items: start;
   }
 
   .lookbook-gallery__figure {
@@ -185,7 +141,17 @@
   .lookbook-gallery__image {
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @media (max-width: 749px) {
+    .lookbook-gallery__photos {
+      grid-template-columns: 1fr;
+    }
+    .lookbook-gallery__figure--wide {
+      grid-column: auto;
+    }
   }
 
   .lookbook-gallery__placeholder-svg {
