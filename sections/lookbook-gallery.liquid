@@ -1,11 +1,19 @@
 {% liquid
   assign widths = '300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1800, 2000, 2500, 3000, 3840'
+  assign custom_bg = section.settings.background_color
+  assign has_custom_bg = false
+  if custom_bg != blank and custom_bg != 'rgba(0,0,0,0)'
+    assign has_custom_bg = true
+  endif
 %}
 
-<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+<div
+  class="section-background color-{{ section.settings.color_scheme }}"
+  {% if has_custom_bg %}style="background-color: {{ custom_bg }};"{% endif %}
+></div>
 <div
   class="section section--page-width color-{{ section.settings.color_scheme }} lookbook-gallery spacing-style"
-  style="{% render 'spacing-style', settings: section.settings %}"
+  style="{% render 'spacing-style', settings: section.settings %}{% if has_custom_bg %} background-color: {{ custom_bg }};{% endif %}"
 >
   {%- if section.settings.title_visible and article.title != blank -%}
     <header class="lookbook-gallery__header">
@@ -18,67 +26,44 @@
     </header>
   {%- endif -%}
 
-  <div class="lookbook-gallery__photos">
+  <div
+    class="lookbook-gallery__photos"
+    style="--gallery-gap: {{ section.settings.gap }}px; --gallery-radius: {{ section.settings.border_radius }}px; --gallery-border-width: {{ section.settings.border_width }}px; --gallery-border-color: {{ section.settings.border_color }};"
+  >
     {%- assign photos = article.metafields.custom.photos.value -%}
     {%- if photos != blank -%}
       {%- for photo in photos -%}
-        {%- assign pos = forloop.index0 | modulo: 3 -%}
-        {%- if pos == 0 -%}
-          <figure class="lookbook-gallery__figure lookbook-gallery__figure--full">
-            {{
-              photo
-              | image_url: width: 3840
-              | image_tag:
-                width: photo.width,
-                widths: widths,
-                height: photo.height,
-                alt: photo.alt | default: article.title,
-                class: 'lookbook-gallery__image',
-                sizes: '(min-width: 750px) 100vw, 100vw',
-                loading: 'lazy'
-            }}
-          </figure>
-        {%- elsif pos == 1 -%}
-          <div class="lookbook-gallery__pair">
-            <figure class="lookbook-gallery__pair-item">
-              {{
-                photo
-                | image_url: width: 2000
-                | image_tag:
-                  width: photo.width,
-                  widths: widths,
-                  height: photo.height,
-                  alt: photo.alt | default: article.title,
-                  class: 'lookbook-gallery__image',
-                  sizes: '(min-width: 750px) 50vw, 100vw',
-                  loading: 'lazy'
-              }}
-            </figure>
-        {%- else -%}
-            <figure class="lookbook-gallery__pair-item">
-              {{
-                photo
-                | image_url: width: 2000
-                | image_tag:
-                  width: photo.width,
-                  widths: widths,
-                  height: photo.height,
-                  alt: photo.alt | default: article.title,
-                  class: 'lookbook-gallery__image',
-                  sizes: '(min-width: 750px) 50vw, 100vw',
-                  loading: 'lazy'
-              }}
-            </figure>
-          </div>
-        {%- endif -%}
-        {%- if forloop.last and pos == 1 -%}
-          </div>
-        {%- endif -%}
+        {%- liquid
+          assign ratio = photo.width | times: 1.0 | divided_by: photo.height
+          assign is_wide = false
+          if ratio > 1.6
+            assign is_wide = true
+          endif
+          if is_wide
+            assign img_sizes = '(min-width: 750px) 100vw, 100vw'
+          else
+            assign img_sizes = '(min-width: 750px) 50vw, 100vw'
+          endif
+        -%}
+        <figure class="lookbook-gallery__figure{% if is_wide %} lookbook-gallery__figure--wide{% endif %}">
+          {{
+            photo
+            | image_url: width: 3840
+            | image_tag:
+              width: photo.width,
+              widths: widths,
+              height: photo.height,
+              alt: photo.alt | default: article.title,
+              class: 'lookbook-gallery__image',
+              sizes: img_sizes,
+              loading: 'lazy'
+          }}
+        </figure>
       {%- endfor -%}
     {%- else -%}
-      <div class="lookbook-gallery__placeholder">
+      <figure class="lookbook-gallery__figure lookbook-gallery__figure--wide lookbook-gallery__figure--empty">
         {{ 'lifestyle-1' | placeholder_svg_tag: 'lookbook-gallery__placeholder-svg' }}
-      </div>
+      </figure>
     {%- endif -%}
   </div>
 
@@ -91,6 +76,59 @@
 
 <script type="application/ld+json">
   {{ article | structured_data }}
+</script>
+
+<script>
+(function () {
+  var ROW_SIZE = 10;
+
+  function layout(gallery) {
+    var gap = parseFloat(getComputedStyle(gallery).rowGap) || 12;
+    gallery.querySelectorAll('.lookbook-gallery__figure').forEach(function (fig) {
+      fig.style.gridRowEnd = '';
+      var h = fig.getBoundingClientRect().height;
+      if (h === 0) return;
+      var span = Math.ceil((h + gap) / (ROW_SIZE + gap));
+      fig.style.gridRowEnd = 'span ' + span;
+    });
+  }
+
+  function init() {
+    var gallery = document.querySelector('.lookbook-gallery__photos');
+    if (!gallery) return;
+
+    var imgs = gallery.querySelectorAll('.lookbook-gallery__image');
+    var total = imgs.length;
+    if (total === 0) return;
+
+    var loaded = 0;
+    function onLoad() {
+      loaded++;
+      if (loaded >= total) layout(gallery);
+    }
+
+    imgs.forEach(function (img) {
+      if (img.complete && img.naturalHeight > 0) {
+        onLoad();
+      } else {
+        img.addEventListener('load', onLoad);
+        img.addEventListener('error', onLoad);
+      }
+    });
+
+    var resizeTimer;
+    window.addEventListener('resize', function () {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(function () { layout(gallery); }, 100);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
 </script>
 
 {% stylesheet %}
@@ -118,44 +156,30 @@
   }
 
   .lookbook-gallery__photos {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: clamp(12px, 2vw, 24px);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 10px;
+    gap: var(--gallery-gap, 12px);
+    align-items: start;
   }
 
   .lookbook-gallery__figure {
     margin: 0;
-    width: 100%;
-    transition: opacity 0.3s ease;
+    border-radius: var(--gallery-radius, 16px);
+    overflow: hidden;
+    border: var(--gallery-border-width, 3px) solid var(--gallery-border-color, #ffffff);
   }
 
-  .lookbook-gallery__figure--full {
-    max-width: 100%;
+  .lookbook-gallery__figure--wide {
+    grid-column: span 2;
   }
 
-  .lookbook-gallery__figure--large {
-    max-width: 85%;
-
-    @media screen and (width < 750px) {
-      max-width: 100%;
-    }
-  }
-
-  .lookbook-gallery__figure--medium {
-    max-width: 65%;
-
-    @media screen and (width < 750px) {
-      max-width: 100%;
-    }
-  }
-
-  .lookbook-gallery__figure--small {
-    max-width: 45%;
-
-    @media screen and (width < 750px) {
-      max-width: 75%;
-    }
+  .lookbook-gallery__figure--empty {
+    aspect-ratio: 3 / 4;
+    background: rgba(from var(--color-foreground) r g b / 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .lookbook-gallery__image {
@@ -164,43 +188,10 @@
     height: auto;
   }
 
-  .lookbook-gallery__placeholder {
-    width: 100%;
-    aspect-ratio: 3 / 4;
-    background: rgba(from var(--color-foreground) r g b / 0.04);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
   .lookbook-gallery__placeholder-svg {
     width: 100%;
     height: 100%;
     object-fit: cover;
-  }
-
-  .lookbook-gallery__caption {
-    font-size: 0.75rem;
-    letter-spacing: 0.04em;
-    opacity: 0.6;
-    margin-block-start: 8px;
-    text-align: center;
-  }
-
-  .lookbook-gallery__pair {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: clamp(12px, 2vw, 24px);
-    width: 100%;
-
-    @media screen and (width >= 750px) {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  .lookbook-gallery__pair-item {
-    margin: 0;
-    overflow: hidden;
   }
 
   .lookbook-gallery__back {
@@ -256,7 +247,53 @@
     },
     {
       "type": "header",
+      "content": "Gallery style"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between photos",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "unit": "px",
+      "default": 3
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
       "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Overrides the color scheme background. Leave unset to use the color scheme."
     },
     {
       "type": "color_scheme",
