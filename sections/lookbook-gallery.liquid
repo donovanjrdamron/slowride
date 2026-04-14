@@ -34,6 +34,16 @@
     {%- if photos != blank -%}
       {%- for photo in photos -%}
         {%- liquid
+          assign w = photo.width
+          if w == blank or w == 0
+            assign w = 3
+          endif
+          assign h = photo.height
+          if h == blank or h == 0
+            assign h = 4
+          endif
+          assign ratio = w | times: 1.0 | divided_by: h
+
           assign loading_attr = 'lazy'
           assign fetch_priority = 'auto'
           if forloop.first
@@ -41,7 +51,10 @@
             assign fetch_priority = 'high'
           endif
         -%}
-        <figure class="lookbook-gallery__figure">
+        <figure
+          class="lookbook-gallery__figure"
+          style="--ratio: {{ ratio }};"
+        >
           {{
             photo
             | image_url: width: 2400
@@ -49,14 +62,14 @@
               widths: widths,
               alt: photo.alt | default: article.title,
               class: 'lookbook-gallery__image',
-              sizes: '(min-width: 750px) 900px, 100vw',
+              sizes: '(min-width: 750px) 500px, 50vw',
               loading: loading_attr,
               fetchpriority: fetch_priority
           }}
         </figure>
       {%- endfor -%}
     {%- else -%}
-      <figure class="lookbook-gallery__figure lookbook-gallery__figure--empty">
+      <figure class="lookbook-gallery__figure lookbook-gallery__figure--empty" style="--ratio: 1.5;">
         {{ 'lifestyle-1' | placeholder_svg_tag: 'lookbook-gallery__placeholder-svg' }}
       </figure>
     {%- endif -%}
@@ -100,14 +113,28 @@
     opacity: 0.6;
   }
 
+  /* Justified rows: each photo keeps its own aspect ratio. Within a row,
+     items share the same height (--row-h) and their widths are proportional
+     to each photo's ratio. Rows pack organically; no fixed bento slots. */
   .lookbook-gallery__photos {
-    display: grid;
-    grid-template-columns: repeat(6, 1fr);
+    --row-h: 320px;
+    display: flex;
+    flex-wrap: wrap;
     gap: var(--gallery-gap, 12px);
     max-width: var(--gallery-max-width, 900px);
     margin-inline: auto;
     padding-inline: clamp(16px, 4vw, 32px);
     box-sizing: border-box;
+  }
+
+  /* The trailing pseudo absorbs leftover space on the last row so its
+     items don't stretch to fill the full width. */
+  .lookbook-gallery__photos::after {
+    content: '';
+    flex-grow: 999999;
+    flex-basis: 0;
+    height: 0;
+    min-width: 0;
   }
 
   .lookbook-gallery__figure {
@@ -117,42 +144,20 @@
     border: var(--gallery-border-width, 3px) solid var(--gallery-border-color, #ffffff);
     background: rgba(from var(--color-foreground) r g b / 0.04);
     box-sizing: border-box;
-  }
-
-  /* Desktop bento pattern (repeats every 6 photos):
-     slot 1     → full-width banner (2:1)
-     slot 2,3   → half-width landscapes (4:3)
-     slot 4,5,6 → third-width portraits (3:4) */
-  .lookbook-gallery__figure:nth-child(6n + 1) {
-    grid-column: span 6;
-    aspect-ratio: 2 / 1;
-  }
-
-  .lookbook-gallery__figure:nth-child(6n + 2),
-  .lookbook-gallery__figure:nth-child(6n + 3) {
-    grid-column: span 3;
-    aspect-ratio: 4 / 3;
-  }
-
-  .lookbook-gallery__figure:nth-child(6n + 4),
-  .lookbook-gallery__figure:nth-child(6n + 5),
-  .lookbook-gallery__figure:nth-child(6n + 6) {
-    grid-column: span 2;
-    aspect-ratio: 3 / 4;
+    height: var(--row-h);
+    flex-basis: calc(var(--ratio, 0.75) * var(--row-h));
+    flex-grow: var(--ratio, 0.75);
+    flex-shrink: 1;
+    min-width: 0;
+    max-width: 100%;
   }
 
   .lookbook-gallery__figure--empty {
-    grid-column: span 6;
-    aspect-ratio: 2 / 1;
+    flex-basis: calc(1.5 * var(--row-h));
+    flex-grow: 1.5;
   }
 
-  .lookbook-gallery__figure > .lookbook-gallery__image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-
+  .lookbook-gallery__figure > .lookbook-gallery__image,
   .lookbook-gallery__figure > .lookbook-gallery__placeholder-svg {
     width: 100%;
     height: 100%;
@@ -160,33 +165,9 @@
     display: block;
   }
 
-  /* Mobile pattern (2 cols): banner → 2 portraits → 2 portraits → wide */
   @media (max-width: 749px) {
     .lookbook-gallery__photos {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    .lookbook-gallery__figure:nth-child(6n + 1) {
-      grid-column: span 2;
-      aspect-ratio: 16 / 9;
-    }
-
-    .lookbook-gallery__figure:nth-child(6n + 2),
-    .lookbook-gallery__figure:nth-child(6n + 3),
-    .lookbook-gallery__figure:nth-child(6n + 4),
-    .lookbook-gallery__figure:nth-child(6n + 5) {
-      grid-column: span 1;
-      aspect-ratio: 3 / 4;
-    }
-
-    .lookbook-gallery__figure:nth-child(6n + 6) {
-      grid-column: span 2;
-      aspect-ratio: 3 / 2;
-    }
-
-    .lookbook-gallery__figure--empty {
-      grid-column: span 2;
-      aspect-ratio: 16 / 9;
+      --row-h: 200px;
     }
   }
 
