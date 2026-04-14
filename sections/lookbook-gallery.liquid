@@ -120,45 +120,67 @@
     box-sizing: border-box;
   }
 
+  /* Padding-top hack reserves vertical space proportional to width:
+     height = width * (padding-top%). Works in all browsers and
+     cannot be fought by the theme's global img { height: auto }. */
+  .lookbook-gallery__figure::before {
+    content: '';
+    display: block;
+    width: 100%;
+  }
+
   /* Desktop pattern (repeats every 6 photos):
-     slot 1  → full-width banner
-     slot 2,3 → half-width landscapes
-     slot 4,5,6 → third-width portraits                              */
+     slot 1  → full-width banner  (2:1)
+     slot 2,3 → half-width landscapes (4:3)
+     slot 4,5,6 → third-width portraits (3:4)                        */
   .lookbook-gallery__figure:nth-child(6n + 1) {
     grid-column: span 6;
-    aspect-ratio: 2 / 1;
+  }
+  .lookbook-gallery__figure:nth-child(6n + 1)::before {
+    padding-top: 50%;
   }
 
   .lookbook-gallery__figure:nth-child(6n + 2),
   .lookbook-gallery__figure:nth-child(6n + 3) {
     grid-column: span 3;
-    aspect-ratio: 4 / 3;
+  }
+  .lookbook-gallery__figure:nth-child(6n + 2)::before,
+  .lookbook-gallery__figure:nth-child(6n + 3)::before {
+    padding-top: 75%;
   }
 
   .lookbook-gallery__figure:nth-child(6n + 4),
   .lookbook-gallery__figure:nth-child(6n + 5),
   .lookbook-gallery__figure:nth-child(6n + 6) {
     grid-column: span 2;
-    aspect-ratio: 3 / 4;
+  }
+  .lookbook-gallery__figure:nth-child(6n + 4)::before,
+  .lookbook-gallery__figure:nth-child(6n + 5)::before,
+  .lookbook-gallery__figure:nth-child(6n + 6)::before {
+    padding-top: 133.333%;
   }
 
   .lookbook-gallery__figure--empty {
     grid-column: span 6;
-    aspect-ratio: 2 / 1;
+  }
+  .lookbook-gallery__figure--empty::before {
+    padding-top: 50%;
   }
 
   .lookbook-gallery__image {
-    position: absolute;
-    inset: 0;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
     display: block;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
   }
 
   .lookbook-gallery__placeholder-svg {
     position: absolute;
-    inset: 0;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     object-fit: cover;
@@ -172,7 +194,9 @@
 
     .lookbook-gallery__figure:nth-child(6n + 1) {
       grid-column: span 2;
-      aspect-ratio: 16 / 9;
+    }
+    .lookbook-gallery__figure:nth-child(6n + 1)::before {
+      padding-top: 56.25%; /* 16:9 */
     }
 
     .lookbook-gallery__figure:nth-child(6n + 2),
@@ -180,17 +204,26 @@
     .lookbook-gallery__figure:nth-child(6n + 4),
     .lookbook-gallery__figure:nth-child(6n + 5) {
       grid-column: span 1;
-      aspect-ratio: 3 / 4;
+    }
+    .lookbook-gallery__figure:nth-child(6n + 2)::before,
+    .lookbook-gallery__figure:nth-child(6n + 3)::before,
+    .lookbook-gallery__figure:nth-child(6n + 4)::before,
+    .lookbook-gallery__figure:nth-child(6n + 5)::before {
+      padding-top: 133.333%; /* 3:4 */
     }
 
     .lookbook-gallery__figure:nth-child(6n + 6) {
       grid-column: span 2;
-      aspect-ratio: 3 / 2;
+    }
+    .lookbook-gallery__figure:nth-child(6n + 6)::before {
+      padding-top: 66.666%; /* 3:2 */
     }
 
     .lookbook-gallery__figure--empty {
       grid-column: span 2;
-      aspect-ratio: 16 / 9;
+    }
+    .lookbook-gallery__figure--empty::before {
+      padding-top: 56.25%;
     }
   }
 
