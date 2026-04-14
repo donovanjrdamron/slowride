@@ -13,9 +13,15 @@
       "type": "lookbook-gallery",
       "settings": {
         "title_visible": true,
-        "show_date": true,
+        "show_date": false,
         "show_back_link": true,
-        "color_scheme": "",
+        "max_width": 900,
+        "gap": 6,
+        "border_radius": 16,
+        "border_width": 3,
+        "border_color": "#ffffff",
+        "background_color": "#263d60",
+        "color_scheme": "scheme-5",
         "padding-block-start": 48,
         "padding-block-end": 48
       }
