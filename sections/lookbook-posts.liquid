@@ -45,18 +45,16 @@
       >
         {%- for article in target_blog.articles -%}
           <article class="lookbook-posts__card" style="--text-align: {{ section.settings.text_alignment }};">
+            {%- liquid
+              assign image_alt = article.image.alt | default: article.title | escape
+            -%}
             <a href="{{ article.url }}" class="lookbook-posts__media-link" aria-label="{{ article.title | escape }}">
               <div class="lookbook-posts__media" style="--image-ratio: {{ section.settings.image_ratio }}; --radius: {{ section.settings.border_radius }}px;">
                 {%- if article.image -%}
                   {{
                     article.image
                     | image_url: width: 1800
-                    | image_tag:
-                      widths: widths,
-                      alt: article.image.alt | default: article.title | escape,
-                      class: 'lookbook-posts__image',
-                      sizes: sizes,
-                      loading: 'lazy'
+                    | image_tag: widths: widths, alt: image_alt, class: 'lookbook-posts__image', sizes: sizes, loading: 'lazy'
                   }}
                 {%- else -%}
                   <div class="lookbook-posts__placeholder">
