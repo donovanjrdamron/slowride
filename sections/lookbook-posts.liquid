@@ -1,8 +1,6 @@
 {% liquid
   assign widths = '300, 450, 600, 750, 900, 1050, 1200, 1500, 1800'
-  assign columns = section.settings.columns
-  assign desktop_image_width = 100 | divided_by: columns
-  assign sizes = '(min-width: 750px) ' | append: desktop_image_width | append: 'vw, 100vw'
+  assign sizes = '(min-width: 750px) 50vw, 50vw'
 
   if section.settings.blog != blank
     assign target_blog = blogs[section.settings.blog]
@@ -41,50 +39,39 @@
     {%- paginate target_blog.articles by section.settings.posts_per_page -%}
       <div
         class="lookbook-posts__grid"
-        style="--lookbook-columns: {{ columns }}; --lookbook-gap: {{ section.settings.gap }}px;"
+        style="--lookbook-gap: {{ section.settings.gap }}px;"
       >
         {%- for article in target_blog.articles -%}
-          <article class="lookbook-posts__card" style="--text-align: {{ section.settings.text_alignment }};">
-            {%- liquid
-              assign image_alt = article.image.alt | default: article.title | escape
-            -%}
-            <a href="{{ article.url }}" class="lookbook-posts__media-link" aria-label="{{ article.title | escape }}">
-              <div class="lookbook-posts__media" style="--image-ratio: {{ section.settings.image_ratio }}; --radius: {{ section.settings.border_radius }}px;">
-                {%- if article.image -%}
-                  {{
-                    article.image
-                    | image_url: width: 1800
-                    | image_tag: widths: widths, alt: image_alt, class: 'lookbook-posts__image', sizes: sizes, loading: 'lazy'
-                  }}
-                {%- else -%}
-                  <div class="lookbook-posts__placeholder">
-                    {{ 'lifestyle-1' | placeholder_svg_tag: 'lookbook-posts__placeholder-svg' }}
-                  </div>
-                {%- endif -%}
-              </div>
-            </a>
-
-            <div class="lookbook-posts__content">
-              {%- if section.settings.show_date or section.settings.show_author -%}
-                <div class="lookbook-posts__meta">
-                  {%- if section.settings.show_date -%}
-                    <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
-                      {{ article.published_at | date: format: 'default' }}
-                    </time>
-                  {%- endif -%}
-                  {%- if section.settings.show_date and section.settings.show_author and article.author != blank -%}
-                    <span class="lookbook-posts__meta-dot">&middot;</span>
-                  {%- endif -%}
-                  {%- if section.settings.show_author and article.author != blank -%}
-                    <span>{{ article.author }}</span>
-                  {%- endif -%}
+          {%- liquid
+            assign image_alt = article.image.alt | default: article.title | escape
+          -%}
+          <a
+            href="{{ article.url }}"
+            class="lookbook-posts__card"
+            style="--image-ratio: {{ section.settings.image_ratio }}; --radius: {{ section.settings.border_radius }}px;"
+            aria-label="{{ article.title | escape }}"
+          >
+            <div class="lookbook-posts__media">
+              {%- if article.image -%}
+                {{
+                  article.image
+                  | image_url: width: 1800
+                  | image_tag: widths: widths, alt: image_alt, class: 'lookbook-posts__image', sizes: sizes, loading: 'lazy'
+                }}
+              {%- else -%}
+                <div class="lookbook-posts__placeholder">
+                  {{ 'lifestyle-1' | placeholder_svg_tag: 'lookbook-posts__placeholder-svg' }}
                 </div>
+              {%- endif -%}
+            </div>
+
+            <div class="lookbook-posts__overlay">
+              {%- if section.settings.show_author and article.author != blank -%}
+                <div class="lookbook-posts__author">{{ article.author }}</div>
               {%- endif -%}
 
               {%- if section.settings.show_title -%}
-                <h2 class="lookbook-posts__card-title">
-                  <a href="{{ article.url }}">{{ article.title }}</a>
-                </h2>
+                <h2 class="lookbook-posts__card-title">{{ article.title }}</h2>
               {%- endif -%}
 
               {%- if section.settings.show_excerpt -%}
@@ -103,14 +90,8 @@
                   {%- endfor -%}
                 </ul>
               {%- endif -%}
-
-              {%- if section.settings.show_read_more -%}
-                <a href="{{ article.url }}" class="lookbook-posts__read-more">
-                  {{ section.settings.read_more_text | default: 'Read more' }} <span aria-hidden="true">&rarr;</span>
-                </a>
-              {%- endif -%}
             </div>
-          </article>
+          </a>
         {%- endfor -%}
       </div>
 
@@ -156,32 +137,24 @@
 
   .lookbook-posts__grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--lookbook-gap, 24px);
-
-    @media screen and (width >= 750px) {
-      grid-template-columns: repeat(var(--lookbook-columns, 3), 1fr);
-    }
   }
 
   .lookbook-posts__card {
-    display: flex;
-    flex-direction: column;
-    text-align: var(--text-align, left);
-  }
-
-  .lookbook-posts__media-link {
+    position: relative;
     display: block;
+    overflow: hidden;
+    aspect-ratio: var(--image-ratio, 3 / 4);
+    border-radius: var(--radius, 0);
     text-decoration: none;
-    color: inherit;
+    color: #ffffff;
+    background: rgba(from var(--color-foreground) r g b / 0.04);
   }
 
   .lookbook-posts__media {
-    position: relative;
-    overflow: hidden;
-    aspect-ratio: var(--image-ratio, 3 / 4);
-    background: rgba(from var(--color-foreground) r g b / 0.04);
-    border-radius: var(--radius, 0);
+    position: absolute;
+    inset: 0;
   }
 
   .lookbook-posts__image {
@@ -192,7 +165,7 @@
     transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   }
 
-  .lookbook-posts__media-link:hover .lookbook-posts__image {
+  .lookbook-posts__card:hover .lookbook-posts__image {
     transform: scale(1.03);
   }
 
@@ -210,58 +183,49 @@
     object-fit: cover;
   }
 
-  .lookbook-posts__content {
-    padding-block-start: 14px;
+  .lookbook-posts__overlay {
+    position: absolute;
+    inset: 0;
     display: flex;
     flex-direction: column;
-    gap: 8px;
-  }
-
-  .lookbook-posts__meta {
-    font-size: 0.75rem;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    opacity: 0.6;
-    display: flex;
-    gap: 6px;
-    justify-content: var(--text-align, flex-start);
-  }
-
-  .lookbook-posts__card[style*='center'] .lookbook-posts__meta {
-    justify-content: center;
-  }
-
-  .lookbook-posts__card[style*='right'] .lookbook-posts__meta {
     justify-content: flex-end;
+    align-items: flex-start;
+    padding: clamp(16px, 3vw, 28px);
+    gap: 6px;
+    color: #ffffff;
+    text-align: left;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.65) 0%,
+      rgba(0, 0, 0, 0.35) 40%,
+      rgba(0, 0, 0, 0) 75%
+    );
+    pointer-events: none;
   }
 
-  .lookbook-posts__meta-dot {
-    opacity: 0.6;
+  .lookbook-posts__author {
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.85;
   }
 
   .lookbook-posts__card-title {
     font-family: var(--font-heading--family);
     font-weight: var(--font-heading--weight);
-    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    font-size: clamp(1rem, 1.8vw, 1.5rem);
     letter-spacing: 0.04em;
     text-transform: uppercase;
     margin: 0;
-    line-height: 1.3;
-  }
-
-  .lookbook-posts__card-title a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .lookbook-posts__card-title a:hover {
-    opacity: 0.7;
+    line-height: 1.2;
+    color: #ffffff;
   }
 
   .lookbook-posts__excerpt {
-    font-size: 0.9rem;
-    line-height: 1.55;
-    opacity: 0.8;
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    opacity: 0.9;
+    max-width: 36ch;
   }
 
   .lookbook-posts__tags {
@@ -271,41 +235,16 @@
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    font-size: 0.6875rem;
+    font-size: 0.625rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
   }
 
   .lookbook-posts__tags li {
-    padding: 4px 10px;
-    border: 1px solid rgba(from var(--color-foreground) r g b / 0.2);
+    padding: 3px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
     border-radius: 999px;
-    opacity: 0.8;
-  }
-
-  .lookbook-posts__read-more {
-    margin-block-start: 4px;
-    font-size: 0.8125rem;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--color-foreground);
-    text-decoration: none;
-    align-self: start;
-    border-bottom: 1px solid currentColor;
-    padding-block-end: 2px;
-    transition: opacity 0.2s ease;
-  }
-
-  .lookbook-posts__card[style*='center'] .lookbook-posts__read-more {
-    align-self: center;
-  }
-
-  .lookbook-posts__card[style*='right'] .lookbook-posts__read-more {
-    align-self: end;
-  }
-
-  .lookbook-posts__read-more:hover {
-    opacity: 0.7;
+    opacity: 0.9;
   }
 
   .lookbook-posts__pagination {
@@ -377,22 +316,13 @@
     },
     {
       "type": "range",
-      "id": "columns",
-      "label": "Columns (desktop)",
-      "min": 1,
-      "max": 4,
-      "step": 1,
-      "default": 3
-    },
-    {
-      "type": "range",
       "id": "gap",
       "label": "Gap between cards",
-      "min": 8,
+      "min": 0,
       "max": 60,
       "step": 2,
       "unit": "px",
-      "default": 24
+      "default": 16
     },
     {
       "type": "select",
@@ -421,9 +351,9 @@
       "type": "range",
       "id": "posts_per_page",
       "label": "Posts per page",
-      "min": 3,
+      "min": 2,
       "max": 48,
-      "step": 3,
+      "step": 2,
       "default": 24
     },
     {
@@ -431,26 +361,9 @@
       "content": "Card content"
     },
     {
-      "type": "select",
-      "id": "text_alignment",
-      "label": "Text alignment",
-      "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Center" },
-        { "value": "right", "label": "Right" }
-      ],
-      "default": "left"
-    },
-    {
       "type": "checkbox",
       "id": "show_title",
       "label": "Show title",
-      "default": true
-    },
-    {
-      "type": "checkbox",
-      "id": "show_date",
-      "label": "Show date",
       "default": true
     },
     {
@@ -463,7 +376,7 @@
       "type": "checkbox",
       "id": "show_excerpt",
       "label": "Show excerpt",
-      "default": true
+      "default": false
     },
     {
       "type": "range",
@@ -472,25 +385,13 @@
       "min": 10,
       "max": 60,
       "step": 5,
-      "default": 25
+      "default": 20
     },
     {
       "type": "checkbox",
       "id": "show_tags",
       "label": "Show tags",
       "default": false
-    },
-    {
-      "type": "checkbox",
-      "id": "show_read_more",
-      "label": "Show read more link",
-      "default": true
-    },
-    {
-      "type": "text",
-      "id": "read_more_text",
-      "label": "Read more text",
-      "default": "Read more"
     },
     {
       "type": "header",
@@ -552,12 +453,8 @@
       "name": "Lookbook posts",
       "category": "Storytelling",
       "settings": {
-        "columns": 3,
         "image_ratio": "3 / 4",
-        "show_title": true,
-        "show_date": true,
-        "show_excerpt": true,
-        "show_read_more": true
+        "show_title": true
       }
     }
   ]
