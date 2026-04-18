@@ -1,0 +1,567 @@
+{% liquid
+  assign widths = '300, 450, 600, 750, 900, 1050, 1200, 1500, 1800'
+  assign columns = section.settings.columns
+  assign desktop_image_width = 100 | divided_by: columns
+  assign sizes = '(min-width: 750px) ' | append: desktop_image_width | append: 'vw, 100vw'
+
+  if section.settings.blog != blank
+    assign target_blog = blogs[section.settings.blog]
+  elsif blog
+    assign target_blog = blog
+  endif
+
+  assign custom_bg = section.settings.background_color
+  assign has_custom_bg = false
+  if custom_bg != blank and custom_bg != 'rgba(0,0,0,0)'
+    assign has_custom_bg = true
+  endif
+%}
+
+<div
+  class="section-background color-{{ section.settings.color_scheme }}"
+  {% if has_custom_bg %}style="background-color: {{ custom_bg }};"{% endif %}
+></div>
+<div
+  class="section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} lookbook-posts spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}{% if has_custom_bg %} background-color: {{ custom_bg }};{% endif %}"
+>
+  {%- if section.settings.show_heading -%}
+    <header class="lookbook-posts__header">
+      {%- assign heading_text = section.settings.custom_heading | default: target_blog.title -%}
+      {%- if heading_text != blank -%}
+        <h1 class="lookbook-posts__title">{{ heading_text }}</h1>
+      {%- endif -%}
+      {%- if section.settings.show_description and target_blog.description != blank -%}
+        <p class="lookbook-posts__description">{{ target_blog.description }}</p>
+      {%- endif -%}
+    </header>
+  {%- endif -%}
+
+  {%- if target_blog != blank and target_blog.articles_count > 0 -%}
+    {%- paginate target_blog.articles by section.settings.posts_per_page -%}
+      <div
+        class="lookbook-posts__grid"
+        style="--lookbook-columns: {{ columns }}; --lookbook-gap: {{ section.settings.gap }}px;"
+      >
+        {%- for article in target_blog.articles -%}
+          <article class="lookbook-posts__card" style="--text-align: {{ section.settings.text_alignment }};">
+            <a href="{{ article.url }}" class="lookbook-posts__media-link" aria-label="{{ article.title | escape }}">
+              <div class="lookbook-posts__media" style="--image-ratio: {{ section.settings.image_ratio }}; --radius: {{ section.settings.border_radius }}px;">
+                {%- if article.image -%}
+                  {{
+                    article.image
+                    | image_url: width: 1800
+                    | image_tag:
+                      widths: widths,
+                      alt: article.image.alt | default: article.title | escape,
+                      class: 'lookbook-posts__image',
+                      sizes: sizes,
+                      loading: 'lazy'
+                  }}
+                {%- else -%}
+                  <div class="lookbook-posts__placeholder">
+                    {{ 'lifestyle-1' | placeholder_svg_tag: 'lookbook-posts__placeholder-svg' }}
+                  </div>
+                {%- endif -%}
+              </div>
+            </a>
+
+            <div class="lookbook-posts__content">
+              {%- if section.settings.show_date or section.settings.show_author -%}
+                <div class="lookbook-posts__meta">
+                  {%- if section.settings.show_date -%}
+                    <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">
+                      {{ article.published_at | date: format: 'default' }}
+                    </time>
+                  {%- endif -%}
+                  {%- if section.settings.show_date and section.settings.show_author and article.author != blank -%}
+                    <span class="lookbook-posts__meta-dot">&middot;</span>
+                  {%- endif -%}
+                  {%- if section.settings.show_author and article.author != blank -%}
+                    <span>{{ article.author }}</span>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+
+              {%- if section.settings.show_title -%}
+                <h2 class="lookbook-posts__card-title">
+                  <a href="{{ article.url }}">{{ article.title }}</a>
+                </h2>
+              {%- endif -%}
+
+              {%- if section.settings.show_excerpt -%}
+                {%- assign excerpt_text = article.excerpt | default: article.content -%}
+                {%- if excerpt_text != blank -%}
+                  <div class="lookbook-posts__excerpt">
+                    {{ excerpt_text | strip_html | truncatewords: section.settings.excerpt_words }}
+                  </div>
+                {%- endif -%}
+              {%- endif -%}
+
+              {%- if section.settings.show_tags and article.tags.size > 0 -%}
+                <ul class="lookbook-posts__tags">
+                  {%- for tag in article.tags limit: 6 -%}
+                    <li>{{ tag }}</li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+
+              {%- if section.settings.show_read_more -%}
+                <a href="{{ article.url }}" class="lookbook-posts__read-more">
+                  {{ section.settings.read_more_text | default: 'Read more' }} <span aria-hidden="true">&rarr;</span>
+                </a>
+              {%- endif -%}
+            </div>
+          </article>
+        {%- endfor -%}
+      </div>
+
+      {%- if paginate.pages > 1 -%}
+        <div class="lookbook-posts__pagination">
+          {{- paginate | default_pagination -}}
+        </div>
+      {%- endif -%}
+    {%- endpaginate -%}
+  {%- else -%}
+    <p class="lookbook-posts__empty">
+      {%- if target_blog == blank -%}
+        Select a blog in the section settings.
+      {%- else -%}
+        No posts in this blog yet.
+      {%- endif -%}
+    </p>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .lookbook-posts__header {
+    text-align: center;
+    padding-block-end: clamp(32px, 4vw, 64px);
+    padding-inline: clamp(16px, 4vw, 32px);
+  }
+
+  .lookbook-posts__title {
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .lookbook-posts__description {
+    margin: 12px 0 0;
+    opacity: 0.7;
+    max-width: 60ch;
+    margin-inline: auto;
+  }
+
+  .lookbook-posts__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--lookbook-gap, 24px);
+
+    @media screen and (width >= 750px) {
+      grid-template-columns: repeat(var(--lookbook-columns, 3), 1fr);
+    }
+  }
+
+  .lookbook-posts__card {
+    display: flex;
+    flex-direction: column;
+    text-align: var(--text-align, left);
+  }
+
+  .lookbook-posts__media-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .lookbook-posts__media {
+    position: relative;
+    overflow: hidden;
+    aspect-ratio: var(--image-ratio, 3 / 4);
+    background: rgba(from var(--color-foreground) r g b / 0.04);
+    border-radius: var(--radius, 0);
+  }
+
+  .lookbook-posts__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .lookbook-posts__media-link:hover .lookbook-posts__image {
+    transform: scale(1.03);
+  }
+
+  .lookbook-posts__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lookbook-posts__placeholder-svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .lookbook-posts__content {
+    padding-block-start: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .lookbook-posts__meta {
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.6;
+    display: flex;
+    gap: 6px;
+    justify-content: var(--text-align, flex-start);
+  }
+
+  .lookbook-posts__card[style*='center'] .lookbook-posts__meta {
+    justify-content: center;
+  }
+
+  .lookbook-posts__card[style*='right'] .lookbook-posts__meta {
+    justify-content: flex-end;
+  }
+
+  .lookbook-posts__meta-dot {
+    opacity: 0.6;
+  }
+
+  .lookbook-posts__card-title {
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    font-size: clamp(1rem, 1.4vw, 1.25rem);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .lookbook-posts__card-title a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .lookbook-posts__card-title a:hover {
+    opacity: 0.7;
+  }
+
+  .lookbook-posts__excerpt {
+    font-size: 0.9rem;
+    line-height: 1.55;
+    opacity: 0.8;
+  }
+
+  .lookbook-posts__tags {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .lookbook-posts__tags li {
+    padding: 4px 10px;
+    border: 1px solid rgba(from var(--color-foreground) r g b / 0.2);
+    border-radius: 999px;
+    opacity: 0.8;
+  }
+
+  .lookbook-posts__read-more {
+    margin-block-start: 4px;
+    font-size: 0.8125rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--color-foreground);
+    text-decoration: none;
+    align-self: start;
+    border-bottom: 1px solid currentColor;
+    padding-block-end: 2px;
+    transition: opacity 0.2s ease;
+  }
+
+  .lookbook-posts__card[style*='center'] .lookbook-posts__read-more {
+    align-self: center;
+  }
+
+  .lookbook-posts__card[style*='right'] .lookbook-posts__read-more {
+    align-self: end;
+  }
+
+  .lookbook-posts__read-more:hover {
+    opacity: 0.7;
+  }
+
+  .lookbook-posts__pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding-block-start: clamp(32px, 4vw, 64px);
+  }
+
+  .lookbook-posts__pagination a,
+  .lookbook-posts__pagination .current {
+    display: block;
+    padding: 6px 12px;
+    color: var(--color-foreground);
+    text-decoration: none;
+  }
+
+  .lookbook-posts__pagination .current,
+  .lookbook-posts__pagination a:hover {
+    border-bottom: 1px solid var(--color-foreground);
+  }
+
+  .lookbook-posts__empty {
+    text-align: center;
+    opacity: 0.5;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Lookbook posts",
+  "tag": "section",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog",
+      "info": "Select the blog to display. On blog templates this is optional."
+    },
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_heading",
+      "label": "Show heading",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "custom_heading",
+      "label": "Custom heading",
+      "info": "Leave blank to use the blog title"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show blog description",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Grid"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns (desktop)",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between cards",
+      "min": 8,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "3 / 4", "label": "Portrait (3:4)" },
+        { "value": "1 / 1", "label": "Square (1:1)" },
+        { "value": "4 / 3", "label": "Landscape (4:3)" },
+        { "value": "16 / 9", "label": "Widescreen (16:9)" },
+        { "value": "2 / 3", "label": "Tall (2:3)" }
+      ],
+      "default": "3 / 4"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Image corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "posts_per_page",
+      "label": "Posts per page",
+      "min": 3,
+      "max": 48,
+      "step": 3,
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Card content"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show title",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "Show excerpt",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "excerpt_words",
+      "label": "Excerpt length (words)",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "default": 25
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Show tags",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_read_more",
+      "label": "Show read more link",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "read_more_text",
+      "label": "Read more text",
+      "default": "Read more"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "page-width", "label": "Page width" },
+        { "value": "full-width", "label": "Full width" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Overrides the color scheme background. Leave unset to use the color scheme."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lookbook posts",
+      "category": "Storytelling",
+      "settings": {
+        "columns": 3,
+        "image_ratio": "3 / 4",
+        "show_title": true,
+        "show_date": true,
+        "show_excerpt": true,
+        "show_read_more": true
+      }
+    }
+  ]
+}
+{% endschema %}
