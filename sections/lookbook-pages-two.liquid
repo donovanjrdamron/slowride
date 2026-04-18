@@ -1,0 +1,519 @@
+{% liquid
+  assign widths = '450, 600, 750, 900, 1050, 1200, 1500, 1800, 2100, 2400, 3000, 3840'
+  assign columns_desktop = section.settings.columns_desktop | default: 2
+  assign columns_mobile_num = section.settings.columns_mobile | default: '2' | plus: 0
+  if columns_desktop == 0
+    assign columns_desktop = 2
+  endif
+  if columns_mobile_num == 0
+    assign columns_mobile_num = 2
+  endif
+  assign desktop_vw = 100 | divided_by: columns_desktop
+  assign mobile_vw = 100 | divided_by: columns_mobile_num
+  assign sizes = '(min-width: 750px) ' | append: desktop_vw | append: 'vw, ' | append: mobile_vw | append: 'vw'
+  assign image_ratio_desktop = section.settings.image_ratio_desktop | default: '3 / 4'
+  assign image_ratio_mobile = section.settings.image_ratio_mobile | default: '3 / 4'
+
+  if section.settings.blog != blank
+    assign target_blog = blogs[section.settings.blog]
+  elsif blog
+    assign target_blog = blog
+  endif
+
+  assign custom_bg = section.settings.background_color
+  assign has_custom_bg = false
+  if custom_bg != blank and custom_bg != 'rgba(0,0,0,0)'
+    assign has_custom_bg = true
+  endif
+%}
+
+<div
+  class="section-background color-{{ section.settings.color_scheme }}"
+  {% if has_custom_bg %}style="background-color: {{ custom_bg }};"{% endif %}
+></div>
+<div
+  class="section section--{{ section.settings.section_width }} color-{{ section.settings.color_scheme }} lbp2 spacing-style"
+  style="{% render 'spacing-style', settings: section.settings %}{% if has_custom_bg %} background-color: {{ custom_bg }};{% endif %}"
+>
+  {%- if section.settings.show_heading -%}
+    <header class="lbp2__header">
+      {%- assign heading_text = section.settings.custom_heading | default: target_blog.title -%}
+      {%- if heading_text != blank -%}
+        <h1 class="lbp2__title">{{ heading_text }}</h1>
+      {%- endif -%}
+      {%- if section.settings.show_description and target_blog.description != blank -%}
+        <p class="lbp2__description">{{ target_blog.description }}</p>
+      {%- endif -%}
+    </header>
+  {%- endif -%}
+
+  {%- if target_blog != blank and target_blog.articles_count > 0 -%}
+    {%- paginate target_blog.articles by section.settings.posts_per_page -%}
+      <div
+        class="lbp2__grid"
+        style="--lbp2-gap: {{ section.settings.gap }}px; --cols-desktop: {{ columns_desktop }}; --cols-mobile: {{ columns_mobile_num }};"
+      >
+        {%- for article in target_blog.articles -%}
+          {%- liquid
+            assign image_alt = article.image.alt | default: article.title | escape
+          -%}
+          <a
+            href="{{ article.url }}"
+            class="lbp2__card"
+            style="--image-ratio-desktop: {{ image_ratio_desktop }}; --image-ratio-mobile: {{ image_ratio_mobile }}; --radius: {{ section.settings.border_radius }}px;"
+            aria-label="{{ article.title | escape }}"
+          >
+            <div class="lbp2__media">
+              {%- if article.image -%}
+                {{
+                  article.image
+                  | image_url: width: 2400
+                  | image_tag: widths: widths, alt: image_alt, class: 'lbp2__image', sizes: sizes, loading: 'lazy'
+                }}
+              {%- else -%}
+                <div class="lbp2__placeholder">
+                  {{ 'lifestyle-1' | placeholder_svg_tag: 'lbp2__placeholder-svg' }}
+                </div>
+              {%- endif -%}
+            </div>
+
+            <div class="lbp2__overlay">
+              {%- if section.settings.show_author and article.author != blank -%}
+                <div class="lbp2__author">{{ article.author }}</div>
+              {%- endif -%}
+
+              {%- if section.settings.show_title -%}
+                <h2 class="lbp2__card-title">{{ article.title }}</h2>
+              {%- endif -%}
+
+              {%- if section.settings.show_excerpt -%}
+                {%- assign excerpt_text = article.excerpt | default: article.content -%}
+                {%- if excerpt_text != blank -%}
+                  <div class="lbp2__excerpt">
+                    {{ excerpt_text | strip_html | truncatewords: section.settings.excerpt_words }}
+                  </div>
+                {%- endif -%}
+              {%- endif -%}
+
+              {%- if section.settings.show_tags and article.tags.size > 0 -%}
+                <ul class="lbp2__tags">
+                  {%- for tag in article.tags limit: 6 -%}
+                    <li>{{ tag }}</li>
+                  {%- endfor -%}
+                </ul>
+              {%- endif -%}
+            </div>
+          </a>
+        {%- endfor -%}
+      </div>
+
+      {%- if paginate.pages > 1 -%}
+        <div class="lbp2__pagination">
+          {{- paginate | default_pagination -}}
+        </div>
+      {%- endif -%}
+    {%- endpaginate -%}
+  {%- else -%}
+    <p class="lbp2__empty">
+      {%- if target_blog == blank -%}
+        Select a blog in the section settings.
+      {%- else -%}
+        No posts in this blog yet.
+      {%- endif -%}
+    </p>
+  {%- endif -%}
+</div>
+
+{% stylesheet %}
+  .lbp2__header {
+    text-align: center;
+    padding-block-end: clamp(32px, 4vw, 64px);
+    padding-inline: clamp(16px, 4vw, 32px);
+  }
+
+  .lbp2__title {
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+  }
+
+  .lbp2__description {
+    margin: 12px 0 0;
+    opacity: 0.7;
+    max-width: 60ch;
+    margin-inline: auto;
+  }
+
+  .lbp2__grid {
+    display: grid;
+    grid-template-columns: repeat(var(--cols-mobile, 2), 1fr);
+    gap: var(--lbp2-gap, 24px);
+
+    @media screen and (width >= 750px) {
+      grid-template-columns: repeat(var(--cols-desktop, 2), 1fr);
+    }
+  }
+
+  .lbp2__card {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: var(--image-ratio-mobile, 3 / 4);
+    border-radius: var(--radius, 0);
+    text-decoration: none;
+    color: #ffffff;
+    background: rgba(from var(--color-foreground) r g b / 0.04);
+  }
+
+  @media screen and (width >= 750px) {
+    .lbp2__card {
+      aspect-ratio: var(--image-ratio-desktop, 3 / 4);
+    }
+  }
+
+  .lbp2__media {
+    position: absolute;
+    inset: 0;
+  }
+
+  .lbp2__image {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .lbp2__card:hover .lbp2__image {
+    transform: scale(1.03);
+  }
+
+  .lbp2__placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .lbp2__placeholder-svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .lbp2__overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-start;
+    padding: clamp(16px, 3vw, 28px);
+    gap: 6px;
+    color: #ffffff;
+    text-align: left;
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.65) 0%,
+      rgba(0, 0, 0, 0.35) 40%,
+      rgba(0, 0, 0, 0) 75%
+    );
+    pointer-events: none;
+  }
+
+  .lbp2__author {
+    font-size: 0.6875rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+
+  .lbp2__card-title {
+    font-family: var(--font-heading--family);
+    font-weight: var(--font-heading--weight);
+    font-size: clamp(1rem, 1.8vw, 1.5rem);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1.2;
+    color: #ffffff;
+  }
+
+  .lbp2__excerpt {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    opacity: 0.9;
+    max-width: 36ch;
+  }
+
+  .lbp2__tags {
+    list-style: none;
+    padding: 0;
+    margin: 4px 0 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    font-size: 0.625rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .lbp2__tags li {
+    padding: 3px 8px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 999px;
+    opacity: 0.9;
+  }
+
+  .lbp2__pagination {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding-block-start: clamp(32px, 4vw, 64px);
+  }
+
+  .lbp2__pagination a,
+  .lbp2__pagination .current {
+    display: block;
+    padding: 6px 12px;
+    color: var(--color-foreground);
+    text-decoration: none;
+  }
+
+  .lbp2__pagination .current,
+  .lbp2__pagination a:hover {
+    border-bottom: 1px solid var(--color-foreground);
+  }
+
+  .lbp2__empty {
+    text-align: center;
+    opacity: 0.5;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Lookbook Pages Two",
+  "tag": "section",
+  "class": "section-wrapper",
+  "disabled_on": {
+    "groups": ["header"]
+  },
+  "settings": [
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Blog",
+      "info": "Select the blog to display. On blog templates this is optional."
+    },
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_heading",
+      "label": "Show heading",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "custom_heading",
+      "label": "Custom heading",
+      "info": "Leave blank to use the blog title"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_description",
+      "label": "Show blog description",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Grid"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns (desktop)",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns (mobile)",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between cards",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "image_ratio_desktop",
+      "label": "Image ratio (desktop)",
+      "options": [
+        { "value": "3 / 4", "label": "Portrait (3:4)" },
+        { "value": "1 / 1", "label": "Square (1:1)" },
+        { "value": "4 / 3", "label": "Landscape (4:3)" },
+        { "value": "16 / 9", "label": "Widescreen (16:9)" },
+        { "value": "2 / 3", "label": "Tall (2:3)" }
+      ],
+      "default": "3 / 4"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio_mobile",
+      "label": "Image ratio (mobile)",
+      "options": [
+        { "value": "3 / 4", "label": "Portrait (3:4)" },
+        { "value": "1 / 1", "label": "Square (1:1)" },
+        { "value": "4 / 3", "label": "Landscape (4:3)" },
+        { "value": "16 / 9", "label": "Widescreen (16:9)" },
+        { "value": "2 / 3", "label": "Tall (2:3)" }
+      ],
+      "default": "3 / 4"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Post corner radius",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "posts_per_page",
+      "label": "Posts per page",
+      "min": 2,
+      "max": 48,
+      "step": 2,
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Card content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_title",
+      "label": "Show title",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show author",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_excerpt",
+      "label": "Show excerpt",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "excerpt_words",
+      "label": "Excerpt length (words)",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "default": 20
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Show tags",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "page-width", "label": "Page width" },
+        { "value": "full-width", "label": "Full width" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color",
+      "info": "Overrides the color scheme background. Leave unset to use the color scheme."
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Lookbook Pages Two",
+      "category": "Storytelling",
+      "settings": {
+        "columns_desktop": 2,
+        "columns_mobile": "2",
+        "image_ratio_desktop": "3 / 4",
+        "image_ratio_mobile": "3 / 4",
+        "show_title": true
+      }
+    }
+  ]
+}
+{% endschema %}
