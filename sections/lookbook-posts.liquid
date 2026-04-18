@@ -36,13 +36,12 @@
   {%- endif -%}
 
   {%- if target_blog != blank and target_blog.articles_count > 0 -%}
-    {%- assign sorted_articles = target_blog.articles | sort: 'published_at' | reverse -%}
-    {%- paginate sorted_articles by section.settings.posts_per_page -%}
+    {%- paginate target_blog.articles by section.settings.posts_per_page -%}
       <div
         class="lookbook-posts__grid"
         style="--lookbook-gap: {{ section.settings.gap }}px;"
       >
-        {%- for article in sorted_articles -%}
+        {%- for article in target_blog.articles -%}
           {%- liquid
             assign image_alt = article.image.alt | default: article.title | escape
           -%}
