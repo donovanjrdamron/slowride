@@ -1,15 +1,15 @@
 {% liquid
   assign widths = '450, 600, 750, 900, 1050, 1200, 1500, 1800, 2100, 2400, 3000, 3840'
   assign columns_desktop = section.settings.columns_desktop | default: 2
-  assign columns_mobile = section.settings.columns_mobile | default: 2
+  assign columns_mobile_num = section.settings.columns_mobile | default: '2' | plus: 0
   if columns_desktop == 0
     assign columns_desktop = 2
   endif
-  if columns_mobile == 0
-    assign columns_mobile = 2
+  if columns_mobile_num == 0
+    assign columns_mobile_num = 2
   endif
   assign desktop_vw = 100 | divided_by: columns_desktop
-  assign mobile_vw = 100 | divided_by: columns_mobile
+  assign mobile_vw = 100 | divided_by: columns_mobile_num
   assign sizes = '(min-width: 750px) ' | append: desktop_vw | append: 'vw, ' | append: mobile_vw | append: 'vw'
   assign image_ratio_desktop = section.settings.image_ratio_desktop | default: '3 / 4'
   assign image_ratio_mobile = section.settings.image_ratio_mobile | default: '3 / 4'
@@ -51,7 +51,7 @@
     {%- paginate target_blog.articles by section.settings.posts_per_page -%}
       <div
         class="lookbook-posts__grid"
-        style="--lookbook-gap: {{ section.settings.gap }}px; --cols-desktop: {{ columns_desktop }}; --cols-mobile: {{ columns_mobile }};"
+        style="--lookbook-gap: {{ section.settings.gap }}px; --cols-desktop: {{ columns_desktop }}; --cols-mobile: {{ columns_mobile_num }};"
       >
         {%- for article in target_blog.articles -%}
           {%- liquid
@@ -346,13 +346,14 @@
       "default": 2
     },
     {
-      "type": "range",
+      "type": "select",
       "id": "columns_mobile",
       "label": "Columns (mobile)",
-      "min": 1,
-      "max": 2,
-      "step": 1,
-      "default": 2
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
     },
     {
       "type": "range",
@@ -507,7 +508,7 @@
       "category": "Storytelling",
       "settings": {
         "columns_desktop": 2,
-        "columns_mobile": 2,
+        "columns_mobile": "2",
         "image_ratio_desktop": "3 / 4",
         "image_ratio_mobile": "3 / 4",
         "show_title": true
