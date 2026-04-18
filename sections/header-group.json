@@ -18,8 +18,8 @@
           "type": "_announcement",
           "name": "t:names.announcement",
           "settings": {
-            "text": "Sale Ending Soon! Shop Last Lap",
-            "link": "shopify://pages/t-shirt-bundle",
+            "text": "Sale Ending Soon! Shop <a href=\"/collections/slowridesaleproducts\" title=\"Slow Ride Products on Sale.\">Last Lap</a>",
+            "link": "shopify://collections/slowridesaleproducts",
             "show_scribble": false,
             "separator_icon": "dot",
             "font": "var(--font-body--family)",
