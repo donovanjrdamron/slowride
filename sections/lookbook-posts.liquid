@@ -1,10 +1,6 @@
 {% liquid
   assign widths = '450, 600, 750, 900, 1050, 1200, 1500, 1800, 2100, 2400, 3000, 3840'
-  assign columns_desktop = section.settings.columns_desktop
-  assign columns_mobile = section.settings.columns_mobile
-  assign desktop_vw = 100 | divided_by: columns_desktop
-  assign mobile_vw = 100 | divided_by: columns_mobile
-  assign sizes = '(min-width: 750px) ' | append: desktop_vw | append: 'vw, ' | append: mobile_vw | append: 'vw'
+  assign sizes = '50vw'
 
   if section.settings.blog != blank
     assign target_blog = blogs[section.settings.blog]
@@ -43,7 +39,7 @@
     {%- paginate target_blog.articles by section.settings.posts_per_page -%}
       <div
         class="lookbook-posts__grid"
-        style="--lookbook-gap: {{ section.settings.gap }}px; --cols-desktop: {{ columns_desktop }}; --cols-mobile: {{ columns_mobile }};"
+        style="--lookbook-gap: {{ section.settings.gap }}px;"
       >
         {%- for article in target_blog.articles -%}
           {%- liquid
@@ -52,7 +48,7 @@
           <a
             href="{{ article.url }}"
             class="lookbook-posts__card"
-            style="--image-ratio-desktop: {{ section.settings.image_ratio_desktop }}; --image-ratio-mobile: {{ section.settings.image_ratio_mobile }}; --radius: {{ section.settings.border_radius }}px;"
+            style="--image-ratio: {{ section.settings.image_ratio }}; --radius: {{ section.settings.border_radius }}px;"
             aria-label="{{ article.title | escape }}"
           >
             <div class="lookbook-posts__media">
@@ -141,29 +137,19 @@
 
   .lookbook-posts__grid {
     display: grid;
-    grid-template-columns: repeat(var(--cols-mobile, 2), 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--lookbook-gap, 24px);
-
-    @media screen and (width >= 750px) {
-      grid-template-columns: repeat(var(--cols-desktop, 2), 1fr);
-    }
   }
 
   .lookbook-posts__card {
     position: relative;
     display: block;
     overflow: hidden;
-    aspect-ratio: var(--image-ratio-mobile, 3 / 4);
+    aspect-ratio: var(--image-ratio, 3 / 4);
     border-radius: var(--radius, 0);
     text-decoration: none;
     color: #ffffff;
     background: rgba(from var(--color-foreground) r g b / 0.04);
-  }
-
-  @media screen and (width >= 750px) {
-    .lookbook-posts__card {
-      aspect-ratio: var(--image-ratio-desktop, 3 / 4);
-    }
   }
 
   .lookbook-posts__media {
@@ -330,24 +316,6 @@
     },
     {
       "type": "range",
-      "id": "columns_desktop",
-      "label": "Columns (desktop)",
-      "min": 1,
-      "max": 4,
-      "step": 1,
-      "default": 2
-    },
-    {
-      "type": "range",
-      "id": "columns_mobile",
-      "label": "Columns (mobile)",
-      "min": 1,
-      "max": 2,
-      "step": 1,
-      "default": 2
-    },
-    {
-      "type": "range",
       "id": "gap",
       "label": "Gap between cards",
       "min": 0,
@@ -358,21 +326,8 @@
     },
     {
       "type": "select",
-      "id": "image_ratio_desktop",
-      "label": "Image ratio (desktop)",
-      "options": [
-        { "value": "3 / 4", "label": "Portrait (3:4)" },
-        { "value": "1 / 1", "label": "Square (1:1)" },
-        { "value": "4 / 3", "label": "Landscape (4:3)" },
-        { "value": "16 / 9", "label": "Widescreen (16:9)" },
-        { "value": "2 / 3", "label": "Tall (2:3)" }
-      ],
-      "default": "3 / 4"
-    },
-    {
-      "type": "select",
-      "id": "image_ratio_mobile",
-      "label": "Image ratio (mobile)",
+      "id": "image_ratio",
+      "label": "Image ratio",
       "options": [
         { "value": "3 / 4", "label": "Portrait (3:4)" },
         { "value": "1 / 1", "label": "Square (1:1)" },
@@ -498,10 +453,7 @@
       "name": "Lookbook posts",
       "category": "Storytelling",
       "settings": {
-        "columns_desktop": 2,
-        "columns_mobile": 2,
-        "image_ratio_desktop": "3 / 4",
-        "image_ratio_mobile": "3 / 4",
+        "image_ratio": "3 / 4",
         "show_title": true
       }
     }
