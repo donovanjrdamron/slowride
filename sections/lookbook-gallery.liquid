@@ -32,17 +32,41 @@
   >
     {%- assign photos = article.metafields.custom.photos.value -%}
     {%- if photos != blank -%}
+      {%- liquid
+        assign target_row_h = 320.0
+        assign packing_w = section.settings.max_width | minus: 64 | times: 1.0
+        assign target_ratio_sum = packing_w | divided_by: target_row_h
+        assign current_ratio_sum = 0.0
+      -%}
+      {%- capture row_buffer %}{% endcapture -%}
       {%- for photo in photos -%}
         {%- liquid
-          assign w = photo.width
+          # Resolve the underlying image object so width/height/alt work
+          # whether the metafield is an image_reference or file_reference.
+          assign img = photo
+          if photo.image != blank
+            assign img = photo.image
+          elsif photo.preview_image != blank
+            assign img = photo.preview_image
+          endif
+
+          assign w = img.width
+          if w == blank or w == 0
+            assign w = photo.width
+          endif
           if w == blank or w == 0
             assign w = 3
           endif
-          assign h = photo.height
+          assign h = img.height
+          if h == blank or h == 0
+            assign h = photo.height
+          endif
           if h == blank or h == 0
             assign h = 4
           endif
           assign ratio = w | times: 1.0 | divided_by: h
+
+          assign photo_alt = img.alt | default: photo.alt | default: article.title
 
           assign loading_attr = 'lazy'
           assign fetch_priority = 'auto'
@@ -51,27 +75,38 @@
             assign fetch_priority = 'high'
           endif
         -%}
-        <figure
-          class="lookbook-gallery__figure"
-          style="--ratio: {{ ratio }};"
-        >
-          {{
-            photo
-            | image_url: width: 2400
-            | image_tag:
-              widths: widths,
-              alt: photo.alt | default: article.title,
-              class: 'lookbook-gallery__image',
-              sizes: '(min-width: 750px) 500px, 50vw',
-              loading: loading_attr,
-              fetchpriority: fetch_priority
-          }}
-        </figure>
+        {%- if current_ratio_sum >= target_ratio_sum -%}
+          <div class="lookbook-gallery__row">{{ row_buffer }}</div>
+          {%- capture row_buffer %}{% endcapture -%}
+          {%- assign current_ratio_sum = 0.0 -%}
+        {%- endif -%}
+        {%- capture figure_html -%}
+          <figure class="lookbook-gallery__figure" style="--ratio: {{ ratio }};">
+            {{
+              img
+              | image_url: width: 2400
+              | image_tag:
+                widths: widths,
+                alt: photo_alt,
+                class: 'lookbook-gallery__image',
+                sizes: '(min-width: 750px) 500px, 50vw',
+                loading: loading_attr,
+                fetchpriority: fetch_priority
+            }}
+          </figure>
+        {%- endcapture -%}
+        {%- capture row_buffer -%}{{ row_buffer }}{{ figure_html }}{%- endcapture -%}
+        {%- assign current_ratio_sum = current_ratio_sum | plus: ratio -%}
       {%- endfor -%}
+      {%- if row_buffer != blank -%}
+        <div class="lookbook-gallery__row lookbook-gallery__row--last">{{ row_buffer }}</div>
+      {%- endif -%}
     {%- else -%}
-      <figure class="lookbook-gallery__figure lookbook-gallery__figure--empty" style="--ratio: 1.5;">
-        {{ 'lifestyle-1' | placeholder_svg_tag: 'lookbook-gallery__placeholder-svg' }}
-      </figure>
+      <div class="lookbook-gallery__row lookbook-gallery__row--last">
+        <figure class="lookbook-gallery__figure lookbook-gallery__figure--empty" style="--ratio: 1.5;">
+          {{ 'lifestyle-1' | placeholder_svg_tag: 'lookbook-gallery__placeholder-svg' }}
+        </figure>
+      </div>
     {%- endif -%}
   </div>
 
@@ -113,13 +148,14 @@
     opacity: 0.6;
   }
 
-  /* Justified rows: each photo keeps its own aspect ratio. Within a row,
-     items share the same height (--row-h) and their widths are proportional
-     to each photo's ratio. Rows pack organically; no fixed bento slots. */
+  /* Justified rows. Each row is its own flex container. Within a row,
+     figures use flex-basis: 0 + flex-grow: ratio so widths divide
+     proportionally to aspect ratios, and aspect-ratio: ratio makes every
+     figure's height match the others. No cropping; true ratios preserved. */
   .lookbook-gallery__photos {
     --row-h: 320px;
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: var(--gallery-gap, 12px);
     max-width: var(--gallery-max-width, 900px);
     margin-inline: auto;
@@ -127,13 +163,11 @@
     box-sizing: border-box;
   }
 
-  /* The trailing pseudo absorbs leftover space on the last row so its
-     items don't stretch to fill the full width. */
-  .lookbook-gallery__photos::after {
-    content: '';
-    flex-grow: 999999;
-    flex-basis: 0;
-    height: 0;
+  .lookbook-gallery__row {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--gallery-gap, 12px);
+    width: 100%;
     min-width: 0;
   }
 
@@ -144,17 +178,24 @@
     border: var(--gallery-border-width, 3px) solid var(--gallery-border-color, #ffffff);
     background: rgba(from var(--color-foreground) r g b / 0.04);
     box-sizing: border-box;
-    height: var(--row-h);
-    flex-basis: calc(var(--ratio, 0.75) * var(--row-h));
+    flex-basis: 0;
     flex-grow: var(--ratio, 0.75);
     flex-shrink: 1;
     min-width: 0;
-    max-width: 100%;
+    aspect-ratio: var(--ratio, 0.75);
   }
 
-  .lookbook-gallery__figure--empty {
-    flex-basis: calc(1.5 * var(--row-h));
-    flex-grow: 1.5;
+  /* Last row: figures at natural size so a lonely last photo doesn't
+     stretch to full-width. Wrap allows graceful overflow on mobile. */
+  .lookbook-gallery__row--last {
+    flex-wrap: wrap;
+  }
+  .lookbook-gallery__row--last .lookbook-gallery__figure {
+    flex: 0 1 auto;
+    width: calc(var(--ratio, 0.75) * var(--row-h));
+    height: var(--row-h);
+    max-width: 100%;
+    aspect-ratio: auto;
   }
 
   .lookbook-gallery__figure > .lookbook-gallery__image,
