@@ -355,7 +355,7 @@
         }
       },
       "settings": {
-        "collection": "iron-man",
+        "collection": "new-releases",
         "layout_type": "grid",
         "carousel_on_mobile": false,
         "max_products": 4,
