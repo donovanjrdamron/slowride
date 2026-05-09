@@ -9,71 +9,6 @@
  */
 {
   "sections": {
-    "hero_slideshow_qGXdmh": {
-      "type": "hero-slideshow",
-      "blocks": {
-        "slide_ayiLyA": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/Frame_1000007990.jpg",
-            "mobile_image": "shopify://shop_images/Frame_1000007991.jpg",
-            "overlay_color": "#000000",
-            "overlay_opacity": 0,
-            "heading": "",
-            "heading_size": 40,
-            "subheading": "",
-            "subheading_size": 18,
-            "text_color": "#ffffff",
-            "text_alignment": "center",
-            "vertical_alignment": "center",
-            "button_text": "Shop Now",
-            "button_link": "shopify://collections/pabst-x-slowride",
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#111111",
-            "button_radius": 8
-          }
-        },
-        "slide_f3Hdwd": {
-          "type": "slide",
-          "settings": {
-            "image": "shopify://shop_images/Frame_1000008010.png",
-            "mobile_image": "shopify://shop_images/Frame_1000008010.png",
-            "overlay_color": "#000000",
-            "overlay_opacity": 0,
-            "heading": "T-Shirt Bundle",
-            "heading_size": 40,
-            "subheading": "3 T-shirts for $75",
-            "subheading_size": 18,
-            "text_color": "#ffffff",
-            "text_alignment": "center",
-            "vertical_alignment": "center",
-            "button_text": "Shop Now",
-            "button_link": "shopify://pages/t-shirt-bundle",
-            "button_bg_color": "#ffffff",
-            "button_text_color": "#111111",
-            "button_radius": 4
-          }
-        }
-      },
-      "block_order": [
-        "slide_ayiLyA",
-        "slide_f3Hdwd"
-      ],
-      "disabled": true,
-      "name": "Hero Slideshow",
-      "settings": {
-        "section_width": "full-width",
-        "custom_width": 1400,
-        "desktop_aspect_ratio": "16/9",
-        "mobile_aspect_ratio": "1/1",
-        "corner_radius_top": 14,
-        "corner_radius_bottom": 14,
-        "autoplay": true,
-        "autoplay_speed": 5,
-        "padding-block-start": 0,
-        "padding-block-end": 0
-      }
-    },
     "blocks_TdBL6y": {
       "type": "_blocks",
       "blocks": {
@@ -541,7 +476,6 @@
     }
   },
   "order": [
-    "hero_slideshow_qGXdmh",
     "blocks_TdBL6y",
     "product_list_qU3bEB",
     "shop_by_category_LKfdU9",
