@@ -77,39 +77,30 @@
     "blocks_TdBL6y": {
       "type": "_blocks",
       "blocks": {
-        "ai_gen_block_a645b34_7gE6Ef": {
-          "type": "ai_gen_block_a645b34",
+        "ai_gen_block_78da8f0_jy6azg": {
+          "type": "ai_gen_block_78da8f0",
+          "name": "Hero section",
           "settings": {
-            "desktop_image": "shopify://shop_images/Frame_1000008023.png",
-            "desktop_aspect_ratio": "16:9",
-            "object_fit": "cover",
-            "mobile_video": "shopify://files/videos/0227 (2)(1).mp4",
-            "mobile_aspect_ratio": "1:1",
-            "heading": "",
-            "heading_size": "large",
-            "subheading": "",
-            "text_color": "#ffffff",
-            "text_alignment": "left",
-            "button_1_label": "",
-            "button_1_link": "",
-            "button_1_style": "filled",
-            "button_2_label": "",
-            "button_2_link": "",
-            "button_2_style": "outlined",
-            "overlay_color": "#000000",
-            "overlay_opacity": 0,
-            "desktop_height_mode": "auto",
-            "desktop_height_px": 600,
-            "mobile_height_mode": "auto",
-            "mobile_height_px": 500,
+            "link": "",
+            "media_type": "image",
+            "desktop_image": "shopify://shop_images/hero.png",
+            "aspect_ratio_desktop": 50,
+            "mobile_image": "shopify://shop_images/Frame_271.png",
+            "aspect_ratio_mobile": 100,
             "padding_top": 0,
-            "padding_bottom": 0
+            "padding_bottom": 0,
+            "padding_left": 0,
+            "padding_right": 0,
+            "padding_top_mobile": 0,
+            "padding_bottom_mobile": 0,
+            "padding_left_mobile": 0,
+            "padding_right_mobile": 0
           },
           "blocks": {}
         }
       },
       "block_order": [
-        "ai_gen_block_a645b34_7gE6Ef"
+        "ai_gen_block_78da8f0_jy6azg"
       ],
       "settings": {
         "content_direction": "column",
