@@ -47,6 +47,28 @@
     background-color: #f4f4f4;
   }
 
+  .ai-hero-overlay-{{ ai_gen_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+    {% assign _op = block.settings.overlay_opacity | divided_by: 100.0 %}
+    {% assign _strength = block.settings.gradient_strength | divided_by: 100.0 %}
+    {% if block.settings.overlay_style == 'gradient' %}
+      background: linear-gradient(
+        {{ block.settings.gradient_direction }},
+        {{ block.settings.overlay_color | color_modify: 'alpha', _op }} 0%,
+        {{ block.settings.overlay_color | color_modify: 'alpha', _strength }} 100%
+      );
+    {% elsif block.settings.overlay_style == 'solid' %}
+      background-color: {{ block.settings.overlay_color }};
+      opacity: {{ _op }};
+    {% endif %}
+  }
+
   .ai-hero-content-{{ ai_gen_id }} {
     position: absolute;
     top: 0;
@@ -58,6 +80,10 @@
     justify-content: {{ block.settings.content_vertical_align }};
     align-items: {{ block.settings.content_horizontal_align }};
     text-align: {{ block.settings.text_align }};
+    z-index: 2;
+    {% if block.settings.text_shadow %}
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+    {% endif %}
   }
 
   .ai-hero-content-wrapper-{{ ai_gen_id }} {
@@ -129,6 +155,10 @@
       <div class="ai-hero-placeholder-{{ ai_gen_id }}">
         {{ 'hero-apparel-1' | placeholder_svg_tag }}
       </div>
+    {% endif %}
+
+    {% if block.settings.overlay_style != 'none' %}
+      <div class="ai-hero-overlay-{{ ai_gen_id }}"></div>
     {% endif %}
 
     <div class="ai-hero-content-{{ ai_gen_id }}">
@@ -255,6 +285,42 @@
       ],
       "default": "center"
     },
+
+    { "type": "header", "content": "Overlay" },
+    {
+      "type": "select",
+      "id": "overlay_style",
+      "label": "Overlay style",
+      "options": [
+        { "value": "none",     "label": "None" },
+        { "value": "solid",    "label": "Solid" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "default": "gradient"
+    },
+    { "type": "color", "id": "overlay_color", "label": "Overlay color", "default": "#000000" },
+    {
+      "type": "range", "id": "overlay_opacity",
+      "label": "Overlay opacity (gradient base / solid)",
+      "min": 0, "max": 100, "step": 5, "unit": "%", "default": 60
+    },
+    {
+      "type": "select", "id": "gradient_direction", "label": "Gradient direction",
+      "options": [
+        { "value": "to top",       "label": "Bottom to top" },
+        { "value": "to bottom",    "label": "Top to bottom" },
+        { "value": "to top right", "label": "Bottom-left to top-right" },
+        { "value": "to top left",  "label": "Bottom-right to top-left" }
+      ],
+      "default": "to top",
+      "info": "Only applies when style is Gradient"
+    },
+    {
+      "type": "range", "id": "gradient_strength", "label": "Gradient end opacity",
+      "min": 0, "max": 100, "step": 5, "unit": "%", "default": 0,
+      "info": "0% fades to fully transparent. Increase for an even darken across the whole image."
+    },
+    { "type": "checkbox", "id": "text_shadow", "label": "Text shadow (legibility)", "default": true },
 
     { "type": "header", "content": "Section Padding (Desktop)" },
     { "type": "range", "id": "padding_top", "min": 0, "max": 100, "step": 5, "unit": "px", "label": "Top padding", "default": 0 },

@@ -142,10 +142,20 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: {{ block.settings.overlay_color }};
-    opacity: {{ block.settings.overlay_opacity | divided_by: 100.0 }};
     pointer-events: none;
     z-index: 1;
+    {% assign _op = block.settings.overlay_opacity | divided_by: 100.0 %}
+    {% assign _strength = block.settings.gradient_strength | default: 0 | divided_by: 100.0 %}
+    {% if block.settings.overlay_style == 'gradient' %}
+      background: linear-gradient(
+        {{ block.settings.gradient_direction }},
+        {{ block.settings.overlay_color | color_modify: 'alpha', _op }} 0%,
+        {{ block.settings.overlay_color | color_modify: 'alpha', _strength }} 100%
+      );
+    {% else %}
+      background-color: {{ block.settings.overlay_color }};
+      opacity: {{ _op }};
+    {% endif %}
   }
 
   .ai-hero-content-{{ ai_gen_id }} {
@@ -158,6 +168,9 @@
     text-align: {{ block.settings.text_alignment }};
     z-index: 2;
     color: {{ block.settings.text_color }};
+    {% if block.settings.text_shadow %}
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
+    {% endif %}
   }
 
   .ai-hero-heading-{{ ai_gen_id }} {
@@ -562,6 +575,16 @@
       "content": "Overlay"
     },
     {
+      "type": "select",
+      "id": "overlay_style",
+      "label": "Overlay style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "default": "gradient"
+    },
+    {
       "type": "color",
       "id": "overlay_color",
       "label": "Overlay color",
@@ -570,12 +593,42 @@
     {
       "type": "range",
       "id": "overlay_opacity",
-      "label": "Overlay opacity",
+      "label": "Overlay opacity (gradient base / solid)",
       "min": 0,
       "max": 100,
       "step": 5,
       "unit": "%",
-      "default": 30
+      "default": 60
+    },
+    {
+      "type": "select",
+      "id": "gradient_direction",
+      "label": "Gradient direction",
+      "options": [
+        { "value": "to top",         "label": "Bottom to top" },
+        { "value": "to bottom",      "label": "Top to bottom" },
+        { "value": "to top right",   "label": "Bottom-left to top-right" },
+        { "value": "to top left",    "label": "Bottom-right to top-left" }
+      ],
+      "default": "to top",
+      "info": "Only applies when style is Gradient"
+    },
+    {
+      "type": "range",
+      "id": "gradient_strength",
+      "label": "Gradient end opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 0,
+      "info": "0% fades to fully transparent. Increase for an even darken across the whole image."
+    },
+    {
+      "type": "checkbox",
+      "id": "text_shadow",
+      "label": "Text shadow (legibility)",
+      "default": true
     },
     {
       "type": "header",
