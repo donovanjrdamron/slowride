@@ -155,6 +155,7 @@
     color: {{ block.settings.button_text_color }};
     text-decoration: none;
     border: 1px solid {{ block.settings.button_bg }};
+    border-radius: {{ block.settings.button_corner_radius }}px;
     font-size: 15px;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -500,6 +501,12 @@
     { "type": "color",    "id": "text_color",   "label": "Text color",   "default": "#ffffff" },
     { "type": "color",    "id": "button_bg",    "label": "Button color", "default": "#ffffff" },
     { "type": "color",    "id": "button_text_color", "label": "Button text color", "default": "#111111" },
+    {
+      "type": "range",
+      "id": "button_corner_radius",
+      "label": "Button corner radius",
+      "min": 0, "max": 40, "step": 1, "unit": "px", "default": 0
+    },
     {
       "type": "select", "id": "text_align", "label": "Text alignment",
       "options": [
