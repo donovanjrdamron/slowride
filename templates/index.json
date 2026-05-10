@@ -27,7 +27,7 @@
             "overlay_opacity": 25,
             "gradient_direction": "to top",
             "gradient_strength": 0,
-            "text_shadow": true,
+            "text_shadow": false,
             "heading": "Enjoy Getting There.",
             "description": "<p>Genuine goods since 2007. </p>",
             "button_label": "Shop Now",
