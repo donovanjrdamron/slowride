@@ -130,6 +130,15 @@
               },
               "blocks": {}
             },
+            "bundle_progress_bar_pdp": {
+              "type": "bundle-progress-bar",
+              "disabled": true,
+              "settings": {
+                "enabled": true,
+                "match_product_type": "T-Shirt"
+              },
+              "blocks": {}
+            },
             "product_rating_bar_b2Q4rn": {
               "type": "product-rating-bar",
               "settings": {
@@ -497,6 +506,7 @@
             "text_467PrF",
             "price_eth3f8",
             "variant_picker_kYm7CR",
+            "bundle_progress_bar_pdp",
             "product_rating_bar_b2Q4rn",
             "buy_buttons_eYQEYi",
             "stock_badge_k6QrLW",

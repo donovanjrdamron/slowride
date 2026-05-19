@@ -1,0 +1,176 @@
+{%- if block.settings.enabled -%}
+  <div class="bpb-block" {{ block.shopify_attributes }}>
+    {% render 'bundle-progress-bar',
+      variant: 'inline',
+      unique_id: block.id,
+      match_product_type: block.settings.match_product_type,
+      tier_1_label: block.settings.tier_1_label,
+      tier_2_label: block.settings.tier_2_label,
+      tier_3_label: block.settings.tier_3_label,
+      tier_1_savings: block.settings.tier_1_savings,
+      tier_2_savings: block.settings.tier_2_savings,
+      tier_3_savings: block.settings.tier_3_savings,
+      discount_2: block.settings.discount_2,
+      discount_3: block.settings.discount_3,
+      headline_0: block.settings.headline_0,
+      headline_1: block.settings.headline_1,
+      headline_2: block.settings.headline_2,
+      headline_3: block.settings.headline_3,
+      fill_color: block.settings.fill_color,
+      track_color: block.settings.track_color,
+      bg_color: block.settings.bg_color,
+      text_color: block.settings.text_color
+    %}
+  </div>
+
+  <script src="{{ 'bundle-progress-bar.js' | asset_url }}" defer></script>
+{%- endif -%}
+
+{% stylesheet %}
+  .bpb-block {
+    margin: 16px 0;
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Bundle Progress Bar",
+  "tag": null,
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enabled",
+      "label": "Show progress bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "match_product_type",
+      "label": "Matching product type",
+      "default": "T-Shirt",
+      "info": "Counts cart items whose Shopify product type matches this value (case-insensitive)."
+    },
+    {
+      "type": "header",
+      "content": "Tier labels"
+    },
+    {
+      "type": "text",
+      "id": "tier_1_label",
+      "label": "Tier 1 label",
+      "default": "1 Shirt"
+    },
+    {
+      "type": "text",
+      "id": "tier_1_savings",
+      "label": "Tier 1 savings text",
+      "default": "Full Price"
+    },
+    {
+      "type": "text",
+      "id": "tier_2_label",
+      "label": "Tier 2 label",
+      "default": "2 Shirts"
+    },
+    {
+      "type": "text",
+      "id": "tier_2_savings",
+      "label": "Tier 2 savings text",
+      "default": "13% Off Each"
+    },
+    {
+      "type": "text",
+      "id": "tier_3_label",
+      "label": "Tier 3 label",
+      "default": "3 Shirts"
+    },
+    {
+      "type": "text",
+      "id": "tier_3_savings",
+      "label": "Tier 3 savings text",
+      "default": "22% Off Each"
+    },
+    {
+      "type": "range",
+      "id": "discount_2",
+      "label": "Tier 2 discount %",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "discount_3",
+      "label": "Tier 3 discount %",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "default": 22
+    },
+    {
+      "type": "header",
+      "content": "Messages",
+      "info": "Use {savings} for live $ amount and {next} for shirts remaining."
+    },
+    {
+      "type": "text",
+      "id": "headline_0",
+      "label": "0 shirts in cart",
+      "default": "Build a bundle and save — add a tee to start."
+    },
+    {
+      "type": "text",
+      "id": "headline_1",
+      "label": "1 shirt in cart",
+      "default": "Add 1 more tee to save 13% on each!"
+    },
+    {
+      "type": "text",
+      "id": "headline_2",
+      "label": "2 shirts in cart",
+      "default": "Add 1 more tee to save 22% on each!"
+    },
+    {
+      "type": "text",
+      "id": "headline_3",
+      "label": "3+ shirts in cart",
+      "default": "Bundle complete — you’re saving {savings}!"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "fill_color",
+      "label": "Fill color",
+      "default": "#48bb78"
+    },
+    {
+      "type": "color",
+      "id": "track_color",
+      "label": "Track color",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#111111"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Bundle Progress Bar",
+      "category": "Product"
+    }
+  ]
+}
+{% endschema %}

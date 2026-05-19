@@ -1,0 +1,231 @@
+{% comment %}
+  Bundle Progress Bar — shared snippet.
+  Renders a tiered milestone bar that reacts to cart updates.
+
+  Required params (via {% render %}):
+    variant            — 'sticky' or 'inline'
+    unique_id          — section.id or block.id
+    match_product_type — Shopify product_type to count in cart (e.g. "T-Shirt")
+
+  Optional params (all have defaults):
+    tier_1_label, tier_2_label, tier_3_label
+    tier_1_savings, tier_2_savings, tier_3_savings
+    discount_2, discount_3   — numeric percents (savings calc)
+    headline_0..3            — message per count state. Supports {next} and {savings} placeholders.
+    fill_color, track_color, bg_color, text_color
+{% endcomment %}
+
+{%- liquid
+  assign variant = variant | default: 'inline'
+  assign uid = unique_id | default: 'bpb'
+  assign match_type = match_product_type | default: 'T-Shirt'
+
+  assign t1_label = tier_1_label | default: '1 Shirt'
+  assign t2_label = tier_2_label | default: '2 Shirts'
+  assign t3_label = tier_3_label | default: '3 Shirts'
+  assign t1_savings = tier_1_savings | default: 'Full Price'
+  assign t2_savings = tier_2_savings | default: '13% Off Each'
+  assign t3_savings = tier_3_savings | default: '22% Off Each'
+
+  assign d2 = discount_2 | default: 13
+  assign d3 = discount_3 | default: 22
+
+  assign h0 = headline_0 | default: 'Build a bundle and save — add a tee to start.'
+  assign h1 = headline_1 | default: 'Add 1 more tee to save 13% on each!'
+  assign h2 = headline_2 | default: 'Add 1 more tee to save 22% on each!'
+  assign h3 = headline_3 | default: 'Bundle complete — you’re saving {savings}!'
+
+  assign fill = fill_color | default: '#48bb78'
+  assign track = track_color | default: '#e0e0e0'
+  assign bg = bg_color | default: '#ffffff'
+  assign txt = text_color | default: '#111111'
+-%}
+
+<div
+  class="bpb bpb--{{ variant }}"
+  id="bpb-{{ uid }}"
+  data-bundle-progress
+  data-variant="{{ variant }}"
+  data-match-type="{{ match_type | downcase | escape }}"
+  data-discount-2="{{ d2 }}"
+  data-discount-3="{{ d3 }}"
+  data-headline-0="{{ h0 | escape }}"
+  data-headline-1="{{ h1 | escape }}"
+  data-headline-2="{{ h2 | escape }}"
+  data-headline-3="{{ h3 | escape }}"
+  style="--bpb-fill: {{ fill }}; --bpb-track: {{ track }}; --bpb-bg: {{ bg }}; --bpb-text: {{ txt }};"
+  role="status"
+  aria-live="polite"
+>
+  <div class="bpb__inner">
+    <div class="bpb__headline" data-bpb-headline>{{ h0 }}</div>
+
+    <div class="bpb__steps" data-bpb-steps>
+      {%- assign labels = t1_label | append: '||' | append: t2_label | append: '||' | append: t3_label | split: '||' -%}
+      {%- assign savings_labels = t1_savings | append: '||' | append: t2_savings | append: '||' | append: t3_savings | split: '||' -%}
+      {%- for i in (1..3) -%}
+        {%- assign idx = forloop.index0 -%}
+        <div class="bpb__step" data-step="{{ i }}">
+          <span class="bpb__circle">
+            <span class="bpb__check" aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            </span>
+            <span class="bpb__num">{{ i }}</span>
+          </span>
+          <span class="bpb__step-label">{{ labels[idx] }}</span>
+          <span class="bpb__step-savings">{{ savings_labels[idx] }}</span>
+        </div>
+        {%- unless forloop.last -%}
+          <div class="bpb__bar"><div class="bpb__bar-fill" data-bar="{{ i }}"></div></div>
+        {%- endunless -%}
+      {%- endfor -%}
+    </div>
+
+    <div class="bpb__savings" data-bpb-savings hidden>
+      You’re saving <strong data-bpb-savings-amount>$0.00</strong>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .bpb {
+    font-family: inherit;
+    color: var(--bpb-text);
+    background: var(--bpb-bg);
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .bpb--sticky {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 50;
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.08);
+    border-top: 1px solid rgba(0, 0, 0, 0.06);
+  }
+
+  .bpb--inline {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+  }
+
+  .bpb__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 14px 20px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+
+  .bpb__headline {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-align: center;
+  }
+  .bpb__headline strong {
+    font-weight: 700;
+  }
+
+  .bpb__steps {
+    display: grid;
+    grid-template-columns: auto 1fr auto 1fr auto;
+    align-items: start;
+    gap: 0;
+  }
+
+  .bpb__step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 64px;
+  }
+
+  .bpb__circle {
+    position: relative;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--bpb-track);
+    background: var(--bpb-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--bpb-track);
+    transition: border-color 0.3s ease, background 0.3s ease, color 0.3s ease;
+  }
+  .bpb__num { display: inline; }
+  .bpb__check {
+    display: none;
+    color: #fff;
+    line-height: 0;
+  }
+
+  .bpb__step--active .bpb__circle,
+  .bpb__step--current .bpb__circle {
+    border-color: var(--bpb-fill);
+    color: var(--bpb-fill);
+  }
+  .bpb__step--active .bpb__circle {
+    background: var(--bpb-fill);
+    color: #fff;
+  }
+  .bpb__step--active .bpb__num { display: none; }
+  .bpb__step--active .bpb__check { display: inline-flex; }
+
+  .bpb__step-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .bpb__step-savings {
+    font-size: 10px;
+    opacity: 0.7;
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .bpb__bar {
+    height: 4px;
+    background: var(--bpb-track);
+    border-radius: 2px;
+    margin: 13px 6px 0;
+    overflow: hidden;
+    align-self: start;
+  }
+  .bpb__bar-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--bpb-fill);
+    transition: width 0.4s ease;
+    border-radius: 2px;
+  }
+
+  .bpb__savings {
+    font-size: 12px;
+    text-align: center;
+    opacity: 0.9;
+  }
+  .bpb__savings[hidden] { display: none; }
+  .bpb__savings strong { font-weight: 700; }
+
+  @media (max-width: 600px) {
+    .bpb__inner {
+      padding: 10px 12px;
+      gap: 8px;
+    }
+    .bpb__headline { font-size: 13px; }
+    .bpb__step-savings { display: none; }
+    .bpb__step-label { font-size: 10px; }
+    .bpb__bar { margin: 13px 4px 0; }
+  }
+{% endstylesheet %}
